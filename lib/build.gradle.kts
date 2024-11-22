@@ -19,7 +19,11 @@ publishing {
     }
   }
   publications {
-    create<MavenPublication>("maven") {
+    create<MavenPublication>("htma") {
+      groupId = "de.jakobschaefer.htma"
+      artifactId = "ktor-server-htma"
+      version = project.version.toString()
+
       pom {
         name = "ktor-server-htma"
         description = "A web framework driven by HTML and powered by Ktor"
@@ -36,10 +40,6 @@ publishing {
           }
         }
       }
-      groupId = "de.jakobschaefer.htma"
-      artifactId = "ktor-server-htma"
-      version = project.version.toString()
-
       from(components["java"])
     }
   }
