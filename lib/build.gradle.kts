@@ -31,6 +31,16 @@ tasks.named<Test>("test") {
 }
 
 publishing {
+  repositories {
+    maven {
+      name = "GitHub"
+      url = uri("https://maven.pkg.github.com/JakobSchaefer/ktor-server-htma")
+      credentials {
+        username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+        password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
   publications {
     create<MavenPublication>("htma") {
       groupId = "io.github.jakobschaefer"

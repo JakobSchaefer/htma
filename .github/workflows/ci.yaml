@@ -10,3 +10,5 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Check project
         run: ./gradlew check
+      - name: Publish maven package
+        run: ./gradlew publish -Pgpr.user="${{ github.actor }}" -Pgpr.key="${{ github.token }}"
