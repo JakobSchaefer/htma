@@ -11,4 +11,4 @@ jobs:
       - name: Check project
         run: ./gradlew check
       - name: Publish Package
-        run: ./gradlew publish
+        run: ./gradlew publish -Pgpr.user="${{ github.actor }}" -Pgpr.key="${{ github.token }}"
