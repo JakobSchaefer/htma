@@ -1,5 +1,9 @@
-name: CI
-on: [ push ]
+name: Continuous Integration
+run-name: "${{ github.event.head_commit.message }}"
+on:
+  push:
+    branches:
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,5 +14,3 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Check project
         run: ./gradlew check
-      - name: Publish maven package
-        run: ./gradlew publish -Pgpr.user="${{ github.actor }}" -Pgpr.key="${{ github.token }}"
