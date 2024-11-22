@@ -18,7 +18,7 @@ jobs:
         env:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
         run: |
-          echo -n "$GPG_SIGNING_KEY" | base64 --decode > keyring.gpg
+          echo -n "$GPG_SIGNING_KEY" | base64 --decode > lib/keyring.gpg
       - name: Publish maven snapshot package
         run: |
           ./gradlew publish \
