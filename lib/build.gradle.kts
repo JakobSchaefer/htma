@@ -3,8 +3,10 @@ plugins {
   alias(libs.plugins.axion)
   alias(libs.plugins.deepmedia.deployer)
   id("java-library")
+  id("kotlin")
 }
 
+group = "de.jakobschaefer.htma"
 version = scmVersion.version
 description = "A web framework driven by HTML and powered by Ktor"
 
@@ -31,32 +33,38 @@ tasks.named<Test>("test") {
 }
 
 deployer {
-  projectInfo {
-    name.set("ktor-server-htma")
-    description.set("A web framework driven by HTML and powered by Ktor")
-    url.set("https://github.com/JakobSchaefer/ktor-server-htma")
-    groupId.set("io.github.jakobschaefer")
-    artifactId.set("ktor-server-htma")
-    scm {
-      fromGithub("ktor-server-htma", "JakobSchaefer")
-    }
-    license(MIT)
-    developer("Jakob Schäfer", "mail@jakobschaefer.de")
-  }
-  release {
-    version.set(project.version.toString())
-  }
+  verbose = true
+
   content {
     component {
       fromJava()
     }
   }
-  signing {
-    key.set(secret("gpg.signing.key"))
-    password.set(secret("gpg.signing.password"))
+
+  projectInfo {
+    description = "A web framework driven by HTML and powered by Ktor"
+    url = "https://github.com/JakobSchaefer/ktor-server-htma"
+    artifactId = "ktor-server-htma"
+    scm {
+      fromGithub("JakobSchaefer", "ktor-server-htma")
+    }
+    license(MIT)
+    developer("JakobSchaefer", "mail@jakobschaefer.de")
   }
+
+  localSpec { }
+
   centralPortalSpec {
     auth.user.set(secret("mavenCentral.portal.username"))
     auth.password.set(secret("mavenCentral.portal.password"))
+  }
+
+  release {
+    version.set(project.version.toString())
+  }
+
+  signing {
+    key.set(secret("gpg.signing.key"))
+    password.set(secret("gpg.signing.password"))
   }
 }

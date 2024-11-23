@@ -1,4 +1,4 @@
-package io.github.jakobschaefer.htma
+package de.jakobschaefer.htma
 
 class Library {
   /**

@@ -1,4 +1,4 @@
-package io.github.jakobschaefer.htma;
+package de.jakobschaefer.htma;
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertTrue
