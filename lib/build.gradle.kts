@@ -56,7 +56,6 @@ deployer {
     password.set(secret("gpg.signing.password"))
   }
   centralPortalSpec {
-    allowMavenCentralSync = false
     auth.user.set(secret("mavenCentral.portal.username"))
     auth.password.set(secret("mavenCentral.portal.password"))
   }
