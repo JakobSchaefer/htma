@@ -1,12 +1,14 @@
+import org.jetbrains.kotlin.codegen.state.md5base64
+
 plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.axion)
+  id("io.deepmedia.tools.deployer") version "0.15.0"
   id("java-library")
-  id("maven-publish")
-  id("signing")
 }
 
 version = scmVersion.version
+description = "A web framework driven by HTML and powered by Ktor"
 
 repositories {
   mavenCentral()
@@ -30,49 +32,34 @@ tasks.named<Test>("test") {
   useJUnitPlatform()
 }
 
-publishing {
-  repositories {
-    maven {
-      name = "GitHub"
-      url = uri("https://maven.pkg.github.com/JakobSchaefer/ktor-server-htma")
-      credentials {
-        username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
-        password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-      }
+deployer {
+  projectInfo {
+    name.set("ktor-server-htma")
+    description.set("A web framework driven by HTML and powered by Ktor")
+    url.set("https://github.com/JakobSchaefer/ktor-server-htma")
+    groupId.set("io.github.jakobschaefer")
+    artifactId.set("ktor-server-htma")
+    scm {
+      fromGithub("ktor-server-htma", "JakobSchaefer")
+    }
+    license(MIT)
+    developer("Jakob Schäfer", "mail@jakobschaefer.de")
+  }
+  release {
+    version.set(project.version.toString())
+  }
+  content {
+    component {
+      fromJava()
     }
   }
-  publications {
-    create<MavenPublication>("htma") {
-      groupId = "io.github.jakobschaefer"
-      artifactId = "ktor-server-htma"
-      version = project.version.toString()
-
-      pom {
-        name = "ktor-server-htma"
-        description = "A web framework driven by HTML and powered by Ktor"
-        scm {
-          url = "https://github.com/JakobSchaefer/ktor-server-htma"
-        }
-        licenses {
-          license {
-            name = "MIT License"
-            url = "https://raw.githubusercontent.com/JakobSchaefer/ktor-server-htma/refs/heads/main/LICENSE"
-          }
-        }
-        developers {
-          developer {
-            id = "jakobschaefer"
-            name = "Jakob Schäfer"
-            email = "mail@jakobschaefer.de"
-          }
-        }
-      }
-      from(components["java"])
-    }
+  signing {
+    key.set(secret("gpg.signing.key"))
+    password.set(secret("gpg.signing.password"))
   }
-}
-
-signing {
-  // required properties: signing.keyId, signing.password, signing.secretKeyRingFile
-  sign(publishing.publications["htma"])
+  centralPortalSpec {
+    allowMavenCentralSync = false
+    auth.user.set(secret("mavenCentral.portal.username"))
+    auth.password.set(secret("mavenCentral.portal.password"))
+  }
 }

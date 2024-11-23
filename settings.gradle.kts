@@ -1,3 +1,5 @@
 rootProject.name = "ktor-server-htma"
 
-include("lib")
+include("lib", "example-basic")
+
+project(":example-basic").projectDir = file("examples/basic")

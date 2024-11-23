@@ -6,6 +6,9 @@ junit-jupiter = "5.10.3"
 axion = "1.18.9"
 kotlin = "2.0.21"
 
+# https://opensource.deepmedia.io/deployer
+deployer = "0.15.0"
+
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 

@@ -12,18 +12,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: Setup signing key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
+      - name: Check project
+        run: ./gradlew check
+      - name: Publish ktor-server-htma library
         run: |
-          echo -n "$GPG_SIGNING_KEY" | base64 --decode > lib/keyring.gpg
-      - name: Publish maven package
-        run: |
-          ./gradlew publish \
-            -Pgpr.user="${{ github.actor }}" \
-            -Pgpr.key="${{ github.token }}" \
-            -Psigning.keyId="${{ secrets.SIGNING_KEY_ID }}" \
-            -Psigning.password="${{ secrets.SIGNING_PASSWORD }}" \
-            -Psigning.secretKeyRingFile="keyring.gpg"
+          ./gradlew :lib:deployCentralPortal \
+            -Pgpg.signing.key="${{ secrets.GPG_SIGNING_KEY }}" \
+            -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
+            -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
+            -PmavenCentral.portal.password="${{ secrets.MAVEN_CENTRAL_PORTAL_PASSWORD }}"
 
 
