@@ -26,5 +26,12 @@ jobs:
             -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
             -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
             -PmavenCentral.portal.password="${{ secrets.MAVEN_CENTRAL_PORTAL_PASSWORD }}"
+      - name: Publish ktor-server-htma gradle-plugin
+        run: |
+          ./gradlew :gradle-plugin:deployCentralPortal \
+            -Pgpg.signing.key="${{ secrets.GPG_SIGNING_KEY }}" \
+            -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
+            -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
+            -PmavenCentral.portal.password="${{ secrets.MAVEN_CENTRAL_PORTAL_PASSWORD }}"
 
 
