@@ -53,12 +53,9 @@ deployer {
   localSpec { }
 
   centralPortalSpec {
+    allowMavenCentralSync = false
     auth.user.set(secret("mavenCentral.portal.username"))
     auth.password.set(secret("mavenCentral.portal.password"))
-  }
-
-  release {
-    version.set(project.version.toString())
   }
 
   signing {
