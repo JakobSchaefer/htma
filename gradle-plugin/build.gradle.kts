@@ -29,8 +29,6 @@ gradlePlugin {
 }
 
 deployer {
-  verbose = true
-
   content {
     gradlePluginComponents {
       kotlinSources()
@@ -41,7 +39,7 @@ deployer {
   projectInfo {
     description = "A web framework driven by HTML and powered by Ktor"
     url.set("https://github.com/JakobSchaefer/ktor-server-htma")
-    artifactId = "htma-gradle-plugin"
+    artifactId = "ktor-server-htma-gradle-plugin"
     scm {
       fromGithub("JakobSchaefer", "ktor-server-htma")
     }
@@ -55,17 +53,6 @@ deployer {
     allowMavenCentralSync = false
     auth.user.set(secret("mavenCentral.portal.username"))
     auth.password.set(secret("mavenCentral.portal.password"))
-    projectInfo.groupId.set("io.github.jakobschaefer")
-    content {
-      inherit.set(false)
-      component {
-        fromMavenPublication("pluginMaven", clone = true)
-        packaging.set("jar")
-        kotlinSources()
-        emptyDocs()
-      }
-
-    }
   }
 
   signing {

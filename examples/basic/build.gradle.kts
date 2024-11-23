@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-  implementation("io.github.jakobschaefer:ktor-server-htma:0.1.2")
+  implementation("de.jakobschaefer.htma:ktor-server-htma:0.1.3")
 }

@@ -33,8 +33,6 @@ tasks.named<Test>("test") {
 }
 
 deployer {
-  verbose = true
-
   content {
     component {
       fromJava()

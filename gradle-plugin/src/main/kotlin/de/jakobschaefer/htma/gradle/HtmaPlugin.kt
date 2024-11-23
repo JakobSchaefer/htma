@@ -1,4 +1,4 @@
-package io.github.jakobschaefer.htma.gradle
+package de.jakobschaefer.htma.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

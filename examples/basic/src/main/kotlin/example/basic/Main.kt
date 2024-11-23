@@ -1,6 +1,6 @@
 package example.basic
 
-import io.github.jakobschaefer.htma.Library
+import de.jakobschaefer.htma.Library
 
 fun main() {
   val a = Library().someLibraryMethod()
