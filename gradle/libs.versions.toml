@@ -15,3 +15,4 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 axion = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion" }
+deepmedia-deployer = { id = "io.deepmedia.tools.deployer", version.ref = "deployer" }

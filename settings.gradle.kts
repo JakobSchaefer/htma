@@ -1,3 +1,10 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    mavenCentral()
+  }
+}
+
 rootProject.name = "ktor-server-htma"
 
 include("lib", "example-basic")

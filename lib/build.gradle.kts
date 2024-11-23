@@ -1,9 +1,7 @@
-import org.jetbrains.kotlin.codegen.state.md5base64
-
 plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.axion)
-  id("io.deepmedia.tools.deployer") version "0.15.0"
+  alias(libs.plugins.deepmedia.deployer)
   id("java-library")
 }
 
