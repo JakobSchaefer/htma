@@ -5,7 +5,8 @@ on:
     tags:
       - '*'
 jobs:
-  build:
+  check:
+    name: Check Project
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -16,9 +17,24 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Check project
         run: ./gradlew check
+
+  publish-library:
+    name: Publish ktor-server-htma library
+    runs-on: ubuntu-latest
+    needs: [ check ]
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Publish ktor-server-htma library
         run: |
           ./gradlew :lib:deployCentralPortal \
@@ -26,6 +42,20 @@ jobs:
             -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
             -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
             -PmavenCentral.portal.password="${{ secrets.MAVEN_CENTRAL_PORTAL_PASSWORD }}"
+
+  publish-gradle-plugin:
+    name: Publish de.jakobschaefer.htma gradle plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Publish ktor-server-htma gradle-plugin
         run: |
           ./gradlew :gradle-plugin:deployCentralPortal \
@@ -33,5 +63,4 @@ jobs:
             -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
             -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
             -PmavenCentral.portal.password="${{ secrets.MAVEN_CENTRAL_PORTAL_PASSWORD }}"
-
-
+  
