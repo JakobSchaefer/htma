@@ -19,7 +19,6 @@ repositories {
 }
 
 dependencies {
-  implementation(project(":web-inf"))
 }
 
 gradlePlugin {
@@ -42,7 +41,7 @@ deployer {
   projectInfo {
     description = "A web framework driven by HTML and powered by Ktor"
     url.set("https://github.com/JakobSchaefer/ktor-server-htma")
-    artifactId = "ktor-server-htma-gradle-plugin"
+    artifactId = "htma-gradle-plugin"
     scm {
       fromGithub("JakobSchaefer", "ktor-server-htma")
     }

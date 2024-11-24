@@ -36,3 +36,5 @@ dependencies {
 }
 ```
 
+You can find fully set up projects and feature demos in the [examples](./examples)
+
