@@ -3,6 +3,12 @@
 kotlin = "2.0.21"
 kotlinx-serialization = "1.7.3"
 
+# https://www.slf4j.org/
+slf4j = "2.0.16"
+
+# https://logging.apache.org/log4j/2.x/index.html
+log4j = "2.24.1"
+
 # https://ktor.io/
 ktor = "3.0.1"
 
@@ -24,6 +30,11 @@ ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", 
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-test = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
+
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+log4j-test = { module = "org.apache.logging.log4j:log4j-core-test", version.ref = "log4j" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }

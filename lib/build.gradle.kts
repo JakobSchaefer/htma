@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
   `java-library`
   alias(libs.plugins.kotlin.jvm)
@@ -20,6 +23,11 @@ dependencies {
   api(libs.ktor.server.core)
   testImplementation(libs.ktor.server.test)
 
+  implementation(libs.slf4j)
+  testImplementation(libs.log4j.core)
+  testImplementation(libs.log4j.slf4j)
+  testImplementation(libs.log4j.test)
+
   testImplementation(libs.kotest.runner.junit5)
   testImplementation(libs.kotest.assertions.core)
 }
@@ -34,6 +42,13 @@ java {
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
+  testLogging {
+    events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    exceptionFormat = TestExceptionFormat.FULL
+    showExceptions = true
+    showExceptions = true
+    showCauses = true
+  }
 }
 
 deployer {
