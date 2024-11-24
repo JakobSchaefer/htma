@@ -1,13 +1,12 @@
 plugins {
   `kotlin-dsl`
   `java-gradle-plugin`
-  alias(libs.plugins.axion)
   alias(libs.plugins.deepmedia.deployer)
   alias(libs.plugins.dokka)
 }
 
 group = "de.jakobschaefer.htma"
-version = scmVersion.version
+version = rootProject.version
 
 val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
   dependsOn(tasks.dokkaJavadoc)

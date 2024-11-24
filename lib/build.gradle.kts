@@ -4,13 +4,12 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
   `java-library`
   alias(libs.plugins.kotlin.jvm)
-  alias(libs.plugins.axion)
   alias(libs.plugins.deepmedia.deployer)
   alias(libs.plugins.dokka)
 }
 
 group = "de.jakobschaefer.htma"
-version = scmVersion.version
+version = rootProject.version
 description = "A web framework driven by HTML and powered by Ktor"
 
 repositories {
