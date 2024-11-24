@@ -21,6 +21,14 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
 }
 
+java {
+  withSourcesJar()
+  withJavadocJar()
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
+}
+
 tasks.named<Test>("test") {
   useJUnitPlatform()
   testLogging {
