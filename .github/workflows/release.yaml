@@ -46,6 +46,7 @@ jobs:
   publish-gradle-plugin:
     name: Publish de.jakobschaefer.htma gradle plugin
     runs-on: ubuntu-latest
+    needs: [ check ]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
