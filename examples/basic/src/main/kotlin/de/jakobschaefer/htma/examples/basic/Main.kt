@@ -1,4 +1,5 @@
 package de.jakobschaefer.htma.examples.basic
 
-fun main() {
-}
+import io.ktor.server.netty.*
+
+fun main(args: Array<String>) = EngineMain.main(args)

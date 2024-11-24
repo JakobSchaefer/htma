@@ -24,7 +24,7 @@ pluginManagement {
 
 // build.gradle.kts
 plugins {
-  id("de.jakobschaefer.htma") version "0.1.4"
+  id("de.jakobschaefer.htma") version "0.1.7"
 }
 
 repositories {
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-  implementation("de.jakobschaefer.htma:ktor-server-htma:0.1.4")
+  implementation("de.jakobschaefer.htma:htma-ktor-server:0.1.7")
 }
 ```
 

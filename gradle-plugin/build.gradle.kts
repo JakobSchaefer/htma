@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+  implementation(project(":web-inf"))
 }
 
 gradlePlugin {

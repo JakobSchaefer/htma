@@ -17,8 +17,12 @@ repositories {
 }
 
 dependencies {
+  implementation(project(":web-inf"))
+
   api(libs.ktor.server.core)
   testImplementation(libs.ktor.server.test)
+
+  implementation(libs.thymeleaf)
 
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)
