@@ -19,6 +19,10 @@ repositories {
   mavenCentral()
 }
 
+dependencies {
+  implementation(project(":web-inf"))
+}
+
 gradlePlugin {
   plugins {
     create("htma") {

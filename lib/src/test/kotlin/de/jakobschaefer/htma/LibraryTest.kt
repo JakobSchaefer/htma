@@ -1,11 +1,12 @@
 package de.jakobschaefer.htma;
 
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.shouldBe
+import io.ktor.server.testing.*
 
 class LibraryTest : FunSpec({
-  test("someLibraryMethodReturnsTrue") {
-    val classUnderTest = Library()
-    classUnderTest.someLibraryMethod() shouldBe true
+  test("Htma plugin can be installed") {
+    testApplication {
+      install(Htma)
+    }
   }
 })
