@@ -9,7 +9,8 @@ A web application framework driven by HTML
 
 ## Installation
 
-The framework consists of a library and a Gradle plugin.
+You will need a [Ktor](https://ktor.io/) server.
+This framework consists of a Ktor server plugin and a Gradle plugin.
 
 ```kotlin
 // settings.gradle.kts
