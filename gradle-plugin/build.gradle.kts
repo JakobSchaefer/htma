@@ -3,7 +3,7 @@ plugins {
   `java-gradle-plugin`
   alias(libs.plugins.axion)
   alias(libs.plugins.deepmedia.deployer)
-  id("org.jetbrains.dokka") version "1.9.20"
+  alias(libs.plugins.dokka)
 }
 
 group = "de.jakobschaefer.htma"

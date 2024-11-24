@@ -1,9 +1,9 @@
 plugins {
+  `java-library`
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.axion)
   alias(libs.plugins.deepmedia.deployer)
-  id("java-library")
-  id("kotlin")
+  alias(libs.plugins.dokka)
 }
 
 group = "de.jakobschaefer.htma"

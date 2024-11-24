@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-  implementation("io.github.jakobschaefer:ktor-server-htma:0.1.4")
+  implementation("de.jakobschaefer.htma:ktor-server-htma:0.1.4")
 }
 ```
 
