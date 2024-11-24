@@ -1,12 +1,11 @@
 package de.jakobschaefer.htma;
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertTrue
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 
-class LibraryTest {
-  @Test
-  fun someLibraryMethodReturnsTrue() {
+class LibraryTest : FunSpec({
+  test("someLibraryMethodReturnsTrue") {
     val classUnderTest = Library()
-    assertTrue(classUnderTest.someLibraryMethod(), "someLibraryMethod should return 'true'")
+    classUnderTest.someLibraryMethod() shouldBe true
   }
-}
+})

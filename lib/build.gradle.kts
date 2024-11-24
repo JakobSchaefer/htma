@@ -15,9 +15,9 @@ repositories {
 }
 
 dependencies {
-  testImplementation(libs.junit.jupiter)
 
-  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testImplementation(libs.kotest.runner.junit5)
+  testImplementation(libs.kotest.assertions.core)
 }
 
 java {
