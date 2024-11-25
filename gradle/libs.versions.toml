@@ -7,7 +7,7 @@ kotlinx-serialization = "1.7.3"
 slf4j = "2.0.16"
 
 # https://logging.apache.org/log4j/2.x/index.html
-log4j = "2.24.1"
+log4j = "2.24.2"
 
 # https://ktor.io/
 ktor = "3.0.1"
