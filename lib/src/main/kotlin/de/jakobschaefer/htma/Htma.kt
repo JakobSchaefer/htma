@@ -11,14 +11,15 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver
 
 val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPluginConfig) {
-  val appManifest = AppManifest.loadFromResources(
-    resourceBase = findStringProperty(
-      givenValue = pluginConfig.resourceBase,
-      propertyName = "htma.resourceBase",
-      fallbackValue = "/WEB-INF"
-    )
+  val resourceBase = findStringProperty(
+    givenValue = pluginConfig.resourceBase,
+    propertyName = "htma.resourceBase",
+    fallbackValue = "/WEB-INF"
   )
-  val templateEngine = setupTemplateEngine()
+  val appManifest = AppManifest.loadFromResources(
+    resourceBase = resourceBase
+  )
+  val templateEngine = setupTemplateEngine(resourceBase)
   val plugin = HtmaPlugin(
     config = pluginConfig,
     templateEngine = templateEngine,
@@ -28,12 +29,12 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
   Logs.htma.info("Htma plugin started!")
 }
 
-private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(): TemplateEngine {
+private fun setupTemplateEngine(resourceBase: String): TemplateEngine {
   val templateEngine = TemplateEngine()
   val templateResolvers = mutableSetOf<ITemplateResolver>()
 
   // We want to provide some templates with this library.
-  // This resolver should look up only specific names in order to improve the performance
+  // This resolver should look up only specific names in order to improve performance
   val internalTemplates = ClassLoaderTemplateResolver(HtmaPluginConfig::class.java.classLoader).apply {
     prefix = "internal-templates/"
     suffix = ".html"
@@ -43,9 +44,9 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(): TemplateEngin
   }
   templateResolvers.add(internalTemplates)
 
-  // The templates provided by the user
+  // Templates provided by the user
   val webTemplates = ClassLoaderTemplateResolver().apply {
-    prefix = "${pluginConfig.resourceBase}/web/"
+    prefix = "${resourceBase}/web/"
     suffix = ".html"
     templateMode = TemplateMode.HTML
     order = 2
@@ -61,7 +62,7 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   propertyName: String,
   fallbackValue: String
 ): String {
-  return givenValue ?: environment.config.propertyOrNull(propertyName)?.getString() ?: fallbackValue
+  return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
 suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>) {

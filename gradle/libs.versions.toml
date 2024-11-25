@@ -1,8 +1,4 @@
 [versions]
-# https://github.com/JakobSchaefer/ktor-server-htma
-# Version used by examples
-htma = "0.1.7"
-
 # https://kotlinlang.org/docs/home.html
 kotlin = "2.0.21"
 kotlinx-serialization = "1.7.3"
@@ -33,15 +29,10 @@ thymeleaf = "3.1.2.RELEASE"
 
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-test = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 
 thymeleaf = { group = "org.thymeleaf", name = "thymeleaf", version.ref = "thymeleaf" }
-
-htma-ktorServer = { module = "de.jakobschaefer.htma:htma-ktor-server", version.ref = "htma" }
-htma-webInf = { module = "de.jakobschaefer.htma:htma-web-inf", version.ref = "htma" }
 
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
@@ -57,4 +48,3 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 axion = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion" }
 deepmedia-deployer = { id = "io.deepmedia.tools.deployer", version.ref = "deployer" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-htma = { id = "de.jakobschaefer.htma", version.ref = "htma" }

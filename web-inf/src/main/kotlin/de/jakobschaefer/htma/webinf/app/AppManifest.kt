@@ -2,6 +2,7 @@ package de.jakobschaefer.htma.webinf.app
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.io.InputStream
@@ -10,6 +11,11 @@ import java.io.InputStream
 data class AppManifest(
   val pages: List<AppManifestPage>
 ) {
+
+  fun toJson(): String {
+    return json.encodeToString(this)
+  }
+
   companion object {
     private val json = Json {
       ignoreUnknownKeys = true
