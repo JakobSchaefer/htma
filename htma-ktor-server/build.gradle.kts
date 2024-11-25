@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.deepmedia.deployer)
   alias(libs.plugins.dokka)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 group = "de.jakobschaefer.htma"
@@ -17,7 +18,7 @@ repositories {
 }
 
 dependencies {
-  implementation(project(":web-inf"))
+  implementation(libs.kotlinx.serialization.json)
 
   api(libs.ktor.server.core)
   testImplementation(libs.ktor.server.test)
@@ -61,10 +62,10 @@ deployer {
 
   projectInfo {
     description = "A web framework driven by HTML and powered by Ktor"
-    url = "https://github.com/JakobSchaefer/ktor-server-htma"
+    url = "https://github.com/JakobSchaefer/htma"
     artifactId = "htma-ktor-server"
     scm {
-      fromGithub("JakobSchaefer", "ktor-server-htma")
+      fromGithub("JakobSchaefer", "htma")
     }
     license(MIT)
     developer("JakobSchaefer", "mail@jakobschaefer.de")

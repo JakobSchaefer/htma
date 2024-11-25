@@ -1,10 +1,12 @@
 pluginManagement {
+  includeBuild("htma-gradle-plugin")
   repositories {
     gradlePluginPortal()
     mavenCentral()
   }
 }
 
-rootProject.name = "ktor-server-htma"
+rootProject.name = "htma"
 
-include("lib", "gradle-plugin", "web-inf")
+include("htma-ktor-server", "example-basic")
+project(":example-basic").projectDir = file("examples/basic")

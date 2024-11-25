@@ -21,30 +21,8 @@ jobs:
       - name: Check project
         run: ./gradlew check
 
-  publish-web-inf:
-    name: Publish web-inf library
-    runs-on: ubuntu-latest
-    needs: [ check ]
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-      - name: Publish web-inf-library
-        run: |
-          ./gradlew :web-inf:deployCentralPortal \
-            -Pgpg.signing.key="${{ secrets.GPG_SIGNING_KEY }}" \
-            -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
-            -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
-            -PmavenCentral.portal.password="${{ secrets.MAVEN_CENTRAL_PORTAL_PASSWORD }}"
-
   publish-library:
-    name: Publish ktor-server-htma library
+    name: Publish htma-ktor-server library
     runs-on: ubuntu-latest
     needs: [ check ]
     steps:
@@ -57,9 +35,9 @@ jobs:
           java-version: 21
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Publish ktor-server-htma library
+      - name: Publish to maven central
         run: |
-          ./gradlew :lib:deployCentralPortal \
+          ./gradlew :htma-ktor-server:deployCentralPortal \
             -Pgpg.signing.key="${{ secrets.GPG_SIGNING_KEY }}" \
             -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
             -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
@@ -81,7 +59,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Publish ktor-server-htma gradle-plugin
         run: |
-          ./gradlew :gradle-plugin:deployCentralPortal \
+          ./gradlew :htma-gradle-plugin:deployCentralPortal \
             -Pgpg.signing.key="${{ secrets.GPG_SIGNING_KEY }}" \
             -Pgpg.signing.password="${{ secrets.GPG_SIGNING_PASSWORD }}" \
             -PmavenCentral.portal.username="${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}" \
