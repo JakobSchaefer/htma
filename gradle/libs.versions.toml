@@ -16,7 +16,7 @@ ktor = "3.0.1"
 kotest = "5.9.1"
 
 # https://axion-release-plugin.readthedocs.io/en/latest/
-axion = "1.18.15"
+axion = "1.18.16"
 
 # https://github.com/Kotlin/dokka
 dokka = "1.9.20"
