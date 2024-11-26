@@ -1,4 +1,4 @@
-package de.jakobschaefer.htma.webinf.app
+package de.jakobschaefer.htma.webinf
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -11,10 +11,6 @@ import java.io.InputStream
 data class AppManifest(
   val pages: List<AppManifestPage>
 ) {
-
-  fun toJson(): String {
-    return json.encodeToString(this)
-  }
 
   companion object {
     private val json = Json {

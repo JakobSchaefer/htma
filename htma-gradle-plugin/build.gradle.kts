@@ -2,8 +2,8 @@ plugins {
   `kotlin-dsl`
   `java-gradle-plugin`
   alias(libs.plugins.deepmedia.deployer)
-  alias(libs.plugins.dokka)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.dokka)
 }
 
 group = "de.jakobschaefer.htma"

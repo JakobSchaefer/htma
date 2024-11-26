@@ -8,6 +8,10 @@ repositories {
   mavenCentral()
 }
 
+application {
+  mainClass.set("io.ktor.server.netty.EngineMain")
+}
+
 dependencies {
   implementation(project(":htma-ktor-server"))
   implementation(libs.ktor.server.netty)

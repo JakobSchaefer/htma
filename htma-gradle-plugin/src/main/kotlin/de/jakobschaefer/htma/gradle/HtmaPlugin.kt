@@ -1,7 +1,7 @@
 package de.jakobschaefer.htma.gradle
 
-import de.jakobschaefer.htma.webinf.app.AppManifest
-import de.jakobschaefer.htma.webinf.app.AppManifestPage
+import de.jakobschaefer.htma.webinf.AppManifest
+import de.jakobschaefer.htma.webinf.AppManifestPage
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType

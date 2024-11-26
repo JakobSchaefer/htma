@@ -1,4 +1,4 @@
-package de.jakobschaefer.htma.webinf.app
+package de.jakobschaefer.htma.webinf
 
 import kotlinx.serialization.Serializable
 

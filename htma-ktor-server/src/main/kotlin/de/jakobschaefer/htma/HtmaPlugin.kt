@@ -1,6 +1,6 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.webinf.app.AppManifest
+import de.jakobschaefer.htma.webinf.AppManifest
 import io.ktor.server.application.*
 import io.ktor.util.*
 import org.thymeleaf.TemplateEngine
