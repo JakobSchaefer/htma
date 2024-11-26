@@ -14,6 +14,7 @@ data class AppManifest(
   companion object {
     private val json = Json {
       ignoreUnknownKeys = true
+      prettyPrint = true // Developers should be able to read the produced manifest
     }
   }
 }
