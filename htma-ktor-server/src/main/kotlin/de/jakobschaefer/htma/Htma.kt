@@ -1,16 +1,33 @@
 package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.webinf.AppManifest
+import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
+import org.thymeleaf.templateresolver.FileTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver
+import java.io.File
+import java.util.*
 
 val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPluginConfig) {
+  if (application.developmentMode) {
+    GlobalScope.launch {
+      ProcessBuilder("npx", "vite", "dev")
+        .directory(File("."))
+        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+        .redirectInput(ProcessBuilder.Redirect.INHERIT)
+        .start()
+    }
+  }
+
+  // Read manifest files
   val resourceBase = findStringProperty(
     givenValue = pluginConfig.resourceBase,
     propertyName = "htma.resourceBase",
@@ -19,17 +36,30 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
   val appManifest = AppManifest.loadFromResources(
     resourceBase = resourceBase
   )
+  val viteManifest = if (application.developmentMode) {
+    ViteManifest.development()
+  } else {
+    ViteManifest.loadFromResources(
+      resourceBase = resourceBase
+    )
+  }
+
+  // Setup template engine
   val templateEngine = setupTemplateEngine(resourceBase)
+
+  // Add plugin to the ktor application
   val plugin = HtmaPlugin(
     config = pluginConfig,
+    resourceBase = resourceBase,
     templateEngine = templateEngine,
-    appManifest = appManifest
+    appManifest = appManifest,
+    viteManifest = viteManifest,
   )
   application.useHtmaPlugin(plugin)
   Logs.htma.info("Htma plugin started!")
 }
 
-private fun setupTemplateEngine(resourceBase: String): TemplateEngine {
+private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: String): TemplateEngine {
   val templateEngine = TemplateEngine()
   val templateResolvers = mutableSetOf<ITemplateResolver>()
 
@@ -45,15 +75,26 @@ private fun setupTemplateEngine(resourceBase: String): TemplateEngine {
   templateResolvers.add(internalTemplates)
 
   // Templates provided by the user
-  val webTemplates = ClassLoaderTemplateResolver().apply {
-    prefix = "${resourceBase}/web/"
-    suffix = ".html"
-    templateMode = TemplateMode.HTML
-    order = 2
+  val webTemplates = if (application.developmentMode) {
+    FileTemplateResolver().apply {
+      prefix = "web/"
+      suffix = ".html"
+      templateMode = TemplateMode.HTML
+      isCacheable = false
+      order = 2
+    }
+  } else {
+    ClassLoaderTemplateResolver().apply {
+      prefix = "${resourceBase}/web/"
+      suffix = ".html"
+      templateMode = TemplateMode.HTML
+      order = 2
+    }
   }
   templateResolvers.add(webTemplates)
 
   templateEngine.templateResolvers = templateResolvers
+  templateEngine.setLinkBuilder(HtmaLinkBuilder())
   return templateEngine
 }
 
@@ -67,7 +108,27 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
 
 suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>) {
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
-    val ctx = Context()
-    application.htma.templateEngine.process(templateName, ctx)
+    val acceptLanguageHeader = request.headers["Accept-Language"]
+    val locale =
+      if (acceptLanguageHeader != null) {
+        val acceptedLanguages = Locale.LanguageRange.parse(acceptLanguageHeader)
+        Locale.lookup(acceptedLanguages, application.htma.config.supportedLocales)
+          ?: application.htma.config.fallbackLocale
+      } else {
+        application.htma.config.fallbackLocale
+      }
+
+    val renderContext = Context(locale, data)
+
+    // Add htma data to the context
+    val htmaRenderContext = HtmaRenderContext(
+      isDevelopment = application.developmentMode,
+      vite = application.htma.viteManifest,
+      app = application.htma.appManifest
+    )
+    htmaRenderContext.updateContext(renderContext)
+
+    // Process template and respond
+    application.htma.templateEngine.process(templateName, renderContext)
   }
 }

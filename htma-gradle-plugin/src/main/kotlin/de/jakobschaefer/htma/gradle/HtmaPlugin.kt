@@ -1,9 +1,14 @@
 package de.jakobschaefer.htma.gradle
 
+import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.npm.task.NpxTask
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Delete
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 import java.nio.file.Files
@@ -14,7 +19,13 @@ import kotlin.io.path.pathString
 
 class HtmaPlugin : Plugin<Project> {
   override fun apply(project: Project) {
+    project.apply(plugin = "com.github.node-gradle.node")
     val htma = project.extensions.create("htma", HtmaExtension::class.java)
+
+    project.configure<NodeExtension> {
+      download.set(true)
+      version.set("20.16.0")
+    }
 
     project.tasks.create("buildAppManifest") {
       val outputDir = project.layout.buildDirectory.dir("htma")
@@ -29,6 +40,19 @@ class HtmaPlugin : Plugin<Project> {
       }
     }
 
+    project.tasks.create("npxViteBuild", NpxTask::class.java) {
+      dependsOn("npmInstall")
+      description = "Executes npx vite build"
+      command.set("vite")
+      args.set(listOf("build"))
+      inputs.files("package.json", "package-lock.json", "vite.config.js")
+      inputs.dir("web")
+      inputs.dir(project.fileTree("node_modules").exclude(".cache"))
+      outputs.dir("dist")
+    }
+    project.tasks.named("build") { dependsOn("npxViteBuild") }
+    project.tasks.named("clean", Delete::class.java) { delete("dist") }
+
     project.tasks.withType<ProcessResources>().configureEach {
       val resourceBase = htma.resourceBase.get().let {
         if (it.startsWith("/")) {
@@ -38,6 +62,7 @@ class HtmaPlugin : Plugin<Project> {
         }
       }
       val webDir = htma.webDir.get()
+      from(project.tasks.named("npxViteBuild")) { into(resourceBase) }
       from(project.tasks.named("buildAppManifest")) { into(resourceBase) }
       from(webDir) {
         include("**/*.html")

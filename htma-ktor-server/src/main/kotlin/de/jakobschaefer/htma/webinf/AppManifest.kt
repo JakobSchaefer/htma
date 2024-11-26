@@ -1,5 +1,6 @@
 package de.jakobschaefer.htma.webinf
 
+import de.jakobschaefer.htma.serde.JsonConverter
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -13,19 +14,12 @@ data class AppManifest(
 ) {
 
   companion object {
-    private val json = Json {
-      ignoreUnknownKeys = true
-    }
-
     @OptIn(ExperimentalSerializationApi::class)
     fun loadFromResources(resourceBase: String): AppManifest {
       val manifest = loadResource("${resourceBase}/manifest.json")
-      val appManifest = json.decodeFromStream<AppManifest>(manifest)
+      val appManifest = JsonConverter.decodeFromStream<AppManifest>(manifest)
       return appManifest
     }
   }
 }
 
-private fun loadResource(path: String): InputStream {
-  return object {}.javaClass.getResourceAsStream(path)!!
-}

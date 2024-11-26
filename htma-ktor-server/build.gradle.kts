@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
   `java-library`
-  alias(libs.plugins.kotlin.jvm)
+  id(libs.plugins.kotlin.jvm.get().pluginId)
   alias(libs.plugins.deepmedia.deployer)
   alias(libs.plugins.dokka)
   alias(libs.plugins.kotlin.serialization)

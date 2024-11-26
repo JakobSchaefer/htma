@@ -16,11 +16,13 @@ val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
 }
 
 repositories {
+  gradlePluginPortal()
   mavenCentral()
 }
 
 dependencies {
   implementation(libs.kotlinx.serialization.json)
+  implementation("com.github.node-gradle:gradle-node-plugin:7.1.0")
 }
 
 gradlePlugin {
