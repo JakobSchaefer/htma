@@ -3,11 +3,13 @@
 A web application framework driven by HTML
 
 ## Features
-
-- Isomorphic rendering
-- File based routing
-- Localization with ICU and Message Format 2
-  - Formatter for MonetaryAmount
+### Isomorphic rendering
+### File based routing
+### Declarative state management
+### Localization and message formatting
+### Styling and theming
+### Authentication
+### Authorization
 
 ## Installation
 
@@ -26,7 +28,7 @@ pluginManagement {
 
 // build.gradle.kts
 plugins {
-  id("de.jakobschaefer.htma") version "0.1.9"
+  id("de.jakobschaefer.htma") version "0.1.11"
 }
 
 repositories {
@@ -34,7 +36,7 @@ repositories {
 }
 
 dependencies {
-  implementation("de.jakobschaefer.htma:htma-ktor-server:0.1.9")
+  implementation("de.jakobschaefer.htma:htma-ktor-server:0.1.11")
 }
 ```
 

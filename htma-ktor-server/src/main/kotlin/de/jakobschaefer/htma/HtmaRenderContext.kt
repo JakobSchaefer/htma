@@ -8,7 +8,9 @@ import org.thymeleaf.context.IContext
 data class HtmaRenderContext(
   val isDevelopment: Boolean,
   val vite: ViteManifest,
-  val app: AppManifest
+  val app: AppManifest,
+  val isHxRequest: Boolean,
+  val hxTarget: String?
 ) {
   fun updateContext(context: Context) {
     context.setVariable("htma", this)

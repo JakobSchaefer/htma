@@ -96,6 +96,7 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
   templateEngine.templateResolvers = templateResolvers
   templateEngine.setLinkBuilder(HtmaLinkBuilder())
   templateEngine.setMessageResolver(HtmaMessageResolver())
+  templateEngine.addDialect(HtmaDialect())
   return templateEngine
 }
 
@@ -120,12 +121,15 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       }
 
     val renderContext = Context(locale, data)
+    val isHxRequest = request.headers["Hx-Request"]?.toBoolean() ?: false
 
     // Add htma data to the context
     val htmaRenderContext = HtmaRenderContext(
       isDevelopment = application.developmentMode,
       vite = application.htma.viteManifest,
-      app = application.htma.appManifest
+      app = application.htma.appManifest,
+      isHxRequest = isHxRequest,
+      hxTarget = request.queryParameters["target"]
     )
     htmaRenderContext.updateContext(renderContext)
 
