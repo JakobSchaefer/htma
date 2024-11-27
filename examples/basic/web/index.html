@@ -3,7 +3,10 @@
 <head th:replace="~{ base :: head(title=~{::title}) }">
     <title>Example Basic</title>
 </head>
-<body>
-    <h1 class="text-3xl bg-primary m-2" th:text="#{hello('name', 'World')}"></h1>
+<body class="w-dvw h-dvh grid place-content-center">
+    <div class="bg-primary">
+        <h1 class="text-3xl text-center" th:text="|<htma>|"></h1>
+        <h2 class="p-2 text-2xl" th:text="#{hello('name', 'World')}"></h2>
+    </div>
 </body>
 </html>
