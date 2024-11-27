@@ -6,6 +6,8 @@ A web application framework driven by HTML
 
 - Isomorphic rendering
 - File based routing
+- Localization with ICU and Message Format 2
+  - Formatter for MonetaryAmount
 
 ## Installation
 

@@ -95,6 +95,7 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
 
   templateEngine.templateResolvers = templateResolvers
   templateEngine.setLinkBuilder(HtmaLinkBuilder())
+  templateEngine.setMessageResolver(HtmaMessageResolver())
   return templateEngine
 }
 

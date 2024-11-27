@@ -19,11 +19,14 @@ repositories {
 
 dependencies {
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.kotlinx.datetime)
 
   api(libs.ktor.server.core)
   testImplementation(libs.ktor.server.test)
 
   implementation(libs.thymeleaf)
+  implementation(libs.icu4j)
+  implementation(libs.moneta)
 
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)
