@@ -30,6 +30,7 @@ dependencies {
   testImplementation(libs.log4j.slf4j)
   testImplementation(libs.log4j.test)
 
+  testImplementation(libs.jsoup)
   testImplementation(libs.kotest.runner.junit5)
   testImplementation(libs.kotest.assertions.core)
 }

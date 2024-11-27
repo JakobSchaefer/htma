@@ -38,10 +38,10 @@ class HtmaLinkBuilder : StandardLinkBuilder() {
     } else {
       val assetFile = htma.vite.assets["web/$link"]
       if (assetFile != null) {
-        "/$assetFile"
+        "/${assetFile.file}"
       } else {
         // We really don't know.... keep the link as is
-        link
+        "/$link"
       }
     }
   }

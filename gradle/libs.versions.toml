@@ -27,6 +27,9 @@ deployer = "0.15.0"
 # https://www.thymeleaf.org/
 thymeleaf = "3.1.2.RELEASE"
 
+# https://github.com/jhy/jsoup/
+jsoup = "1.18.2"
+
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
@@ -42,6 +45,7 @@ log4j-test = { module = "org.apache.logging.log4j:log4j-core-test", version.ref 
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
