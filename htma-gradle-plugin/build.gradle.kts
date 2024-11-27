@@ -3,11 +3,18 @@ plugins {
   `java-gradle-plugin`
   alias(libs.plugins.deepmedia.deployer)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.axion)
   alias(libs.plugins.dokka)
 }
 
+scmVersion {
+  repository {
+    directory = project.projectDir.parent
+  }
+}
+
 group = "de.jakobschaefer.htma"
-version = rootProject.version
+version = scmVersion.version
 
 val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
   dependsOn(tasks.dokkaJavadoc)

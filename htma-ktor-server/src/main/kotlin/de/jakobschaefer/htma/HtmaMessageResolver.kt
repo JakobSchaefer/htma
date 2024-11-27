@@ -14,7 +14,7 @@ import java.util.*
 import javax.money.MonetaryAmount
 
 class HtmaMessageResolver : StandardMessageResolver() {
-  val functions = MFFunctionRegistry.builder()
+  private val functions = MFFunctionRegistry.builder()
     .setFormatter("money") { locale, params -> HtmaMoneyFormatter(locale)}
     .setDefaultFormatterNameForType(MonetaryAmount::class.java, "money")
     .build()
