@@ -1,2 +1,7 @@
+/* Tailwindcss 4: https://tailwindcss.com/docs/v4-beta#css-first-configuration */
 @import "tailwindcss";
 @source "./**/*.html";
+
+@theme {
+    --color-primary: #ff00ff;
+}
