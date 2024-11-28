@@ -17,8 +17,8 @@ import org.unbescape.html.HtmlEscape
  * Syntax full page navigation
  * th:navigate="path=@{/site}"
  *
- * Syntax partial swap
- * th:navigate="path=@{/site},target='main'"
+ * Syntax partial swap with transition
+ * th:navigate="path=@{/site},target='main',transition=true"
  */
 class HtmaNavigateAttributeProcessor(dialectPrefix: String) :
     AbstractAttributeTagProcessor(

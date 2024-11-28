@@ -110,6 +110,7 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
 
 suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>) {
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
+    // Detect client language
     val acceptLanguageHeader = request.headers["Accept-Language"]
     val locale =
       if (acceptLanguageHeader != null) {
@@ -121,7 +122,10 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       }
 
     val renderContext = Context(locale, data)
+
+    // Detect htmx requests and pass information to the render context.
     val isHxRequest = request.headers["Hx-Request"]?.toBoolean() ?: false
+    val hxTarget = request.queryParameters["target"]
 
     // Add htma data to the context
     val htmaRenderContext = HtmaRenderContext(
@@ -129,7 +133,7 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       vite = application.htma.viteManifest,
       app = application.htma.appManifest,
       isHxRequest = isHxRequest,
-      hxTarget = request.queryParameters["target"]
+      hxTarget = hxTarget
     )
     htmaRenderContext.updateContext(renderContext)
 
