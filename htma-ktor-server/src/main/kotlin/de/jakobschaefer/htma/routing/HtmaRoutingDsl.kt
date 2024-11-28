@@ -8,7 +8,7 @@ import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 
 @KtorDsl
-fun Route.web(spec: () -> Unit) {
+fun Route.htma(spec: () -> Unit) {
   val appManifest = application.htma.appManifest
   val resourceBase = application.htma.resourceBase
   staticResources("/assets", "$resourceBase/assets") {

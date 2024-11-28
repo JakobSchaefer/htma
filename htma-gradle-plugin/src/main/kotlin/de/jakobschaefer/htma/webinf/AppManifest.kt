@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class AppManifest(
-  val pages: List<AppManifestPage>
+  val pages: List<AppManifestPage>,
 ) {
 
   fun toJson() = json.encodeToString(this)

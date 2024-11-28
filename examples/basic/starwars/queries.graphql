@@ -1,0 +1,8 @@
+query FilmTitlesQuery {
+    allFilms {
+        films {
+            title
+        }
+        totalCount
+    }
+}

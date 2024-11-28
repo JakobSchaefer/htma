@@ -22,11 +22,14 @@ dependencies {
   implementation(libs.kotlinx.datetime)
 
   api(libs.ktor.server.core)
+  api(libs.ktor.client.core)
   testImplementation(libs.ktor.server.test)
 
   implementation(libs.thymeleaf)
   implementation(libs.icu4j)
   implementation(libs.moneta)
+  api(libs.apollo.api)
+  implementation(libs.apollo.runtime)
 
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)

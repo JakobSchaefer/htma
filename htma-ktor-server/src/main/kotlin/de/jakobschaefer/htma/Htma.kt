@@ -15,6 +15,7 @@ import org.thymeleaf.templateresolver.FileTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPluginConfig) {
   if (application.developmentMode) {
@@ -133,7 +134,9 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       vite = application.htma.viteManifest,
       app = application.htma.appManifest,
       isHxRequest = isHxRequest,
-      hxTarget = hxTarget
+      hxTarget = hxTarget,
+      graphqlCache = ConcurrentHashMap(),
+      graphqlServices = application.htma.config.graphqlServices
     )
     htmaRenderContext.updateContext(renderContext)
 

@@ -3,25 +3,25 @@
 <head th:replace="~{ base :: head(title=~{::title}) }">
     <title>Example Basic</title>
 </head>
-<body class="w-dvw h-dvh grid place-content-center" th:with="route='root'">
+<body class="w-dvw h-dvh grid place-content-center" th:with="route='home'">
     <nav class="absolute w-dvw p-2 flex justify-center">
         <ol class="flex gap-2">
             <li>
-                <a id="nav-index" th:navigate="path=@{/},target='main',transition=true"
-                   class="hover:text-primary transition-all"
-                   th:classappend="${route == 'root'} ? 'underline' : ''"
-                >Root</a>
-            </li>
-            <li>
-                <a id="nav-home" th:navigate="path=@{/home},target='main',transition=true"
+                <a id="nav-home" th:navigate="path=@{/},target='main',transition=true"
                    class="hover:text-primary transition-all"
                    th:classappend="${route == 'home'} ? 'underline' : ''"
                 >Home</a>
             </li>
+            <li>
+                <a id="nav-starwars" th:navigate="path=@{/starwars},target='main',transition=true"
+                   class="hover:text-primary transition-all"
+                   th:classappend="${route == 'starwars'} ? 'underline' : ''"
+                >Starwars</a>
+            </li>
         </ol>
     </nav>
     <main class="p-8 rounded-2xl border min-w-sm h-32">
-        <h1 class="text-3xl">Root</h1>
+        <h1 class="text-3xl">Home</h1>
         <h2 class="text-2xl" th:text="#{hello('name', 'World')}"></h2>
     </main>
 </body>

@@ -1,4 +1,4 @@
-package de.jakobschaefer.htma.rendering
+package de.jakobschaefer.htma.routing
 
 import de.jakobschaefer.htma.HtmaRenderContext
 import de.jakobschaefer.htma.serde.JsonConverter
@@ -32,15 +32,13 @@ class HtmaNavigateAttributeProcessor(dialectPrefix: String) :
   ) {
     val parser = StandardExpressions.getExpressionParser(context.configuration)
     val parsedConfig =
-        attributeValue
-            .split(",")
-            .map {
-              val key = it.substringBefore('=').trim()
-              val value = it.substringAfter('=').trim()
-              key to value
-            }
-            .toMap()
-            .mapValues { (_, value) ->
+      attributeValue
+        .split(",").associate {
+          val key = it.substringBefore('=').trim()
+          val value = it.substringAfter('=').trim()
+          key to value
+        }
+        .mapValues { (_, value) ->
               val valueExpr = parser.parseExpression(context, value)
               val parsedValue = valueExpr.execute(context)
               parsedValue

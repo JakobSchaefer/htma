@@ -37,16 +37,23 @@ icu4j = "76.1"
 # https://javamoney.github.io/ri.html
 moneta = "1.4.4"
 
+# https://github.com/apollographql/apollo-kotlin
+apollo = "4.1.0"
+
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-test = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor"}
 
 thymeleaf = { group = "org.thymeleaf", name = "thymeleaf", version.ref = "thymeleaf" }
 icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
 moneta = { group = "org.javamoney", name = "moneta", version.ref = "moneta" }
+apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
+apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
+apollo-gradle-plugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
@@ -64,3 +71,4 @@ axion = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion" }
 deepmedia-deployer = { id = "io.deepmedia.tools.deployer", version.ref = "deployer" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor"}
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }

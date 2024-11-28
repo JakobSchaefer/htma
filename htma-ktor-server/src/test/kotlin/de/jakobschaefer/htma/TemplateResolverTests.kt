@@ -1,12 +1,11 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.routing.web
+import de.jakobschaefer.htma.routing.htma
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.string.shouldContain
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.server.routing.*
-import io.ktor.server.testing.*
 
 class TemplateResolverTests : FunSpec({
   test("template can be resolved and returned manually") {
@@ -30,7 +29,7 @@ class TemplateResolverTests : FunSpec({
         resourceBase = "/template-resolver-tests"
       }
       routing {
-        web {
+        htma {
         }
       }
       val response = client.get("/route")
@@ -45,7 +44,7 @@ class TemplateResolverTests : FunSpec({
       }
 
       routing {
-        web { }
+        htma { }
       }
 
       val response = client.get("/").bodyAsText()
