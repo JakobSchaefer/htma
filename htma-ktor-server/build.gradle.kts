@@ -22,7 +22,6 @@ dependencies {
   implementation(libs.kotlinx.datetime)
 
   api(libs.ktor.server.core)
-  api(libs.ktor.client.core)
   testImplementation(libs.ktor.server.test)
 
   implementation(libs.thymeleaf)
@@ -30,6 +29,8 @@ dependencies {
   implementation(libs.moneta)
   api(libs.apollo.api)
   implementation(libs.apollo.runtime)
+  api(libs.graphql.java)
+  implementation(libs.gson)
 
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)

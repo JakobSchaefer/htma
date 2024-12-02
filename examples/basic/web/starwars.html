@@ -3,7 +3,7 @@
 <head th:replace="~{ base :: head(title=~{::title}) }">
     <title>Example Basic</title>
 </head>
-<body class="w-dvw h-dvh grid place-content-center">
+<body class="bg-surface text-on-surface w-dvw h-dvh grid place-content-center">
     <nav th:replace="~{ index :: nav(route='starwars') }"></nav>
     <main class="p-8 rounded-2xl border min-w-sm" th:query="films = ~{ starwars :: FilmTitlesQuery }">
         <h2><a class="text-blue-400 hover:text-blue-500 transition-colors" href="https://studio.apollographql.com/public/star-wars-swapi/variant/current/home" target="_blank">Public Starwars API</a></h2>

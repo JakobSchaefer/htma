@@ -1,0 +1,3 @@
+query IndexQuery($name: String) {
+    hello(name: $name)
+}

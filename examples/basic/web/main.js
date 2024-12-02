@@ -1,3 +1,4 @@
+import "./md/colors.css"
 import "./main.css"
 import "./htmx.js"
 

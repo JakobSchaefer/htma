@@ -8,7 +8,7 @@ import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 
 @KtorDsl
-fun Route.htma(spec: () -> Unit) {
+fun Route.htma(spec: HtmaRouting.() -> Unit) {
   val appManifest = application.htma.appManifest
   val resourceBase = application.htma.resourceBase
   staticResources("/assets", "$resourceBase/assets") {
@@ -21,3 +21,5 @@ fun Route.htma(spec: () -> Unit) {
     }
   }
 }
+
+class HtmaRouting

@@ -40,6 +40,10 @@ moneta = "1.4.4"
 # https://github.com/apollographql/apollo-kotlin
 apollo = "4.1.0"
 
+# https://github.com/graphql-java/graphql-java
+graphql-java = "22.3"
+gson = "2.11.0"
+
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
@@ -54,6 +58,8 @@ moneta = { group = "org.javamoney", name = "moneta", version.ref = "moneta" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 apollo-gradle-plugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
+graphql-java = { group = "com.graphql-java", name = "graphql-java", version.ref = "graphql-java" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
