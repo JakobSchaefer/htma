@@ -1,5 +1,7 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.graphql.GraphQlOperationRef
+import de.jakobschaefer.htma.graphql.GraphQlResponse
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
@@ -9,6 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
+import org.thymeleaf.processor.element.IElementTagStructureHandler
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
@@ -109,7 +112,7 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
-suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>) {
+suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>, graphqlCache: ConcurrentHashMap<GraphQlOperationRef, GraphQlResponse> = ConcurrentHashMap()) {
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
     // Detect client language
     val acceptLanguageHeader = request.headers["Accept-Language"]
@@ -135,7 +138,7 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       app = application.htma.appManifest,
       isHxRequest = isHxRequest,
       hxTarget = hxTarget,
-      graphqlCache = ConcurrentHashMap(),
+      graphqlCache = graphqlCache,
       graphqlServices = application.htma.config.graphqlServices
     )
     htmaRenderContext.updateContext(renderContext)

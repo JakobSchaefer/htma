@@ -31,6 +31,7 @@ dependencies {
   implementation(libs.apollo.runtime)
   api(libs.graphql.java)
   implementation(libs.gson)
+  implementation(libs.betterParse)
 
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)

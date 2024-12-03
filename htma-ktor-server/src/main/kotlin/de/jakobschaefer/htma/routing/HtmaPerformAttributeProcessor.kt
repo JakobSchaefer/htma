@@ -2,7 +2,6 @@ package de.jakobschaefer.htma.routing
 
 import de.jakobschaefer.htma.HtmaRenderContext
 import de.jakobschaefer.htma.serde.JsonConverter
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import org.thymeleaf.context.ITemplateContext
 import org.thymeleaf.engine.AttributeName
@@ -15,14 +14,14 @@ import org.unbescape.html.HtmlEscape
 
 /**
  * Syntax full page navigation
- * th:navigate="path=@{/site}"
+ * th:perform="path=@{/site},mutation=~{ <ServiceName> :: <OperationName>}"
  *
  * Syntax partial swap with transition
- * th:navigate="path=@{/site},target='main',transition=true"
+ * th:perform="path=@{/site},mutation=~{ <ServiceName> :: <OperationName> },target='main',transition=true"
  */
-class HtmaNavigateAttributeProcessor(dialectPrefix: String) :
+class HtmaPerformAttributeProcessor(dialectPrefix: String) :
     AbstractAttributeTagProcessor(
-        TemplateMode.HTML, dialectPrefix, null, false, "navigate", true, 10_000, true) {
+        TemplateMode.HTML, dialectPrefix, null, false, "perform", true, 10_000, true) {
   override fun doProcess(
       context: ITemplateContext,
       tag: IProcessableElementTag,
@@ -50,13 +49,12 @@ class HtmaNavigateAttributeProcessor(dialectPrefix: String) :
             get() = (parsedConfig["target"] as String?) ?: "body"
           val transition: Boolean
             get() = (parsedConfig["transition"] as Boolean?) ?: false
+          val mutation: String by parsedConfig
         }
     val destination = HtmlEscape.escapeHtml5(config.path)
-    if (tag.elementDefinition.elementName.elementName == "a") {
-      structureHandler.setAttribute("href", destination)
-    }
-    structureHandler.setAttribute("hx-get", destination)
-    structureHandler.setAttribute("hx-push-url", destination)
+
+    structureHandler.setAttribute("hx-post", destination)
+//    structureHandler.setAttribute("hx-push-url", destination)
     structureHandler.setAttribute("hx-target", config.target)
     if (config.target != "body") {
       // NOTE: HTMX expects the payload from the server in the body element.

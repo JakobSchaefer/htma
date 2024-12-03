@@ -1,3 +1,11 @@
-query IndexQuery($name: String) {
-    hello(name: $name)
+query NameQuery {
+    name
+}
+
+query ServerGreetingQuery($nameOverride: String) {
+    greeting(name: $nameOverride)
+}
+
+mutation UpdateNameMutation($newName: String!, $options: SetNameOptions) {
+    setName(name: $newName, options: $options)
 }

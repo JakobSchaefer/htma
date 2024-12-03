@@ -44,6 +44,9 @@ apollo = "4.1.0"
 graphql-java = "22.3"
 gson = "2.11.0"
 
+# https://github.com/h0tk3y/better-parse
+better-parse = "0.4.4"
+
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
@@ -60,6 +63,7 @@ apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.r
 apollo-gradle-plugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 graphql-java = { group = "com.graphql-java", name = "graphql-java", version.ref = "graphql-java" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "better-parse" }
 
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }

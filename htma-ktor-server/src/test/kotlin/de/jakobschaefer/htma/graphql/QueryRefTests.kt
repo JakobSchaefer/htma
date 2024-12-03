@@ -6,23 +6,23 @@ import io.kotest.matchers.shouldBe
 class QueryRefTests : FunSpec({
   test("query ref variables are part of the identity") {
     // A QueryRef is used as a caching key. Comparison must be by-value
-    val a = QueryRef(
+    val a = GraphQlOperationRef(
       serviceName = "template",
-      queryName = "Query",
-      queryParameters = listOf("a", "b", "c")
+      operationName = "Query",
+      variables = mapOf("a" to "b")
     )
     val b = a.copy()
     (a == b) shouldBe true
   }
 
   test("changes in query variables will lead to a different hashCode") {
-    val a = QueryRef(
+    val a = GraphQlOperationRef(
       serviceName = "template",
-      queryName = "Query",
-      queryParameters = listOf("a", "b", "c")
+      operationName = "Query",
+      variables = mapOf("a" to "b")
     )
     val b = a.copy(
-      queryParameters = listOf("a", "b", "X")
+      variables = mapOf("a" to "x")
     )
     (a == b) shouldBe false
   }

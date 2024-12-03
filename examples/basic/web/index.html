@@ -1,22 +1,29 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:xx="https://github.io/jakobschaefer/htma">
 <head th:replace="~{ base :: head(title=~{::title}) }">
     <title>Example Basic</title>
 </head>
 <body th:with="route='home'" class="bg-surface text-on-surface w-dvw h-dvh grid place-content-center">
-    <nav class="flex">
-        <a id="nav-home" th:navigate="path=@{/},target='main'" th:classappend="${route == 'home'} ? 'active' : ''">
-            <i>home</i>
-            <div>Home</div>
+    <nav class="flex gap-4">
+        <a id="nav-home" th:navigate="path=@{/},target='main'" class="hover:text-primary" th:classappend="${route == 'home'} ? 'underline' : ''">
+            Home
         </a>
-        <a id="nav-starwars" th:navigate="path=@{/starwars},target='main'" th:classappend="${route == 'starwars'} ? 'active' : ''">
-            <i>favorite</i>
-            <div>Starwars</div>
+        <a id="nav-starwars" th:navigate="path=@{/starwars},target='main'" class="hover:text-primary" th:classappend="${route == 'starwars'} ? 'underline' : ''">
+            Starwars
         </a>
     </nav>
-    <main class="p-8 rounded-2xl border min-w-sm" th:query="local = ~{ graphql :: IndexQuery('Peter') }">
-        <h1 th:text="#{hello('name', 'World')}"></h1>
-        <h2 th:text="${local.data.hello}"></h2>
+    <main class="p-8 rounded-2xl border min-w-sm" th:query="local = ~{ graphql :: NameQuery },greeting = ~{ graphql :: ServerGreetingQuery(nameOverride = 'xxx') }">
+        <h1 th:text="#{hello('name', ${local.data.name})}" class="text-2xl pb-2"></h1>
+        <h2 th:text="${greeting.data.greeting}"></h2>
+        <div class="bg-red-500" th:mutation="mut = ~{graphql :: NameQuery}">
+            <h2 th:if="${mut.success}" th:text="${mut.data.name}"></h2>
+            <h2 th:unless="${mut.success}" th:text="${mut}">Failed mutation lookup</h2>
+        </div>
+        <form th:perform="path=@{/},mutation=~{ graphql :: UpdateNameMutation }">
+            <label for="name-input" th:text="#{changeName}"></label>
+            <input id="name-input" name="$.newName" class="p-2 bg-surface-container" placeholder="Name">
+            <button class="p-2 bg-primary-container text-on-primary-container">Submit</button>
+        </form>
     </main>
 </body>
 </html>

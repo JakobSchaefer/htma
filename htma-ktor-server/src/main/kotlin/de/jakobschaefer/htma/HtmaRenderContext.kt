@@ -1,7 +1,8 @@
 package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.graphql.GraphQlEngine
-import de.jakobschaefer.htma.graphql.QueryRef
+import de.jakobschaefer.htma.graphql.GraphQlOperationRef
+import de.jakobschaefer.htma.graphql.GraphQlResponse
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import org.thymeleaf.context.Context
@@ -14,7 +15,7 @@ data class HtmaRenderContext(
   val app: AppManifest,
   val isHxRequest: Boolean,
   val hxTarget: String?,
-  val graphqlCache: ConcurrentHashMap<QueryRef, Any>,
+  val graphqlCache: ConcurrentHashMap<GraphQlOperationRef, GraphQlResponse>,
   val graphqlServices: Map<String, GraphQlEngine>
 ) {
   fun updateContext(context: Context) {

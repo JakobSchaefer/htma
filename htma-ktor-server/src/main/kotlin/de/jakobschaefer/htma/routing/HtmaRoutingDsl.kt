@@ -4,6 +4,7 @@ import de.jakobschaefer.htma.htma
 import de.jakobschaefer.htma.respondTemplate
 import io.ktor.http.*
 import io.ktor.server.http.content.*
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 
@@ -17,6 +18,10 @@ fun Route.htma(spec: HtmaRouting.() -> Unit) {
   }
   for (page in appManifest.pages) {
     get(page.remotePath) {
+      call.respondTemplate(page.templateName, emptyMap())
+    }
+    post(page.remotePath) {
+      println(call.receiveParameters())
       call.respondTemplate(page.templateName, emptyMap())
     }
   }
