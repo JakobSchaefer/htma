@@ -2,10 +2,12 @@ package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.graphql.GraphQlOperationRef
 import de.jakobschaefer.htma.graphql.GraphQlResponse
+import de.jakobschaefer.htma.routing.HtmaClientNavigationContext
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
@@ -113,7 +115,7 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
-suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>, graphqlCache: ConcurrentHashMap<GraphQlOperationRef, GraphQlResponse> = ConcurrentHashMap()) {
+suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>, clientContext: HtmaClientNavigationContext? = null) {
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
     // Detect client language
     val acceptLanguageHeader = request.headers["Accept-Language"]
@@ -128,18 +130,13 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
 
     val renderContext = Context(locale, data)
 
-    // Detect htmx requests and pass information to the render context.
-    val isHxRequest = request.headers["Hx-Request"]?.toBoolean() ?: false
-    val hxTarget = request.queryParameters["target"]
-
     // Add htma data to the context
     val htmaRenderContext = HtmaRenderContext(
       isDevelopment = application.developmentMode,
       vite = application.htma.viteManifest,
       app = application.htma.appManifest,
-      isHxRequest = isHxRequest,
-      hxTarget = hxTarget,
-      graphqlCache = graphqlCache,
+      clientContext = clientContext,
+      graphqlCache = ConcurrentHashMap(),
       graphqlServices = application.htma.config.graphqlServices,
     )
     htmaRenderContext.updateContext(renderContext)

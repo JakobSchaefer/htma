@@ -3,6 +3,7 @@ package de.jakobschaefer.htma.routing
 import de.jakobschaefer.htma.htma
 import de.jakobschaefer.htma.respondTemplate
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
@@ -18,13 +19,27 @@ fun Route.htma(spec: HtmaRouting.() -> Unit) {
   }
   for (page in appManifest.pages) {
     get(page.remotePath) {
-      call.respondTemplate(page.templateName, emptyMap())
+      val clientContext = call.ifHtmxRequest {
+        HtmaClientNavigationContext.fromParameters(call.queryParameters)
+      }
+      call.respondTemplate(page.templateName, emptyMap(), clientContext)
     }
     post(page.remotePath) {
-      println(call.receiveParameters())
-      call.respondTemplate(page.templateName, emptyMap())
+      val clientContext = call.ifHtmxRequest {
+        HtmaClientNavigationContext.fromParameters(call.receiveParameters())
+      }
+      call.respondTemplate(page.templateName, emptyMap(), clientContext)
     }
   }
 }
 
 class HtmaRouting
+
+private inline fun <T> ApplicationCall.ifHtmxRequest(block: () -> T): T? {
+  val isHxRequest = request.headers["Hx-Request"]?.toBoolean() ?: false
+  return if (isHxRequest) {
+    block()
+  } else {
+    null
+  }
+}
