@@ -3,7 +3,7 @@ package de.jakobschaefer.htma.graphql
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-class QueryRefTests : FunSpec({
+class GraphQlOperationRefTests : FunSpec({
   test("query ref variables are part of the identity") {
     // A QueryRef is used as a caching key. Comparison must be by-value
     val a = GraphQlOperationRef(
