@@ -1,20 +1,16 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.graphql.GraphQlOperationRef
-import de.jakobschaefer.htma.graphql.GraphQlResponse
+import de.jakobschaefer.htma.graphql.GraphQlExecutionCache
 import de.jakobschaefer.htma.routing.HtmaClientNavigationContext
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
-import org.thymeleaf.processor.element.IElementTagStructureHandler
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
@@ -115,7 +111,14 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
-suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<String, Any?>, clientContext: HtmaClientNavigationContext? = null) {
+suspend fun ApplicationCall.respondTemplate(
+  templateName: String,
+  data: Map<String, Any?> = emptyMap(),
+  clientContext: HtmaClientNavigationContext? = null
+) {
+  val graphqlExecutionCache = GraphQlExecutionCache(
+    entries = ConcurrentHashMap()
+  )
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
     // Detect client language
     val acceptLanguageHeader = request.headers["Accept-Language"]
@@ -136,7 +139,7 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       vite = application.htma.viteManifest,
       app = application.htma.appManifest,
       clientContext = clientContext,
-      graphqlCache = ConcurrentHashMap(),
+      graphql = graphqlExecutionCache,
       graphqlServices = application.htma.config.graphqlServices,
     )
     htmaRenderContext.updateContext(renderContext)

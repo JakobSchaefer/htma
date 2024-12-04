@@ -15,7 +15,7 @@ class TemplateResolverTests : FunSpec({
       }
       routing {
         get("/test") {
-          call.respondTemplate("route", emptyMap())
+          call.respondTemplate("route")
         }
       }
       val response = client.get("/test")
