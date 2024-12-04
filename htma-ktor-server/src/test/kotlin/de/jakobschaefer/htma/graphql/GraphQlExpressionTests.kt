@@ -67,7 +67,18 @@ class GraphQlExpressionTests : FunSpec({
     )
   }
 
-//  test("variables are standard expressions") {
-//    val result = GraphQlExpressionGrammar.parseToEnd(" var")
-//  }
+  test("variables are thymeleaf's standard expressions") {
+    val result = GraphQlExpressionGrammar.parseToEnd("var = ~{ graphql :: TestQuery(ref = null, greeting = 'Hello World!', age = \${person.age}, name = #{person.name}, url = @{/person/url}) }")
+    result.assignments["var"] shouldBe GraphQlOperationRef(
+      serviceName = "graphql",
+      operationName = "TestQuery",
+      variables = mapOf(
+        "ref" to "null",
+        "greeting" to "'Hello World!'",
+        "age" to "\${person.age}",
+        "name" to "#{person.name}",
+        "url" to "@{/person/url}"
+      )
+    )
+  }
 })

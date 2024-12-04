@@ -28,6 +28,7 @@ class HtmaMutationAttributeProcessor(dialectPrefix: String) :
   ) {
     val htma = HtmaRenderContext.fromContext(context)
     val mutations = GraphQlExpressionHelper.parseGraphQlExpression(attributeValue, context)
+      .assignments
       .mapValues { (_, mutationRef) ->
         for ((ref, cacheValue) in htma.graphqlCache) {
           if (ref.serviceName == mutationRef.serviceName && ref.operationName == mutationRef.operationName) {

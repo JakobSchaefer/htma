@@ -18,9 +18,13 @@ val GraphQlExpressionGrammar = object : Grammar<GraphQlExpression>() {
   // because the tokenizer tries to match them in exactly this order. For instance, if literalToken("a") is
   // listed before literalToken("aa"), the latter will never be matched. Be careful with keyword tokens!
   // If you match them with regexes, a word boundary \b in the end may help against ambiguity.
-  val thStringLit by regexToken("'.*'")
+  val thStringLit by regexToken("'.*?'")
+  val thVarExprLit by regexToken("\\\$\\{.*?\\}")
+  val thUrlExprLit by regexToken("@\\{.*?\\}")
+  val thMsgExprLit by regexToken("#\\{.*?\\}")
   val thNullLit by literalToken("null")
-  val space by regexToken("\\s+")
+  @Suppress("unused")
+  val space by regexToken("\\s+", ignore = true)
   val eq by literalToken("=")
   val comma by literalToken(",")
   val openingBracket by literalToken("(")
@@ -32,31 +36,30 @@ val GraphQlExpressionGrammar = object : Grammar<GraphQlExpression>() {
   val id by regexToken("[a-zA-Z_]\\w*")
 
   val identifier by parser(this::id) map { it.text }
-  val optionalWhitespace = optional(space)
 
-  val thString by thStringLit map {
-    val textLength = it.text.length
-    if (textLength > 2) {
-      it.text.substring(startIndex = 1, endIndex = textLength - 1)
-    } else {
-      ""
-    }
-  }
+  val thString by thStringLit map { it.text }
   val thNull = thNullLit asJust "null"
-  val thExpr by thNull or thString
+  val thVarExpr = thVarExprLit map { it.text }
+  val thUrlExpr = thUrlExprLit map { it.text }
+  val thMsgExpr = thMsgExprLit map { it.text }
+  val thExpr by thNull or
+      thString or
+      thVarExpr or
+      thUrlExpr or
+      thMsgExpr
 
-  val variableAssignment by identifier * -optionalWhitespace * -eq * -optionalWhitespace * thExpr map { it.t1 to it.t2 }
-  val variableAssignments by separated(variableAssignment, optionalWhitespace * comma * optionalWhitespace, true) map { it.terms.toMap() }
+  val variableAssignment by identifier * -eq * thExpr map { it.t1 to it.t2 }
+  val variableAssignments by separated(variableAssignment, comma, true) map { it.terms.toMap() }
   val variablesBlock by -openingBracket * variableAssignments * -closingBracket
 
-  val gqlExpr by -tilde * -openingCurlyBracket * -optionalWhitespace * identifier * -optionalWhitespace * -serviceSeparator * -optionalWhitespace * identifier * optional(variablesBlock) * -optionalWhitespace * -closingCurlyBracket * -optionalWhitespace map {
+  val gqlExpr by -tilde * -openingCurlyBracket * identifier * -serviceSeparator * identifier * optional(variablesBlock) * -closingCurlyBracket map {
         GraphQlOperationRef(
           serviceName = it.t1, operationName = it.t2, variables = it.t3 ?: emptyMap()
         )
       }
 
-  val gqlAssignment by -optionalWhitespace * identifier * -optionalWhitespace * -eq * -optionalWhitespace * gqlExpr map { it.t1 to it.t2 }
-  val gqlAssignments by separated(gqlAssignment, optionalWhitespace * comma * optionalWhitespace, true) map { it.terms.toMap() }
+  val gqlAssignment by identifier * -eq * gqlExpr map { it.t1 to it.t2 }
+  val gqlAssignments by separated(gqlAssignment, comma, true) map { it.terms.toMap() }
   val impl by gqlAssignments map { GraphQlExpression(
     assignments = it
   )}

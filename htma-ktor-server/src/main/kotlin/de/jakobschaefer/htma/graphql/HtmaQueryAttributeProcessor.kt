@@ -27,11 +27,10 @@ class HtmaQueryAttributeProcessor(dialectPrefix: String) :
       structureHandler: IElementTagStructureHandler
   ) {
     val htma = HtmaRenderContext.fromContext(context)
-    val assignments = GraphQlExpressionHelper.getVariableAssignments(attributeValue)
+    val gqlExpr = GraphQlExpressionHelper.parseGraphQlExpression(attributeValue, context)
     val queries =
         runBlocking {
-              assignments
-                  .mapValues { (_, value) -> GraphQlExpressionHelper.computeOperation(value, context) }
+              gqlExpr.assignments
                   .map { (variableName, queryRef) ->
                     async {
                       val result =
