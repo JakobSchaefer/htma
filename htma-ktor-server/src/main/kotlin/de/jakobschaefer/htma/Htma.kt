@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
@@ -139,7 +140,7 @@ suspend fun ApplicationCall.respondTemplate(templateName: String, data: Map<Stri
       isHxRequest = isHxRequest,
       hxTarget = hxTarget,
       graphqlCache = graphqlCache,
-      graphqlServices = application.htma.config.graphqlServices
+      graphqlServices = application.htma.config.graphqlServices,
     )
     htmaRenderContext.updateContext(renderContext)
 
