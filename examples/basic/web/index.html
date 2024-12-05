@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:xx="https://github.io/jakobschaefer/htma">
+<html lang="en" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{ base :: head(title=~{::title}) }">
     <title>Example Basic</title>
 </head>
@@ -24,6 +24,7 @@
             <input id="name-input" name="newName" class="p-2 bg-surface-container" placeholder="Name">
             <button class="p-2 bg-primary-container text-on-primary-container">Submit</button>
         </form>
+        <div th:text="${#locale}"></div>
     </main>
 </body>
 </html>

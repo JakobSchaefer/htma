@@ -21,14 +21,14 @@ fun Route.htma(spec: HtmaRouting.() -> Unit) {
     get(page.remotePath) {
       val parameters = call.queryParameters
       val clientContext = call.ifHtmxRequest {
-        HtmaClientNavigationContext.fromParameters(parameters)
+        HtmaNavigationClientContext.fromParameters(parameters)
       }
       call.respondTemplate(page.templateName, emptyMap(), clientContext)
     }
     post(page.remotePath) {
       val parameters = call.receiveParameters()
       val clientContext = call.ifHtmxRequest {
-        HtmaClientNavigationContext.fromParameters(parameters)
+        HtmaNavigationClientContext.fromParameters(parameters)
       }
       call.respondTemplate(page.templateName, emptyMap(), clientContext)
     }

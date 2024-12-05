@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HtmaClientNavigationContext(
+data class HtmaNavigationClientContext(
   @SerialName("_t")
   val target: String?,
   @SerialName("_s")
@@ -14,8 +14,8 @@ data class HtmaClientNavigationContext(
   val operation: String?
 ) {
   companion object {
-    fun fromParameters(parameters: Parameters): HtmaClientNavigationContext {
-      return HtmaClientNavigationContext(
+    fun fromParameters(parameters: Parameters): HtmaNavigationClientContext {
+      return HtmaNavigationClientContext(
         target = parameters["_t"],
         service = parameters["_s"],
         operation = parameters["_o"]

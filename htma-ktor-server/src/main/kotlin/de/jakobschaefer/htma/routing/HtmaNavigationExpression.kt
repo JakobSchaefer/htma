@@ -52,7 +52,7 @@ fun setHtmxAttributes(
   structureHandler.setAttribute("hx-swap", "outerHTML${transition}")
 
   // Some values we will need when the user clicks the link, e.i. the "client context"
-  val clientContext = HtmaClientNavigationContext(
+  val clientContext = HtmaNavigationClientContext(
     target = expr.target,
     service = expr.service,
     operation = expr.operation,

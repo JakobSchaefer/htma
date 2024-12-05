@@ -11,12 +11,12 @@ import de.jakobschaefer.htma.routing.htma
 import graphql.schema.idl.RuntimeWiring
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import java.util.*
 
 fun Application.module() {
   var currentName = "World"
-  UpdateNameMutation(newName = "")
-  UpdateNameMutation(newName = "", options = Optional.present(SetNameOptions()))
   install(Htma) {
+    supportedLocales = listOf(Locale.GERMAN, Locale.ENGLISH)
     graphqlServices = mapOf(
       "graphql" to GraphQlEngineJava(
         schemaResourceFile = "/graphql/schema.graphqls",

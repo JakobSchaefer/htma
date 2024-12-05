@@ -1,7 +1,8 @@
 package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.graphql.GraphQlExecutionCache
-import de.jakobschaefer.htma.routing.HtmaClientNavigationContext
+import de.jakobschaefer.htma.routing.HtmaNavigationClientContext
+import de.jakobschaefer.htma.thymeleaf.KtorWebExchange
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
@@ -10,7 +11,7 @@ import io.ktor.server.response.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
-import org.thymeleaf.context.Context
+import org.thymeleaf.context.WebContext
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
@@ -20,6 +21,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPluginConfig) {
+  Logs.htma.info("Supporting languages {} with fallack {}", pluginConfig.supportedLocales, pluginConfig.fallbackLocale)
   if (application.developmentMode) {
     GlobalScope.launch {
       ProcessBuilder("npx", "vite", "dev")
@@ -113,12 +115,9 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
 
 suspend fun ApplicationCall.respondTemplate(
   templateName: String,
-  data: Map<String, Any?> = emptyMap(),
-  clientContext: HtmaClientNavigationContext? = null
+  data: Map<String, Any> = emptyMap(),
+  clientContext: HtmaNavigationClientContext? = null
 ) {
-  val graphqlExecutionCache = GraphQlExecutionCache(
-    entries = ConcurrentHashMap()
-  )
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
     // Detect client language
     val acceptLanguageHeader = request.headers["Accept-Language"]
@@ -131,7 +130,7 @@ suspend fun ApplicationCall.respondTemplate(
         application.htma.config.fallbackLocale
       }
 
-    val renderContext = Context(locale, data)
+    val renderContext = WebContext(KtorWebExchange(this), locale, data)
 
     // Add htma data to the context
     val htmaRenderContext = HtmaRenderContext(
@@ -139,7 +138,9 @@ suspend fun ApplicationCall.respondTemplate(
       vite = application.htma.viteManifest,
       app = application.htma.appManifest,
       clientContext = clientContext,
-      graphql = graphqlExecutionCache,
+      graphql = GraphQlExecutionCache(
+        entries = ConcurrentHashMap()
+      ),
       graphqlServices = application.htma.config.graphqlServices,
     )
     htmaRenderContext.updateContext(renderContext)
