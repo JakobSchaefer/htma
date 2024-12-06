@@ -4,6 +4,7 @@ import de.jakobschaefer.htma.serde.JsonConverter
 import de.jakobschaefer.htma.webinf.loadResource
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
+import java.io.File
 
 data class ViteManifest(
   val assets: Map<String, ViteChunk>,
@@ -25,11 +26,31 @@ data class ViteManifest(
     }
 
     fun development(): ViteManifest {
+      var viteServerPort = 5173
+      val viteConfigJs = File("vite.config.js")
+      val viteConfigTs = File("vite.config.ts")
+      if (viteConfigJs.exists()) {
+        viteServerPort = getVitePort(viteConfigJs.readText())
+      } else if (viteConfigTs.exists()) {
+        viteServerPort = getVitePort(viteConfigTs.readText())
+      }
       return ViteManifest(
         assets = emptyMap(),
-        mainJsModules = listOf("http://localhost:5173/@vite/client", "http://localhost:5173/web/main.js"),
+        mainJsModules = listOf("http://localhost:$viteServerPort/@vite/client", "http://localhost:$viteServerPort/web/main.js"),
         mainCssModules = emptyList()
       )
+    }
+
+    private fun getVitePort(viteConfig: String): Int {
+      val portString = viteConfig.replace(Regex("\\s"), "")
+        .substringAfter("server:{", "")
+        .substringAfter("port:", "")
+        .substringBefore(",", "")
+      if (portString.isNotEmpty()) {
+        return portString.toInt()
+      } else {
+        return 5173
+      }
     }
   }
 }
