@@ -14,7 +14,7 @@ internal class HtmaPlugin(
   val viteManifest: ViteManifest,
 )
 
-internal val htmaPluginKey = AttributeKey<HtmaPlugin>("htmaPlugin")
+internal val htmaPluginKey = AttributeKey<HtmaPlugin>("htma")
 
 internal val Application.htma: HtmaPlugin
   get() = attributes[htmaPluginKey]

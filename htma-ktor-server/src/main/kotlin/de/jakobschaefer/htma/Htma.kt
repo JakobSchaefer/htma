@@ -1,6 +1,8 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.graphql.GraphQlExecution
 import de.jakobschaefer.htma.graphql.GraphQlExecutionCache
+import de.jakobschaefer.htma.graphql.GraphQlOperationRef
 import de.jakobschaefer.htma.routing.HtmaNavigationClientContext
 import de.jakobschaefer.htma.thymeleaf.KtorWebExchange
 import de.jakobschaefer.htma.webinf.AppManifest
@@ -118,34 +120,50 @@ suspend fun ApplicationCall.respondTemplate(
   data: Map<String, Any> = emptyMap(),
   clientContext: HtmaNavigationClientContext? = null
 ) {
-  respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
-    // Detect client language
-    val acceptLanguageHeader = request.headers["Accept-Language"]
-    val locale =
-      if (acceptLanguageHeader != null) {
-        val acceptedLanguages = Locale.LanguageRange.parse(acceptLanguageHeader)
-        Locale.lookup(acceptedLanguages, application.htma.config.supportedLocales)
-          ?: application.htma.config.fallbackLocale
-      } else {
-        application.htma.config.fallbackLocale
-      }
+  val htmaContext = HtmaRenderContext(
+    isDevelopment = application.developmentMode,
+    vite = application.htma.viteManifest,
+    app = application.htma.appManifest,
+    clientContext = clientContext,
+    graphql = GraphQlExecutionCache(
+      entries = ConcurrentHashMap()
+    ),
+    graphqlServices = application.htma.config.graphqlServices,
+  )
 
-    val renderContext = WebContext(KtorWebExchange(this), locale, data)
+  // build thymeleaf's web context
+  val webContext = buildWebContext(data)
 
-    // Add htma data to the context
-    val htmaRenderContext = HtmaRenderContext(
-      isDevelopment = application.developmentMode,
-      vite = application.htma.viteManifest,
-      app = application.htma.appManifest,
-      clientContext = clientContext,
-      graphql = GraphQlExecutionCache(
-        entries = ConcurrentHashMap()
+  // Add HTMA data to web context
+  htmaContext.updateContext(webContext)
+
+  if (clientContext?.service != null && clientContext.operation != null) {
+    GraphQlExecution(
+      operation = GraphQlOperationRef(
+        serviceName = clientContext.service,
+        operationName = clientContext.operation,
+        variables = emptyMap()
       ),
-      graphqlServices = application.htma.config.graphqlServices,
-    )
-    htmaRenderContext.updateContext(renderContext)
-
-    // Process template and respond
-    application.htma.templateEngine.process(templateName, renderContext)
+      context = webContext,
+      services = htmaContext.graphqlServices,
+      cache = htmaContext.graphql
+    ).executeMutationAndCache()
   }
+
+  respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
+    application.htma.templateEngine.process(templateName, webContext)
+  }
+}
+
+internal fun ApplicationCall.buildWebContext(data: Map<String, Any>): WebContext {
+  val acceptLanguageHeader = request.headers["Accept-Language"]
+  val locale =
+    if (acceptLanguageHeader != null) {
+      val acceptedLanguages = Locale.LanguageRange.parse(acceptLanguageHeader)
+      Locale.lookup(acceptedLanguages, application.htma.config.supportedLocales)
+        ?: application.htma.config.fallbackLocale
+    } else {
+      application.htma.config.fallbackLocale
+    }
+  return WebContext(KtorWebExchange(this), locale, data)
 }

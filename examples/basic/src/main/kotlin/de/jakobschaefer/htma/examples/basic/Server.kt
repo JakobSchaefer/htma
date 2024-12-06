@@ -1,12 +1,9 @@
 package de.jakobschaefer.htma.examples.basic
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional
 import de.jakobschaefer.htma.Htma
 import de.jakobschaefer.htma.graphql.GraphQlEngineApollo
 import de.jakobschaefer.htma.graphql.GraphQlEngineJava
-import de.jakobschaefer.htma.graphql.UpdateNameMutation
-import de.jakobschaefer.htma.graphql.type.SetNameOptions
 import de.jakobschaefer.htma.routing.htma
 import graphql.schema.idl.RuntimeWiring
 import io.ktor.server.application.*

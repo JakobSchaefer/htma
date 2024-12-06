@@ -12,7 +12,7 @@ class KtorWebExchange(
   val call: ApplicationCall
 ) : IWebExchange {
   override fun getRequest(): IWebRequest {
-    TODO("Not yet implemented")
+    return KtorWebRequest(call.request)
   }
 
   override fun getSession(): IWebSession {
