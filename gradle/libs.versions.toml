@@ -49,6 +49,8 @@ better-parse = "0.4.4"
 
 handlebars = "4.4.0"
 
+gradle-node = "7.1.0"
+
 [libraries]
 handlebars-java = { group = "com.github.jknack", name = "handlebars", version.ref = "handlebars" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -59,7 +61,8 @@ ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"
 ktor-server-test = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor"}
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+gradle-node =  { module = "com.github.node-gradle:gradle-node-plugin", version.ref = "gradle-node" }
 
 thymeleaf = { group = "org.thymeleaf", name = "thymeleaf", version.ref = "thymeleaf" }
 icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
@@ -87,4 +90,3 @@ axion = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion" }
 deepmedia-deployer = { id = "io.deepmedia.tools.deployer", version.ref = "deployer" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor"}
-apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }

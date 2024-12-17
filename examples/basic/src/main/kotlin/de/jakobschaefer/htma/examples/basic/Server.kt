@@ -55,10 +55,13 @@ fun Application.module() {
     htma {
     }
 
-    graphql("/graphql") {
+    graphql("/graphql", context = { "ctx" }) {
       typeQuery {
-        resolveName {
-          "peter!"
+        resolveName { ctx, env ->
+          "peter! $ctx"
+        }
+        resolveGreeting { ctx, env, name ->
+          "Hello $name! I'm the server."
         }
       }
     }

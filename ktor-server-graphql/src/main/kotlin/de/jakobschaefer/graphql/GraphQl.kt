@@ -37,8 +37,8 @@ private val Application.typeDefinitions: TypeDefinitionRegistry
 private val gson = GsonBuilder().create()
 
 @KtorDsl
-fun Route.graphql(path: String, spec: GraphQlSchemaWiring.() -> Unit) {
-  val schemaWiring = GraphQlSchemaWiring()
+fun <T> Route.graphql(path: String, context: suspend RoutingContext.(GraphQlRequest) -> T, spec: GraphQlSchemaWiring<T>.() -> Unit) {
+  val schemaWiring = GraphQlSchemaWiring<T>()
   schemaWiring.spec()
   schemaWiring.runtimeWiring
   val schema =
@@ -50,23 +50,22 @@ fun Route.graphql(path: String, spec: GraphQlSchemaWiring.() -> Unit) {
         GraphQL.newGraphQL(schema)
             .defaultDataFetcherExceptionHandler(GraphQlExceptionHandler())
             .build()
-    val result = coroutineScope {
-      val input =
-          ExecutionInput.newExecutionInput()
-              .graphQLContext(
-                  mapOf("coroutineScope" to this@coroutineScope, "routingContext" to this@post))
-              .query(request.query)
-      if (request.operationName != null) {
-        input.operationName(request.operationName)
-      }
-      if (request.variables != null) {
-        input.variables(jsonObjectToMap(request.variables))
-      }
-
-      gql.executeAsync(input).await()
+    val input = ExecutionInput.newExecutionInput()
+      .query(request.query)
+      .graphQLContext(mapOf(
+        "ctx" to context(request),
+        "routingContext" to this@post,
+      ))
+    if (request.operationName != null) {
+      input.operationName(request.operationName)
     }
-    val responseData = result.toSpecification()
-    call.respondText(gson.toJson(responseData), contentType = ContentType.Application.Json)
+    if (request.variables != null) {
+      input.variables(jsonObjectToMap(request.variables))
+    }
+    val response = gql.executeAsync(input).await()
+    val responsePayload = response.toSpecification()
+    val responseJsonPayload = gson.toJson(responsePayload)
+    call.respondText(responseJsonPayload, contentType = ContentType.Application.Json)
   }
 }
 

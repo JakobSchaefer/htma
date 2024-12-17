@@ -70,25 +70,26 @@ class GraphQlPlugin : Plugin<Project> {
       
       {{#each schema.types}}
       // --------------------------- {{ typeName }} ------------------------------
-      data class GraphQl{{ typeName }}(
+      data class GraphQl{{ typeName }}<T>(
       {{#each fields}}  val {{fieldName}}: {{fieldTypeName}},
       {{/each}})
       
       @KtorDsl
-      fun GraphQlSchemaWiring.type{{ typeName }}(spec: GraphQl{{ typeName }}Wiring.() -> Unit) {
+      fun <T> GraphQlSchemaWiring<T>.type{{ typeName }}(spec: GraphQl{{ typeName }}Wiring<T>.() -> Unit) {
         runtimeWiring.type("{{ typeName }}") { builder ->
-          GraphQl{{ typeName }}Wiring(builder).apply(spec).typeWiring
+          GraphQl{{ typeName }}Wiring<T>(builder).apply(spec).typeWiring
         }
       }
 
-      class GraphQl{{ typeName }}Wiring(
+      class GraphQl{{ typeName }}Wiring<T>(
         val typeWiring: TypeRuntimeWiring.Builder
       )
       
       {{#each fields}}
       @KtorDsl
-      fun GraphQl{{ typeName }}Wiring.resolve{{up fieldName }}(
+      fun <T> GraphQl{{ typeName }}Wiring<T>.resolve{{up fieldName }}(
         resolveFn: suspend RoutingContext.(
+          ctx: T,
           DataFetchingEnvironment,
           {{#each inputs}}{{fieldTypeName}},
           {{/each}}) -> {{ fieldTypeName }}
@@ -99,10 +100,11 @@ class GraphQlPlugin : Plugin<Project> {
             // val {{ fieldName }}: {{ fieldTypeName }} = GraphQlSchemaWiring.gson.fromJson({{ fieldName }}Arg, {{class fieldTypeName }})
             val {{ fieldName }}: {{ fieldTypeName }} = GraphQlSchemaWiring.parseArgument(env.getArgument("{{ fieldName }}"), {{class fieldTypeName }})
             {{/each}}
-            val coroutineScope = env.graphQlContext.get<CoroutineScope>("coroutineScope")
+            val ctx = env.graphQlContext.get<T>("ctx")
             val routingContext = env.graphQlContext.get<RoutingContext>("routingContext")
-            coroutineScope.async(SupervisorJob()) {
+            routingContext.call.async(SupervisorJob()) {
               routingContext.resolveFn(
+                ctx,
                 env,
                 {{#each inputs}}{{ fieldName }},
                 {{/each}})

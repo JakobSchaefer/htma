@@ -3,7 +3,7 @@ package de.jakobschaefer.graphql
 import com.google.gson.GsonBuilder
 import graphql.schema.idl.RuntimeWiring
 
-class GraphQlSchemaWiring {
+class GraphQlSchemaWiring<T> {
   val runtimeWiring = RuntimeWiring.newRuntimeWiring()
 
   fun build(): RuntimeWiring {
