@@ -1,9 +1,7 @@
 package de.jakobschaefer.htma.graphql
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.ApolloResponse
-import com.apollographql.apollo.api.Mutation
-import com.apollographql.apollo.api.Query
+import com.apollographql.apollo.api.*
 
 class GraphQlEngineApollo(private val apolloClient: ApolloClient) : GraphQlEngine {
   override suspend fun <D : Query.Data> query(query: Query<D>): ApolloResponse<D> {

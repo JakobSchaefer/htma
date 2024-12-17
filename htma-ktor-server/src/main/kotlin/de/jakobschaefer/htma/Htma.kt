@@ -138,19 +138,6 @@ suspend fun ApplicationCall.respondTemplate(
   // Add HTMA data to web context
   htmaContext.updateContext(webContext)
 
-  if (clientContext?.service != null && clientContext.operation != null) {
-    GraphQlExecution(
-      operation = GraphQlOperationRef(
-        serviceName = clientContext.service,
-        operationName = clientContext.operation,
-        variables = emptyMap()
-      ),
-      context = webContext,
-      services = htmaContext.graphqlServices,
-      cache = htmaContext.graphql
-    ).executeMutationAndCache()
-  }
-
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
     application.htma.templateEngine.process(templateName, webContext)
   }

@@ -14,7 +14,7 @@ data class HtmaRenderContext(
   val app: AppManifest,
   val clientContext: HtmaNavigationClientContext?,
   val graphql: GraphQlExecutionCache,
-  val graphqlServices: Map<String, GraphQlEngine>
+  val graphqlServices: Map<String, GraphQlEngine>,
 ) {
   fun updateContext(context: WebContext) {
     context.setVariable("htma", this)

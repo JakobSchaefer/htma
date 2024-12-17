@@ -3,10 +3,8 @@ package de.jakobschaefer.htma.graphql
 import com.apollographql.apollo.api.Mutation
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.api.Query
+import com.google.gson.GsonBuilder
 import org.thymeleaf.context.IContext
-import org.thymeleaf.context.WebEngineContext
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.primaryConstructor
 
 internal class GraphQlExecution(
   val operation: GraphQlOperationRef,
@@ -15,6 +13,9 @@ internal class GraphQlExecution(
   val cache: GraphQlExecutionCache,
   private val packageName: String = "de.jakobschaefer.htma"
 ) {
+  private val gson = GsonBuilder()
+    .registerTypeAdapter(Optional::class.java, ApolloOptionalTypeAdapter<Any>())
+    .create()
 
   suspend fun executeQueryAndCache(): GraphQlResponse {
     val query = buildOperation<Query<*>>()
@@ -34,31 +35,9 @@ internal class GraphQlExecution(
 
   @Suppress("UNCHECKED_CAST")
   fun <T> buildOperation(): T {
-    val kClass = Class.forName("${packageName}.${operation.serviceName}.${operation.operationName}").kotlin
-    val args = kClass.primaryConstructor!!
-      .parameters
-      .map { param -> findConstructorArgument(param, operation) }.toTypedArray()
-    return kClass.primaryConstructor!!.call(*args) as T
-  }
-
-  private fun findConstructorArgument(param: KParameter, operation: GraphQlOperationRef): Any {
-    val value = operation.variables[param.name]
-    return getVariableValue(param, value)
-  }
-
-  private fun getVariableValue(param: KParameter, value: Any?): Any {
-    val classifier = param.type.classifier
-    return when (classifier) {
-      Optional::class -> {
-        val innerType = classifier::class.typeParameters.first()
-        println(innerType.toString())
-        when (value) {
-          null -> Optional.absent()
-          is WebEngineContext.RequestParameterValues -> Optional.presentIfNotNull(value.firstOrNull())
-          else -> Optional.present(value)
-        }
-      }
-      else -> value!!
-    }
+    val javaClass = Class.forName("${packageName}.${operation.serviceName}.${operation.operationName}") as Class<out T>
+    val args = gson.toJson(operation.variables)
+    val operation = gson.fromJson(args, javaClass)
+    return operation
   }
 }
