@@ -1,8 +1,6 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.graphql.GraphQlExecution
-import de.jakobschaefer.htma.graphql.GraphQlExecutionCache
-import de.jakobschaefer.htma.graphql.GraphQlOperationRef
+import de.jakobschaefer.htma.graphql.GraphQlEngine
 import de.jakobschaefer.htma.routing.HtmaNavigationClientContext
 import de.jakobschaefer.htma.thymeleaf.KtorWebExchange
 import de.jakobschaefer.htma.webinf.AppManifest
@@ -10,18 +8,17 @@ import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.WebContext
-import org.thymeleaf.standard.StandardDialect
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver
 import java.io.File
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPluginConfig) {
   Logs.htma.info("Supporting languages {} with fallack {}", pluginConfig.supportedLocales, pluginConfig.fallbackLocale)
@@ -62,6 +59,7 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
     templateEngine = templateEngine,
     appManifest = appManifest,
     viteManifest = viteManifest,
+    graphqlEngine = null
   )
   application.useHtmaPlugin(plugin)
   Logs.htma.info("Htma plugin started!")
@@ -82,6 +80,26 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
   }
   templateResolvers.add(internalTemplates)
 
+  val graphqlTemplates = if (application.developmentMode) {
+    FileTemplateResolver().apply {
+      prefix = "web/"
+      suffix = ""
+      templateMode = TemplateMode.TEXT
+      isCacheable = false
+      order = 2
+      resolvablePatterns = setOf("*.graphql")
+    }
+  } else {
+    ClassLoaderTemplateResolver().apply {
+      prefix = "${resourceBase}/web/"
+      suffix = ""
+      templateMode = TemplateMode.TEXT
+      order = 2
+      resolvablePatterns = setOf("*.graphql")
+    }
+  }
+  templateResolvers.add(graphqlTemplates)
+
   // Templates provided by the user
   val webTemplates = if (application.developmentMode) {
     FileTemplateResolver().apply {
@@ -89,14 +107,14 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
       suffix = ".html"
       templateMode = TemplateMode.HTML
       isCacheable = false
-      order = 2
+      order = 3
     }
   } else {
     ClassLoaderTemplateResolver().apply {
       prefix = "${resourceBase}/web/"
       suffix = ".html"
       templateMode = TemplateMode.HTML
-      order = 2
+      order = 3
     }
   }
   templateResolvers.add(webTemplates)
@@ -116,7 +134,7 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
-suspend fun ApplicationCall.respondTemplate(
+suspend fun RoutingCall.respondTemplate(
   templateName: String,
   data: Map<String, Any> = emptyMap(),
   clientContext: HtmaNavigationClientContext? = null
@@ -125,11 +143,8 @@ suspend fun ApplicationCall.respondTemplate(
     isDevelopment = application.developmentMode,
     vite = application.htma.viteManifest,
     app = application.htma.appManifest,
+    call = this,
     clientContext = clientContext,
-    graphql = GraphQlExecutionCache(
-      entries = ConcurrentHashMap()
-    ),
-    graphqlServices = application.htma.config.graphqlServices,
   )
 
   // build thymeleaf's web context
@@ -143,7 +158,7 @@ suspend fun ApplicationCall.respondTemplate(
   }
 }
 
-internal fun ApplicationCall.buildWebContext(data: Map<String, Any>): WebContext {
+internal fun RoutingCall.buildWebContext(data: Map<String, Any>): WebContext {
   val acceptLanguageHeader = request.headers["Accept-Language"]
   val locale =
     if (acceptLanguageHeader != null) {

@@ -31,7 +31,7 @@ val GraphQl =
     }
 
 private val typeDefinitionKey = AttributeKey<TypeDefinitionRegistry>("typeDefinitionRegistry")
-private val Application.typeDefinitions: TypeDefinitionRegistry
+val Application.typeDefinitions: TypeDefinitionRegistry
   get() = attributes[typeDefinitionKey]
 
 private val gson = GsonBuilder().create()

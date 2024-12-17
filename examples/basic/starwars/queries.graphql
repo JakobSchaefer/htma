@@ -1,8 +1,0 @@
-query FilmTitlesQuery {
-    allFilms {
-        films {
-            id
-            title
-        }
-    }
-}

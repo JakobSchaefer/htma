@@ -1,5 +1,6 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.graphql.GraphQlEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.server.application.*
@@ -12,6 +13,7 @@ internal class HtmaPlugin(
   val templateEngine: TemplateEngine,
   val appManifest: AppManifest,
   val viteManifest: ViteManifest,
+  var graphqlEngine: GraphQlEngine?
 )
 
 internal val htmaPluginKey = AttributeKey<HtmaPlugin>("htma")

@@ -15,25 +15,6 @@ graphql {
   schemaFile = layout.projectDirectory.file("src/main/resources/graphql/schema.graphqls")
 }
 
-apollo {
-  service("graphql") {
-    packageName.set("de.jakobschaefer.htma.graphql")
-    schemaFiles.from("src/main/resources/graphql/schema.graphqls")
-    srcDir("web")
-    includes.add("**/*.graphql")
-  }
-  service("starwars") {
-    packageName.set("de.jakobschaefer.htma.starwars")
-    schemaFiles.from("src/main/graphql/starwars/schema.graphqls")
-    srcDir("starwars")
-    includes.add("**/*.graphql")
-    introspection {
-      endpointUrl.set("https://swapi-graphql.netlify.app/.netlify/functions/index")
-      schemaFile.set(file("src/main/graphql/starwars/schema.graphqls"))
-    }
-  }
-}
-
 application {
   mainClass.set("io.ktor.server.netty.EngineMain")
 }

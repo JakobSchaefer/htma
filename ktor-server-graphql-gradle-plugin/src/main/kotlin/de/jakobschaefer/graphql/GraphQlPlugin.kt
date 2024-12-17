@@ -90,14 +90,12 @@ class GraphQlPlugin : Plugin<Project> {
       fun <T> GraphQl{{ typeName }}Wiring<T>.resolve{{up fieldName }}(
         resolveFn: suspend RoutingContext.(
           ctx: T,
-          DataFetchingEnvironment,
-          {{#each inputs}}{{fieldTypeName}},
+          env: DataFetchingEnvironment,
+          {{#each inputs}}{{ fieldName }}: {{fieldTypeName}},
           {{/each}}) -> {{ fieldTypeName }}
         ) {
           typeWiring.dataFetcher("{{ fieldName }}") { env ->
             {{#each inputs}}
-            // val {{ fieldName }}Arg = GraphQlSchemaWiring.gson.toJson(env.getArgument("{{ fieldName }}"))
-            // val {{ fieldName }}: {{ fieldTypeName }} = GraphQlSchemaWiring.gson.fromJson({{ fieldName }}Arg, {{class fieldTypeName }})
             val {{ fieldName }}: {{ fieldTypeName }} = GraphQlSchemaWiring.parseArgument(env.getArgument("{{ fieldName }}"), {{class fieldTypeName }})
             {{/each}}
             val ctx = env.graphQlContext.get<T>("ctx")

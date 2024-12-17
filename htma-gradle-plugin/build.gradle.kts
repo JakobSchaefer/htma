@@ -30,7 +30,6 @@ repositories {
 dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation("com.github.node-gradle:gradle-node-plugin:7.1.0")
-  implementation(libs.apollo.gradle.plugin)
 }
 
 gradlePlugin {

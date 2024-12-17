@@ -1,6 +1,5 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.graphql.HtmaMutationAttributeProcessor
 import de.jakobschaefer.htma.routing.HtmaNavigateAttributeProcessor
 import de.jakobschaefer.htma.graphql.HtmaQueryAttributeProcessor
 import de.jakobschaefer.htma.routing.HtmaPerformAttributeProcessor
@@ -13,7 +12,6 @@ class HtmaDialect : AbstractProcessorDialect("HTMA", "th", 100) {
       HtmaNavigateAttributeProcessor(dialectPrefix),
       HtmaPerformAttributeProcessor(dialectPrefix),
       HtmaQueryAttributeProcessor(dialectPrefix),
-      HtmaMutationAttributeProcessor(dialectPrefix)
     )
   }
 }

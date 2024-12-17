@@ -27,8 +27,6 @@ dependencies {
   implementation(libs.thymeleaf)
   implementation(libs.icu4j)
   implementation(libs.moneta)
-  api(libs.apollo.api)
-  implementation(libs.apollo.runtime)
   api(libs.graphql.java)
   implementation(libs.gson)
   implementation(libs.betterParse)

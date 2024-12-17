@@ -7,7 +7,7 @@ import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 
-// <VariableName> = ~{ <ServiceName> :: <OperationName>(<Parameters>)}
+// <VariableName> = ~{ <TemplateName> :: <OperationName>(<Parameters>)}
 data class GraphQlExpression(
   val assignments: Map<String, GraphQlOperationRef>
 )
@@ -54,7 +54,7 @@ val GraphQlExpressionGrammar = object : Grammar<GraphQlExpression>() {
 
   val gqlExpr by -tilde * -openingCurlyBracket * identifier * -serviceSeparator * identifier * optional(variablesBlock) * -closingCurlyBracket map {
         GraphQlOperationRef(
-          serviceName = it.t1, operationName = it.t2, variables = it.t3 ?: emptyMap()
+          templateName = it.t1, operationName = it.t2, variables = it.t3 ?: emptyMap()
         )
       }
 

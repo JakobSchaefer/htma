@@ -7,7 +7,7 @@ class GraphQlOperationRefTests : FunSpec({
   test("query ref variables are part of the identity") {
     // A QueryRef is used as a caching key. Comparison must be by-value
     val a = GraphQlOperationRef(
-      serviceName = "template",
+      templateName = "template",
       operationName = "Query",
       variables = mapOf("a" to "b")
     )
@@ -17,7 +17,7 @@ class GraphQlOperationRefTests : FunSpec({
 
   test("changes in query variables will lead to a different hashCode") {
     val a = GraphQlOperationRef(
-      serviceName = "template",
+      templateName = "template",
       operationName = "Query",
       variables = mapOf("a" to "b")
     )

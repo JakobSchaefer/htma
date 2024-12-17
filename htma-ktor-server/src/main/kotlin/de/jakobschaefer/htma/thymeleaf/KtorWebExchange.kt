@@ -1,6 +1,7 @@
 package de.jakobschaefer.htma.thymeleaf
 
 import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import org.thymeleaf.web.IWebApplication
 import org.thymeleaf.web.IWebExchange
 import org.thymeleaf.web.IWebRequest
@@ -9,7 +10,7 @@ import java.security.Principal
 import java.util.*
 
 class KtorWebExchange(
-  val call: ApplicationCall
+  val call: RoutingCall
 ) : IWebExchange {
   override fun getRequest(): IWebRequest {
     return KtorWebRequest(call.request)

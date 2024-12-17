@@ -1,7 +1,5 @@
 package de.jakobschaefer.htma.gradle
 
-import com.apollographql.apollo.gradle.api.ApolloExtension
-import com.apollographql.apollo.gradle.internal.DefaultApolloExtension
 import com.github.gradle.node.NodeExtension
 import com.github.gradle.node.npm.task.NpxTask
 import de.jakobschaefer.htma.webinf.AppManifest
@@ -11,7 +9,6 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 import java.nio.file.Files
@@ -23,7 +20,6 @@ import kotlin.io.path.pathString
 class HtmaPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.apply(plugin = "com.github.node-gradle.node")
-    project.apply(plugin = "com.apollographql.apollo")
     val htma = project.extensions.create("htma", HtmaExtension::class.java)
 
     project.configure<NodeExtension> {

@@ -8,13 +8,10 @@
         <a id="nav-home" th:navigate="path=@{/},target='main'" class="hover:text-primary" th:classappend="${route == 'home'} ? 'underline' : ''">
             Home
         </a>
-        <a id="nav-starwars" th:navigate="path=@{/starwars},target='main'" class="hover:text-primary" th:classappend="${route == 'starwars'} ? 'underline' : ''">
-            Starwars
-        </a>
     </nav>
-    <main class="p-8 rounded-2xl border min-w-sm max-w-[1024px]" th:query="local = ~{ graphql :: NameQuery }, queryWithParam = ~{ graphql :: ServerGreetingQuery(nameOverride = 'NewName')}">
+    <main class="p-8 rounded-2xl border min-w-sm max-w-[1024px]" th:query="local = ~{ index :: NameQuery }, queryWithParam = ~{ index :: ServerGreetingQuery(nameOverride = 'NewName')}">
         <h1 th:text="#{hello('name', ${local.data.name})}" class="text-2xl pb-2"></h1>
-        <h2 th:text="${queryWithParam}"></h2>
+        <h2 th:text="${queryWithParam.data.greeting}"></h2>
     </main>
 </body>
 </html>
