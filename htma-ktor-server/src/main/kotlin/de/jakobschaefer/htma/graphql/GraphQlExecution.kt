@@ -4,6 +4,7 @@ import com.apollographql.apollo.api.Mutation
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.api.Query
 import org.thymeleaf.context.IContext
+import org.thymeleaf.context.WebEngineContext
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 
@@ -42,15 +43,20 @@ internal class GraphQlExecution(
 
   private fun findConstructorArgument(param: KParameter, operation: GraphQlOperationRef): Any {
     val value = operation.variables[param.name]
-    return when (param.type.classifier) {
-      Optional::class -> if (value is List<*>) {
-        if (value.size == 0) {
-          Optional.absent()
-        } else {
-          Optional.present(value)
+    return getVariableValue(param, value)
+  }
+
+  private fun getVariableValue(param: KParameter, value: Any?): Any {
+    val classifier = param.type.classifier
+    return when (classifier) {
+      Optional::class -> {
+        val innerType = classifier::class.typeParameters.first()
+        println(innerType.toString())
+        when (value) {
+          null -> Optional.absent()
+          is WebEngineContext.RequestParameterValues -> Optional.presentIfNotNull(value.firstOrNull())
+          else -> Optional.present(value)
         }
-      } else {
-        Optional.presentIfNotNull(value)
       }
       else -> value!!
     }

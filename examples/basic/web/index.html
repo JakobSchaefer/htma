@@ -12,18 +12,8 @@
             Starwars
         </a>
     </nav>
-    <main class="p-8 rounded-2xl border min-w-sm max-w-[1024px]" th:query="local = ~{ graphql :: NameQuery },greeting = ~{ graphql :: ServerGreetingQuery(nameOverride = ${param.name}) }">
+    <main class="p-8 rounded-2xl border min-w-sm max-w-[1024px]" th:query="local = ~{ graphql :: NameQuery }">
         <h1 th:text="#{hello('name', ${local.data.name})}" class="text-2xl pb-2"></h1>
-        <h2 th:text="${greeting.data.greeting}" class="bg-green-500"></h2>
-        <div class="bg-red-500" th:mutation="mut = ~{ graphql :: ServerGreetingQuery }">
-            <h2 th:if="${mut.success}" th:text="${mut.data.greeting}"></h2>
-            <h2 th:unless="${mut.success}" th:text="${mut}">Failed mutation lookup</h2>
-        </div>
-        <form th:perform="path=@{/},service='graphql',operation='UpdateNameMutation'">
-            <label for="name-input" th:text="#{changeName}"></label>
-            <input id="name-input" name="newName" class="p-2 bg-surface-container" placeholder="Name">
-            <button class="p-2 bg-primary-container text-on-primary-container">Submit</button>
-        </form>
     </main>
 </body>
 </html>

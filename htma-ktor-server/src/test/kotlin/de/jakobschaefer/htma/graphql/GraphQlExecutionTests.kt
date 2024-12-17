@@ -6,7 +6,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.thymeleaf.context.Context
 import org.thymeleaf.context.IContext
-import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 class GraphQlExecutionTests : FunSpec({
