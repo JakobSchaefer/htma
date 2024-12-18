@@ -36,6 +36,7 @@ fun Application.module() {
               resolveGreeting { ctx, env, name -> "Hello, ${name ?: currentName}" }
               resolveHero { ctx, env, stuff ->
                 GraphQlHero(
+                  id = "",
                   name = stuff?.firstOrNull()?.name ?: currentName,
                   level = 0
                 )
