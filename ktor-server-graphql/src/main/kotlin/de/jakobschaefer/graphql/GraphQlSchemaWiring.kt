@@ -1,6 +1,7 @@
 package de.jakobschaefer.graphql
 
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import graphql.schema.idl.RuntimeWiring
 
 class GraphQlSchemaWiring<T>(
@@ -11,11 +12,12 @@ class GraphQlSchemaWiring<T>(
   }
 
   companion object {
-    private val gson = GsonBuilder().create()
+    val gson = GsonBuilder().create()
 
-    fun <T> parseArgument(input: Any?, javaClass: Class<T>): T {
-      val json = gson.toJson(input)
-      return gson.fromJson(json, javaClass)
+    inline fun <reified T> parseArgument(input: Any?): T {
+      val type = object : TypeToken<T>() {}.type
+      val json = gson.toJson(input, type)
+      return gson.fromJson(json, type)
     }
   }
 }

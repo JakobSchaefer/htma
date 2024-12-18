@@ -23,7 +23,7 @@ dependencies {
   testImplementation(libs.ktor.server.test)
 
   api(libs.graphql.java)
-  implementation(libs.gson)
+  api(libs.gson)
 
   testImplementation(libs.jsoup)
   testImplementation(libs.kotest.runner.junit5)

@@ -12,6 +12,7 @@ class GraphQlPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val graphql = project.extensions.create("graphql", GraphQlExtension::class.java)
     project.tasks.create("generateGraphQlSchema") {
+      group = "build"
       inputs.file(graphql.schemaFile.get())
       outputs.dir(project.layout.buildDirectory.dir("generated-kotlin-schema/${graphql.serviceName.get()}"))
       doLast {
@@ -105,7 +106,7 @@ class GraphQlPlugin : Plugin<Project> {
         ) {
           typeWiring.dataFetcher("{{ fieldName }}") { env ->
             {{#each inputs}}
-            val {{ fieldName }} = GraphQlSchemaWiring.parseArgument(env.getArgument("{{ fieldName }}"), {{class fieldTypeName }}) as {{ fieldTypeName }}
+            val {{ fieldName }} = GraphQlSchemaWiring.parseArgument<{{ fieldTypeName }}>(env.getArgument("{{ fieldName }}"))
             {{/each}}
             val ctx = env.graphQlContext.get<T>("ctx")
             val routingContext = env.graphQlContext.get<RoutingContext>("routingContext")
