@@ -13,6 +13,7 @@ input SetNameOptions {
 }
 
 type Hero {
+    id: ID!
     name: String!
     level: Int
 }

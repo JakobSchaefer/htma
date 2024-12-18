@@ -40,7 +40,6 @@ class GraphQlPlugin : Plugin<Project> {
         }
         hbs.registerHelper("isScalarType") { name: String, _ ->
           name == "String" ||
-              name == "Uuid" ||
               name == "Int" ||
               name == "Float" ||
               name == "Currency" ||
@@ -58,25 +57,16 @@ class GraphQlPlugin : Plugin<Project> {
         val output =
           hbs.compileInline(
             """
-      @file:OptIn(ExperimentalUuidApi::class)
-      
       package {{ packageName }}
       
       import de.jakobschaefer.graphql.GraphQlSchemaWiring
-      import graphql.GraphQLError
-      import graphql.execution.DataFetcherResult
-      import graphql.execution.ResultPath
       import graphql.schema.DataFetchingEnvironment
       import graphql.schema.idl.TypeRuntimeWiring
       import io.ktor.server.routing.*
       import io.ktor.utils.io.KtorDsl
-      import kotlinx.coroutines.CoroutineScope
       import kotlinx.coroutines.SupervisorJob
       import kotlinx.coroutines.async
       import kotlinx.coroutines.future.asCompletableFuture
-      import kotlin.uuid.ExperimentalUuidApi
-      import kotlin.uuid.Uuid
-      import java.util.*
       
       {{#each schema.types}}
       // --------------------------- {{ typeName }} ------------------------------

@@ -17,7 +17,7 @@ class GqlField(field: FieldDefinition) {
           val kotlinTypeName =
             when (type.name) {
               "String" -> "String"
-              "ID" -> "Uuid"
+              "ID" -> "String"
               "Int" -> "Int"
               "BigInt" -> "Long"
               "Float" -> "Float"
