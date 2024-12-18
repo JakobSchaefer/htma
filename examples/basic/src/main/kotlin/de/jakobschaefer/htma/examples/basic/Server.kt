@@ -34,6 +34,12 @@ fun Application.module() {
             typeQuery {
               resolveName { ctx, env -> currentName }
               resolveGreeting { ctx, env, name -> "Hello, ${name ?: currentName}" }
+              resolveHero { ctx, env, stuff ->
+                GraphQlHero(
+                  name = stuff?.firstOrNull()?.name ?: currentName,
+                  level = 0
+                )
+              }
             }
             typeMutation {
               resolveSetName { ctx, env, name, options ->

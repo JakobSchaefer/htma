@@ -1,6 +1,7 @@
 type Query {
     name: String!
     greeting(name: String): String!
+    hero(stuff: [Stuff]): Hero
 }
 
 type Mutation {
@@ -9,4 +10,14 @@ type Mutation {
 
 input SetNameOptions {
     generate: Boolean
+}
+
+type Hero {
+    name: String!
+    level: Int
+}
+
+input Stuff {
+    name: String,
+    amount: Float!
 }

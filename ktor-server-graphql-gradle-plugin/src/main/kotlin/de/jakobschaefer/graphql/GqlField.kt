@@ -24,7 +24,7 @@ class GqlField(field: FieldDefinition) {
               "BigDecimal" -> "Double"
               "Boolean" -> "Boolean"
               "Currency" -> "Currency"
-              else -> "GraphQl${type.name}"
+              else -> "GraphQl${type.name}<T>"
             }
           "$kotlinTypeName$nonNullSuffix"
         }

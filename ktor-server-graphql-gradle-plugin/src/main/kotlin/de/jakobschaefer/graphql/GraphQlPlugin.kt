@@ -19,16 +19,24 @@ class GraphQlPlugin : Plugin<Project> {
         val outputFile =
           project.file(
             project.layout.buildDirectory.file(
-              "generated-kotlin-schema/${graphql.serviceName.get()}/${graphql.packageName.get().replace(".", "/")}/${graphql.outputFile.get()}"))
+              "generated-kotlin-schema/${graphql.serviceName.get()}/${
+                graphql.packageName.get().replace(".", "/")
+              }/${graphql.outputFile.get()}"
+            )
+          )
         outputFile.parentFile.mkdirs()
         val hbs = Handlebars().with(EscapingStrategy.NOOP)
 
         hbs.registerHelper("up") { name: String, _ -> name.replaceFirstChar { it.uppercaseChar() } }
-        hbs.registerHelper("class") { typeName: String, _ -> if (typeName.contains('?')) {
-          "${typeName.substringBeforeLast('?')}::class.java"
-        } else {
-          "${typeName}::class.java"
-        } }
+        hbs.registerHelper("class") { typeName: String, _ ->
+          if (typeName.contains('<')) {
+            "${typeName.substringBefore('<')}::class.java"
+          } else if (typeName.contains('?')) {
+            "${typeName.substringBeforeLast('?')}::class.java"
+          } else {
+            "${typeName}::class.java"
+          }
+        }
         hbs.registerHelper("isScalarType") { name: String, _ ->
           name == "String" ||
               name == "Uuid" ||
@@ -42,7 +50,8 @@ class GraphQlPlugin : Plugin<Project> {
           Context.newBuilder(
             mapOf(
               "packageName" to graphql.packageName.get(),
-            ))
+            )
+          )
             .combine(mapOf("schema" to GqlSchemaContext(schema)))
             .build()
         val output =
@@ -71,7 +80,7 @@ class GraphQlPlugin : Plugin<Project> {
       {{#each schema.types}}
       // --------------------------- {{ typeName }} ------------------------------
       data class GraphQl{{ typeName }}<T>(
-      {{#each fields}}  val {{fieldName}}: {{fieldTypeName}},
+      {{#each fields}}  val {{fieldName}}: {{ fieldTypeName }},
       {{/each}})
       
       @KtorDsl
@@ -91,12 +100,12 @@ class GraphQlPlugin : Plugin<Project> {
         resolveFn: suspend RoutingContext.(
           ctx: T,
           env: DataFetchingEnvironment,
-          {{#each inputs}}{{ fieldName }}: {{fieldTypeName}},
+          {{#each inputs}}{{ fieldName }}: {{ fieldTypeName }},
           {{/each}}) -> {{ fieldTypeName }}
         ) {
           typeWiring.dataFetcher("{{ fieldName }}") { env ->
             {{#each inputs}}
-            val {{ fieldName }}: {{ fieldTypeName }} = GraphQlSchemaWiring.parseArgument(env.getArgument("{{ fieldName }}"), {{class fieldTypeName }})
+            val {{ fieldName }} = GraphQlSchemaWiring.parseArgument(env.getArgument("{{ fieldName }}"), {{class fieldTypeName }}) as {{ fieldTypeName }}
             {{/each}}
             val ctx = env.graphQlContext.get<T>("ctx")
             val routingContext = env.graphQlContext.get<RoutingContext>("routingContext")
@@ -120,19 +129,13 @@ class GraphQlPlugin : Plugin<Project> {
       
       // ---------------------------------- Inputs -----------------------------
       {{#each schema.inputs}}
-      data class GraphQl{{ typeName }}(
+      data class GraphQl{{ typeName }}<T>(
       {{#each fields}}  val {{ fieldName }}: {{ fieldTypeName }},
-      {{/each}}) {
-        companion object {
-          fun fromMap(map: Map<String, Any>) = GraphQl{{ typeName }}(
-            {{#each fields}}{{ fieldName }} = map["{{ fieldName }}"] as {{ fieldTypeName }},
-            {{/each}}
-          )
-        }
-      }
+      {{/each}})
       {{/each}}
     """
-              .trimIndent())
+              .trimIndent()
+          )
             .apply(ctx)
         outputFile.writeText(output)
       }
