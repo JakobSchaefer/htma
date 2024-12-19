@@ -78,7 +78,7 @@ private fun jsonElementToMap(el: JsonElement): Any? {
     is JsonObject -> el.toMap().mapValues { entry -> jsonElementToMap(entry.value) }
     is JsonArray -> el.map { jsonElementToMap(it) }
     is JsonNull -> null
-    is JsonPrimitive -> (el.booleanOrNull ?: el.content)
+    is JsonPrimitive -> (el.booleanOrNull ?: el.intOrNull ?: el.floatOrNull ?: el.content)
   }
 }
 
