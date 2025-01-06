@@ -48,8 +48,8 @@ class TemplateResolverTests : FunSpec({
       }
 
       val response = client.get("/").bodyAsText()
-      response shouldContain """<meta charset="UTF-8">"""
       response shouldContain """<title>Index</title>"""
+      response shouldContain """<script type="module" """
     }
   }
 })

@@ -1,7 +1,5 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.graphql.GraphQlEngine
-import de.jakobschaefer.htma.routing.HtmaNavigationClientContext
 import de.jakobschaefer.htma.thymeleaf.KtorWebExchange
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -136,15 +134,13 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
 
 suspend fun RoutingCall.respondTemplate(
   templateName: String,
-  data: Map<String, Any> = emptyMap(),
-  clientContext: HtmaNavigationClientContext? = null
+  data: Map<String, Any> = emptyMap()
 ) {
   val htmaContext = HtmaRenderContext(
     isDevelopment = application.developmentMode,
     vite = application.htma.viteManifest,
     app = application.htma.appManifest,
     call = this,
-    clientContext = clientContext,
   )
 
   // build thymeleaf's web context

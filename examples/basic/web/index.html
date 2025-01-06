@@ -1,17 +1,20 @@
 <!doctype html>
 <html lang="en" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{ base :: head(title=~{::title}) }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Example Basic</title>
+    <th:block th:replace="~{ base :: scripts }"></th:block>
+    <th:block th:replace="~{ base :: styles }"></th:block>
 </head>
-<body th:with="route='home'" class="bg-surface text-on-surface w-dvw h-dvh grid place-content-center">
-    <nav class="flex gap-4">
-        <a id="nav-home" th:navigate="path=@{/},target='main'" class="hover:text-primary" th:classappend="${route == 'home'} ? 'underline' : ''">
-            Home
-        </a>
+<body class="bg-surface text-on-surface w-dvw h-dvh">
+    <nav class="h-10 inline-grid gap-2 grid-cols-2">
+        <a th:href="@{/}" class="underline">Home</a>
+        <a th:href="@{/about}">About</a>
     </nav>
-    <main class="p-8 rounded-2xl border min-w-sm max-w-[1024px]" th:query="local = ~{ index :: NameQuery }, queryWithParam = ~{ index :: ServerGreetingQuery(nameOverride = 'NewName')}">
-        <h1 th:text="#{hello('name', ${local.data.name})}" class="text-2xl pb-2"></h1>
-        <h2 th:text="${queryWithParam.data.greeting}"></h2>
-    </main>
+    <div>
+        <h1 class="text-2xl font-bold text-primary">Home</h1>
+        <p th:text="#{hello('name', 'World')}"></p>
+    </div>
 </body>
 </html>

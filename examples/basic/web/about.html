@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{ index :: head }"></head>
+<body class="bg-surface text-on-surface w-dvw h-dvh">
+    <nav class="h-10 inline-grid gap-2 grid-cols-2">
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/about}" class="underline">About</a>
+    </nav>
+    <div>
+        <h1 class="text-2xl font-bold text-primary">About</h1>
+    </div>
+</body>
+</html>

@@ -12,6 +12,15 @@ data class GraphQlExpression(
   val assignments: Map<String, GraphQlOperationRef>
 )
 
+/**
+ * Representation of a graphql operation used in a template via the th:query or th:mutation attribute
+ */
+data class GraphQlOperationRef(
+  val templateName: String,
+  val operationName: String,
+  val variables: Map<String, Any?>
+)
+
 val GraphQlExpressionGrammar = object : Grammar<GraphQlExpression>() {
   // IMPORTANT: https://github.com/h0tk3y/better-parse?tab=readme-ov-file#tokens
   // The tokens order matters in some cases,

@@ -1,13 +1,7 @@
 <!doctype html>
 <html lang="en">
-<head th:fragment="head(title)">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:replace="${title}">Htma</title>
-    <script type="module" th:each="js : ${htma.vite.mainJsModules}" th:src="@{${js}}"></script>
-    <link rel="stylesheet" th:each="css : ${htma.vite.mainCssModules}" th:href="@{${css}}">
+<head>
+    <script th:fragment="scripts" type="module" th:each="js : ${htma.vite.mainJsModules}" th:src="@{${js}}"></script>
+    <link th:fragment="styles" rel="stylesheet" th:each="css : ${htma.vite.mainCssModules}" th:href="@{${css}}">
 </head>
-<body>
-
-</body>
 </html>

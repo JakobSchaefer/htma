@@ -1,6 +1,5 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.routing.HtmaNavigationClientContext
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.server.routing.*
@@ -12,7 +11,6 @@ data class HtmaRenderContext(
   val vite: ViteManifest,
   val app: AppManifest,
   val call: RoutingCall,
-  val clientContext: HtmaNavigationClientContext?
 ) {
   fun updateContext(context: WebContext) {
     context.setVariable("htma", this)
