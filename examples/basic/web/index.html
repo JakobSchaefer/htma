@@ -8,13 +8,18 @@
     <th:block th:replace="~{ base :: styles }"></th:block>
 </head>
 <body class="bg-surface text-on-surface w-dvw h-dvh">
-    <nav class="h-10 inline-grid gap-2 grid-cols-2">
-        <a th:href="@{/}" class="underline">Home</a>
+
+    <nav th:fragment="navigation" class="h-10 inline-grid gap-2 grid-cols-3">
+        <a th:href="@{/}">Home</a>
         <a th:href="@{/about}">About</a>
+        <a th:href="@{/query}">Query</a>
     </nav>
-    <div>
+
+    <div th:query="result=~{ index :: NameQuery }">
         <h1 class="text-2xl font-bold text-primary">Home</h1>
-        <p th:text="#{hello('name', 'World')}"></p>
+        <p th:text="#{hello('name', ${result.data.name})}"></p>
+        <text-element count="99"></text-element>
     </div>
+
 </body>
 </html>

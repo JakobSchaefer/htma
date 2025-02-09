@@ -1,6 +1,6 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.thymeleaf.KtorWebExchange
+import de.jakobschaefer.htma.graphql.GraphQlPreProcessorDialect
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
@@ -10,7 +10,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
-import org.thymeleaf.context.WebContext
+import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
@@ -121,6 +121,7 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
   templateEngine.setLinkBuilder(HtmaLinkBuilder())
   templateEngine.setMessageResolver(HtmaMessageResolver())
   templateEngine.addDialect(HtmaDialect())
+  templateEngine.addDialect(GraphQlPreProcessorDialect())
   return templateEngine
 }
 
@@ -136,25 +137,18 @@ suspend fun RoutingCall.respondTemplate(
   templateName: String,
   data: Map<String, Any> = emptyMap()
 ) {
-  val htmaContext = HtmaRenderContext(
-    isDevelopment = application.developmentMode,
-    vite = application.htma.viteManifest,
-    app = application.htma.appManifest,
-    call = this,
-  )
-
   // build thymeleaf's web context
-  val webContext = buildWebContext(data)
+  val context = buildContext(data)
 
-  // Add HTMA data to web context
-  htmaContext.updateContext(webContext)
+  val renderContext = HtmaRoutingCall(this)
+  renderContext.updateContext(context)
 
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
-    application.htma.templateEngine.process(templateName, webContext)
+    application.htma.templateEngine.process(templateName, context)
   }
 }
 
-internal fun RoutingCall.buildWebContext(data: Map<String, Any>): WebContext {
+internal fun RoutingCall.buildContext(data: Map<String, Any>): Context {
   val acceptLanguageHeader = request.headers["Accept-Language"]
   val locale =
     if (acceptLanguageHeader != null) {
@@ -164,5 +158,5 @@ internal fun RoutingCall.buildWebContext(data: Map<String, Any>): WebContext {
     } else {
       application.htma.config.fallbackLocale
     }
-  return WebContext(KtorWebExchange(this), locale, data)
+  return Context(locale, data)
 }

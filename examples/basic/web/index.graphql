@@ -1,11 +1,3 @@
 query NameQuery {
     name
 }
-
-query ServerGreetingQuery($nameOverride: String) {
-    greeting(name: $nameOverride)
-}
-
-mutation UpdateNameMutation($newName: String!, $options: SetNameOptions) {
-    setName(name: $newName, options: $options)
-}

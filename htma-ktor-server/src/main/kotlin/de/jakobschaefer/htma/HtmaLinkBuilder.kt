@@ -18,7 +18,7 @@ class HtmaLinkBuilder : StandardLinkBuilder() {
   }
 
   override fun processLink(context: IExpressionContext, link: String): String {
-    val htma = HtmaRenderContext.fromContext(context)
+    val htma = HtmaRoutingCall.fromContext(context)
     if (link.matches(Regex("^https?://.+"))) {
       return link
     }

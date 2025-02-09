@@ -2,11 +2,11 @@
 <html lang="en" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{ index :: head }"></head>
 <body class="bg-surface text-on-surface w-dvw h-dvh">
-    <nav th:replace="~{ index :: navigation }">
-    </nav>
-    <div>
-        <h1 class="text-2xl font-bold text-primary">About</h1>
-        <p th:text="${#ctx}"></p>
-    </div>
+<nav th:replace="~{ index :: navigation }">
+</nav>
+<div th:query="result=~{ index :: NameQuery }">
+    <h1 class="text-2xl font-bold text-primary">Query</h1>
+    <p th:text="${result}"></p>
+</div>
 </body>
 </html>

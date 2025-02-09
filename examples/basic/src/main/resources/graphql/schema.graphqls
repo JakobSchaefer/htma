@@ -1,24 +1,3 @@
 type Query {
     name: String!
-    greeting(name: String): String!
-    hero(stuff: [Stuff]): Hero
-}
-
-type Mutation {
-    setName(name: String, options: SetNameOptions): String!
-}
-
-input SetNameOptions {
-    generate: Boolean
-}
-
-type Hero {
-    id: ID!
-    name: String!
-    level: Int
-}
-
-input Stuff {
-    name: String,
-    amount: Float!
 }

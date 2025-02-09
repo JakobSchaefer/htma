@@ -7,9 +7,7 @@ import graphql.schema.idl.RuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.TypeDefinitionRegistry
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.http.content.*
-import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 
@@ -17,6 +15,7 @@ import io.ktor.utils.io.*
 fun Route.htma(spec: HtmaRouting.() -> Unit) {
   val appManifest = application.htma.appManifest
   val resourceBase = application.htma.resourceBase
+
   val routingSpec = HtmaRouting().apply(spec)
   application.htma.graphqlEngine = routingSpec.engine
 
@@ -36,18 +35,9 @@ class HtmaRouting {
   var engine: GraphQlEngine? = null
 
   @KtorDsl
-  fun graphql(typeDefinitions: TypeDefinitionRegistry, contextProvider: suspend RoutingContext.() -> Any, runtimeWiring: () -> RuntimeWiring) {
+  fun graphql(typeDefinitions: TypeDefinitionRegistry, contextProvider: suspend RoutingContext.() -> Any = {}, runtimeWiring: () -> RuntimeWiring) {
     val wiring = runtimeWiring()
     val schema = SchemaGenerator().makeExecutableSchema(typeDefinitions, wiring)
     engine = GraphQlEngine(schema, contextProvider)
-  }
-}
-
-private inline fun <T> ApplicationCall.ifHtmxRequest(block: () -> T): T? {
-  val isHxRequest = request.headers["Hx-Request"]?.toBoolean() ?: false
-  return if (isHxRequest) {
-    block()
-  } else {
-    null
   }
 }
