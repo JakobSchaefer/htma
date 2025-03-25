@@ -20,7 +20,7 @@ kotest = "5.9.1"
 axion = "1.18.16"
 
 # https://github.com/Kotlin/dokka
-dokka = "1.9.20"
+dokka = "2.0.0"
 
 # https://opensource.deepmedia.io/deployer
 deployer = "0.17.0"
