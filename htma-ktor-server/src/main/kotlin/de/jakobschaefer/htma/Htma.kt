@@ -1,7 +1,9 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.graphql.GraphQlPreProcessorDialect
+import de.jakobschaefer.htma.thymeleaf.HtmaContext
+import de.jakobschaefer.htma.thymeleaf.htma
 import de.jakobschaefer.htma.webinf.AppManifest
+import de.jakobschaefer.htma.webinf.AppManifestPage
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -10,16 +12,33 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
-import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver
+import org.thymeleaf.templateresolver.StringTemplateResolver
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPluginConfig) {
-  Logs.htma.info("Supporting languages {} with fallack {}", pluginConfig.supportedLocales, pluginConfig.fallbackLocale)
+  val supportedLocales = pluginConfig.supportedLocales
+    ?: applicationConfig.propertyOrNull("htma.supportedLocales")?.getList()?.map { Locale.of(it) }
+    ?: emptyList()
+  val fallbackLocale = pluginConfig.fallbackLocale
+    ?: applicationConfig.propertyOrNull("htma.fallbackLocale")?.getString()?.let { Locale.of(it) }
+    ?: supportedLocales.firstOrNull()
+    ?: Locale.getDefault()
+  Logs.htma.info("Supporting languages {} with fallback {}", supportedLocales, fallbackLocale)
+
+  val enableLogic = if (pluginConfig.enableLogic != null) {
+    pluginConfig.enableLogic!!
+  } else if (applicationConfig.propertyOrNull("htma.enableLogic") != null) {
+    applicationConfig.property("htma.enableLogic").getString().toBooleanStrict()
+  } else {
+    false
+  }
+  Logs.htma.info("Decoubled logic is {}", if (enableLogic) { "enabled" } else { "not enabled" })
+
   if (application.developmentMode) {
     GlobalScope.launch {
       ProcessBuilder("npx", "vite", "dev")
@@ -48,7 +67,7 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
   }
 
   // Setup template engine
-  val templateEngine = setupTemplateEngine(resourceBase)
+  val templateEngine = setupTemplateEngine(resourceBase, enableLogic)
 
   // Add plugin to the ktor application
   val plugin = HtmaPlugin(
@@ -57,13 +76,15 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
     templateEngine = templateEngine,
     appManifest = appManifest,
     viteManifest = viteManifest,
-    graphqlEngine = null
+    supportedLocales = supportedLocales,
+    fallbackLocale = fallbackLocale,
+    enableLogic = enableLogic
   )
   application.useHtmaPlugin(plugin)
   Logs.htma.info("Htma plugin started!")
 }
 
-private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: String): TemplateEngine {
+private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: String, enableLogic: Boolean): TemplateEngine {
   val templateEngine = TemplateEngine()
   val templateResolvers = mutableSetOf<ITemplateResolver>()
 
@@ -74,29 +95,9 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
     suffix = ".html"
     templateMode = TemplateMode.HTML
     order = 1
-    resolvablePatterns = setOf("base")
+    resolvablePatterns = setOf("__fragment_root")
   }
   templateResolvers.add(internalTemplates)
-
-  val graphqlTemplates = if (application.developmentMode) {
-    FileTemplateResolver().apply {
-      prefix = "web/"
-      suffix = ""
-      templateMode = TemplateMode.TEXT
-      isCacheable = false
-      order = 2
-      resolvablePatterns = setOf("*.graphql")
-    }
-  } else {
-    ClassLoaderTemplateResolver().apply {
-      prefix = "${resourceBase}/web/"
-      suffix = ""
-      templateMode = TemplateMode.TEXT
-      order = 2
-      resolvablePatterns = setOf("*.graphql")
-    }
-  }
-  templateResolvers.add(graphqlTemplates)
 
   // Templates provided by the user
   val webTemplates = if (application.developmentMode) {
@@ -106,6 +107,7 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
       templateMode = TemplateMode.HTML
       isCacheable = false
       order = 3
+      useDecoupledLogic = enableLogic
     }
   } else {
     ClassLoaderTemplateResolver().apply {
@@ -113,15 +115,18 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
       suffix = ".html"
       templateMode = TemplateMode.HTML
       order = 3
+      useDecoupledLogic = enableLogic
     }
   }
   templateResolvers.add(webTemplates)
+
+  val stringTemplateResolver = StringTemplateResolver()
+  templateResolvers.add(stringTemplateResolver)
 
   templateEngine.templateResolvers = templateResolvers
   templateEngine.setLinkBuilder(HtmaLinkBuilder())
   templateEngine.setMessageResolver(HtmaMessageResolver())
   templateEngine.addDialect(HtmaDialect())
-  templateEngine.addDialect(GraphQlPreProcessorDialect())
   return templateEngine
 }
 
@@ -133,30 +138,55 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
-suspend fun RoutingCall.respondTemplate(
-  templateName: String,
-  data: Map<String, Any> = emptyMap()
+internal suspend fun RoutingCall.replyHtml(
+  toPage: AppManifestPage
 ) {
-  // build thymeleaf's web context
-  val context = buildContext(data)
+  val isHtmxRequest = request.headers["Hx-Request"] == "true"
+  val fromPage = if (isHtmxRequest) {
+    val fromPathSegments = Url(request.headers["Hx-Current-Url"]!!).segments
+    application.htma.appManifest.pages
+      .find {
+        val remotePathSegments = if (it.remotePath == "/") {
+          emptyList()
+        } else {
+          it.remotePath.substring(1).split("/")
+        }
+        if (fromPathSegments.size != remotePathSegments.size) {
+          return@find false
+        }
+        for (i in fromPathSegments.indices) {
+          if (fromPathSegments[i] != remotePathSegments[i] && !remotePathSegments[i].startsWith('{')) {
+            return@find false
+          }
+        }
+        return@find true
+      }!!
+  } else {
+    null
+  }
+  val context = HtmaContext(this, fromPage, toPage)
 
-  val renderContext = HtmaRoutingCall(this)
-  renderContext.updateContext(context)
-
+  // Render response
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
-    application.htma.templateEngine.process(templateName, context)
+    if (context.htma.isHtmxRequest) {
+      renderFragment(context)
+    } else {
+      renderPage(context, toPage)
+    }
   }
 }
 
-internal fun RoutingCall.buildContext(data: Map<String, Any>): Context {
-  val acceptLanguageHeader = request.headers["Accept-Language"]
-  val locale =
-    if (acceptLanguageHeader != null) {
-      val acceptedLanguages = Locale.LanguageRange.parse(acceptLanguageHeader)
-      Locale.lookup(acceptedLanguages, application.htma.config.supportedLocales)
-        ?: application.htma.config.fallbackLocale
-    } else {
-      application.htma.config.fallbackLocale
-    }
-  return Context(locale, data)
+internal fun RoutingCall.renderFragment(context: HtmaContext): String {
+  // Detect the common layout of fromPage and toPage
+  val outletCssSelector = "#${context.htma.outletSwap!!.oldOutlet.replace(".", "\\.").replace("/", "\\/").replace("$", "\\$")}"
+  response.header("HX-Retarget", outletCssSelector)
+  response.header("HX-Reswap", "outerHTML")
+
+  // Render
+  return application.htma.templateEngine.process("__fragment_root", context)
+}
+
+internal fun RoutingCall.renderPage(context: HtmaContext, toPage: AppManifestPage): String {
+  // Render
+  return application.htma.templateEngine.process("__root", context)
 }

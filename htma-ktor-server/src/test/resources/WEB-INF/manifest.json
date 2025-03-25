@@ -2,7 +2,9 @@
   "pages": [
     {
       "remotePath": "/",
-      "templateName": "index"
+      "outlets": {
+        "__root": "index"
+      }
     }
   ]
 }

@@ -1,5 +1,7 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.thymeleaf.HtmaRenderContext
+import de.jakobschaefer.htma.thymeleaf.htma
 import org.thymeleaf.context.IExpressionContext
 import org.thymeleaf.linkbuilder.StandardLinkBuilder
 
@@ -18,7 +20,7 @@ class HtmaLinkBuilder : StandardLinkBuilder() {
   }
 
   override fun processLink(context: IExpressionContext, link: String): String {
-    val htma = HtmaRoutingCall.fromContext(context)
+    val htma = context.htma
     if (link.matches(Regex("^https?://.+"))) {
       return link
     }

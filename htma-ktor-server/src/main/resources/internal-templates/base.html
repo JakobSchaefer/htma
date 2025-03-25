@@ -1,7 +1,0 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <script th:fragment="scripts" type="module" th:each="js : ${call.vite.mainJsModules}" th:src="@{${js}}"></script>
-    <link th:fragment="styles" rel="stylesheet" th:each="css : ${call.vite.mainCssModules}" th:href="@{${css}}">
-</head>
-</html>

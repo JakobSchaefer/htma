@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppManifestPage(
   val remotePath: String,
-  val templateName: String,
+  val outlets: Map<String, String>,
 )

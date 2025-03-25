@@ -1,11 +1,11 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.graphql.GraphQlEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.server.application.*
 import io.ktor.util.*
 import org.thymeleaf.TemplateEngine
+import java.util.*
 
 internal class HtmaPlugin(
   val config: HtmaPluginConfig,
@@ -13,7 +13,9 @@ internal class HtmaPlugin(
   val templateEngine: TemplateEngine,
   val appManifest: AppManifest,
   val viteManifest: ViteManifest,
-  var graphqlEngine: GraphQlEngine?
+  val supportedLocales: List<Locale>,
+  val fallbackLocale: Locale,
+  val enableLogic: Boolean
 )
 
 internal val htmaPluginKey = AttributeKey<HtmaPlugin>("htma")

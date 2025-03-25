@@ -4,22 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Example Basic</title>
-    <th:block th:replace="~{ base :: scripts }"></th:block>
-    <th:block th:replace="~{ base :: styles }"></th:block>
 </head>
 <body class="bg-surface text-on-surface w-dvw h-dvh">
-
-    <nav th:fragment="navigation" class="h-10 inline-grid gap-2 grid-cols-3">
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/about}">About</a>
-        <a th:href="@{/query}">Query</a>
-    </nav>
-
-    <div th:query="result=~{ index :: NameQuery }">
-        <h1 class="text-2xl font-bold text-primary">Home</h1>
-        <p th:text="#{hello('name', ${result.data.name})}"></p>
-        <text-element count="99"></text-element>
+    <div th:fragment="outlet">
+        <p>Dies ist ein Text</p>
+        <iframe id="one-hub" title="One Hub" width="1000" height="1000" src="http://localhost:5173/"></iframe>
     </div>
-
 </body>
 </html>

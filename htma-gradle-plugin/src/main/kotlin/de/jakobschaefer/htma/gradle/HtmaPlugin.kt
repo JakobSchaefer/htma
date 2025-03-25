@@ -14,7 +14,6 @@ import org.gradle.language.jvm.tasks.ProcessResources
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.stream.Collectors
 import kotlin.io.path.pathString
 
 class HtmaPlugin : Plugin<Project> {
@@ -74,27 +73,84 @@ class HtmaPlugin : Plugin<Project> {
   }
 
   private fun buildAppManifest(webDir: Path): AppManifest {
-    val appManifestPages =
-      Files.walk(webDir)
-        .filter { it.pathString.endsWith(".html") }
-        .map { htmlFile ->
-          val htmlFilePathWithoutExtension =
-            htmlFile.pathString.substringAfter(webDir.pathString).substringBeforeLast(".html")
-          AppManifestPage(
-            remotePath =
-              if (htmlFilePathWithoutExtension == "/index") {
-                "/"
-              } else if (htmlFilePathWithoutExtension.endsWith("index")) {
-                htmlFilePathWithoutExtension.substringBeforeLast("/index")
-              } else {
-                htmlFilePathWithoutExtension
-              },
-            templateName = htmlFilePathWithoutExtension.substringAfter("/"),
+    val htmlFiles = Files.walk(webDir)
+      .filter { it.pathString.endsWith(".html")}
+      .map { htmlFile ->
+        htmlFile.pathString.substringAfter(webDir.pathString).substringBeforeLast(".html")
+      }
+      .map { HtmlFile(it) }
+      .toList()
+
+      val pages = buildList {
+        for (htmlFile in htmlFiles) {
+          if (htmlFile.isLayout) {
+            continue
+          }
+
+          val page = AppManifestPage(
+            remotePath = htmlFile.remotePath,
+            outlets = buildMap {
+              var currentOutlet = "__root"
+              for (outlet in htmlFile.normalizedOutletChain) {
+                val templateName = htmlFiles.find { it.normalizedPath == outlet }!!.templateName
+                put(currentOutlet, templateName)
+                currentOutlet = outlet
+              }
+            }
           )
+          add(page)
         }
-        .collect(Collectors.toList())
+      }
+
+    println("pages = " + pages)
+
     return AppManifest(
-      pages = appManifestPages,
+      pages = pages,
     )
+  }
+}
+
+data class HtmlFile(
+  val path: String
+) {
+  val templateName = path.substring(1)
+
+  val normalizedPath = path.substring(1)
+    .replace('/', '.')
+
+  val normalizedPathSegments = normalizedPath
+    .split('.')
+
+  val isLayout = normalizedPathSegments.last().startsWith('_')
+
+  val isIndex = normalizedPathSegments.last() == "index"
+
+  val canonicalPathSegments = normalizedPathSegments
+    .filter { !it.startsWith('_') }
+    .map {
+      if (it.startsWith('$')) {
+        "{${it.substring(1)}}"
+      } else {
+        it
+      }
+    }
+  val remotePath = "/" + if (isIndex) {
+    canonicalPathSegments.dropLast(1).joinToString("/")
+  } else {
+    canonicalPathSegments.joinToString("/")
+  }
+
+  val normalizedOutletChain = buildList {
+    for (i in normalizedPathSegments.indices) {
+      val segment = normalizedPathSegments[i]
+      if (segment.startsWith("_")) {
+        val normalizedLayoutPath = normalizedPathSegments.subList(0, i + 1).joinToString(".")
+        add(normalizedLayoutPath)
+      }
+    }
+
+    if (!isLayout) {
+      add(normalizedPathSegments.joinToString("."))
+    }
   }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<thlogic>
+    <attr sel="#heroId" th:text="${param.heroId[0]}">
+    </attr>
+</thlogic>

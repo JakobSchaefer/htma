@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body hx-boost="true">
+    <header>
+        <h1 class="text-2xl font-bold">
+            Hello <span class="text-red-400" th:text="${#execInfo.templateName}">__root</span>!
+        </h1>
+        <nav class="flex gap-2">
+            <a href="/">Index</a>
+            <a href="/about">About</a>
+            <a href="/home">Home</a>
+            <a href="/staff">Staff</a>
+            <a href="/inner1">Inner1</a>
+        </nav>
+    </header>
+    <div class="border border-red-400">
+        <th:outlet>hier steht etwas</th:outlet>
+    </div>
+</body>
+</html>
