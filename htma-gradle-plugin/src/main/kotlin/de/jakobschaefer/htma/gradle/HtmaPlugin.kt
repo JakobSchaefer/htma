@@ -26,7 +26,7 @@ class HtmaPlugin : Plugin<Project> {
       version.set("20.16.0")
     }
 
-    project.tasks.create("buildAppManifest") {
+    project.tasks.register("buildAppManifest") {
       val outputDir = project.layout.buildDirectory.dir("htma")
       val webDir = htma.webDir.get()
       inputs.dir(webDir)
@@ -39,7 +39,7 @@ class HtmaPlugin : Plugin<Project> {
       }
     }
 
-    project.tasks.create("npxViteBuild", NpxTask::class.java) {
+    project.tasks.register("npxViteBuild", NpxTask::class.java) {
       dependsOn("npmInstall")
       description = "Executes npx vite build"
       command.set("vite")
@@ -101,8 +101,6 @@ class HtmaPlugin : Plugin<Project> {
           add(page)
         }
       }
-
-    println("pages = " + pages)
 
     return AppManifest(
       pages = pages,
