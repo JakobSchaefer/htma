@@ -17,7 +17,7 @@ export default defineConfig({
         manifest: true,
         outDir: path.resolve(__dirname, "dist"),
         rollupOptions: {
-            input: path.resolve(__dirname, "web", "main.js"),
+            input: path.resolve(__dirname, "web", "__root.js"),
         },
     },
 });

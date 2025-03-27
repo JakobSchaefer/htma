@@ -36,7 +36,7 @@ data class ViteManifest(
       }
       return ViteManifest(
         assets = emptyMap(),
-        mainJsModules = listOf("http://localhost:$viteServerPort/@vite/client", "http://localhost:$viteServerPort/web/main.js"),
+        mainJsModules = listOf("http://localhost:$viteServerPort/@vite/client", "http://localhost:$viteServerPort/web/__root.js"),
         mainCssModules = emptyList()
       )
     }
