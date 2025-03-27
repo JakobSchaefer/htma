@@ -12,7 +12,9 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
+import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler
 import org.thymeleaf.templatemode.TemplateMode
+import org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver

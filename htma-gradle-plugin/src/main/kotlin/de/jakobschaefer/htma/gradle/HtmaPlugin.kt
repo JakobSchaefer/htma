@@ -31,8 +31,9 @@ class HtmaPlugin : Plugin<Project> {
       val webDir = htma.webDir.get()
       inputs.dir(webDir)
       outputs.file(outputDir.get().file("manifest.json"))
+      val projectPath = project.projectDir.path
       doLast {
-        val webPath = Paths.get(project.projectDir.path, webDir)
+        val webPath = Paths.get(projectPath, webDir)
         val appManifest = buildAppManifest(webPath)
         val appManifestContent = appManifest.toJson()
         outputDir.get().file("manifest.json").asFile.writeText(appManifestContent)
