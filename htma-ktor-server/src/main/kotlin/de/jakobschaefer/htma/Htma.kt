@@ -1,7 +1,10 @@
 package de.jakobschaefer.htma
 
-import de.jakobschaefer.htma.thymeleaf.HtmaContext
-import de.jakobschaefer.htma.thymeleaf.htma
+import de.jakobschaefer.htma.messages.HtmaMessageResolver
+import de.jakobschaefer.htma.thymeleaf.dialect.HtmaDialect
+import de.jakobschaefer.htma.thymeleaf.HtmaLinkBuilder
+import de.jakobschaefer.htma.thymeleaf.context.HtmaContext
+import de.jakobschaefer.htma.thymeleaf.context.htma
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -12,9 +15,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.thymeleaf.TemplateEngine
-import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler
 import org.thymeleaf.templatemode.TemplateMode
-import org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
 import org.thymeleaf.templateresolver.ITemplateResolver
@@ -179,16 +180,13 @@ internal suspend fun RoutingCall.replyHtml(
 }
 
 internal fun RoutingCall.renderFragment(context: HtmaContext): String {
-  // Detect the common layout of fromPage and toPage
   val outletCssSelector = "#${context.htma.outletSwap!!.oldOutlet.replace(".", "\\.").replace("/", "\\/").replace("$", "\\$")}"
   response.header("HX-Retarget", outletCssSelector)
   response.header("HX-Reswap", "outerHTML")
 
-  // Render
   return application.htma.templateEngine.process("__fragment_root", context)
 }
 
 internal fun RoutingCall.renderPage(context: HtmaContext, toPage: AppManifestPage): String {
-  // Render
   return application.htma.templateEngine.process("__root", context)
 }

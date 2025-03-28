@@ -1,7 +1,6 @@
-package de.jakobschaefer.htma
+package de.jakobschaefer.htma.thymeleaf
 
-import de.jakobschaefer.htma.thymeleaf.HtmaRenderContext
-import de.jakobschaefer.htma.thymeleaf.htma
+import de.jakobschaefer.htma.thymeleaf.context.htma
 import org.thymeleaf.context.IExpressionContext
 import org.thymeleaf.linkbuilder.StandardLinkBuilder
 

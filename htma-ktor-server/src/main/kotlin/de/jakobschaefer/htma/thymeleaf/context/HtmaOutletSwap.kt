@@ -1,4 +1,4 @@
-package de.jakobschaefer.htma.thymeleaf
+package de.jakobschaefer.htma.thymeleaf.context
 
 import de.jakobschaefer.htma.webinf.AppManifestPage
 

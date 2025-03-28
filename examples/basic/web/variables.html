@@ -1,0 +1,62 @@
+<!--/*@thymesVar id="#money" type="de.jakobschaefer.htma.thymeleaf.dialect.MoneyExpressionObject"*/-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <div th:fragment="outlet" class="flex flex-col gap-3">
+        <h1 class="text-3xl font-bold">Variables</h1>
+
+        <section>
+            <h2 class="text-2xl font-bold">Locale</h2>
+            <pre class="text-violet-700">${#locale}</pre>
+            <div th:text="${#locale}">en</div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold">Messages</h2>
+            <pre class="text-violet-700">#{greeting('name', 'Peter', 'now', ${#dates.createNow()})}</pre>
+            <div th:text="#{greeting('name', 'Peter', 'now', ${#dates.createNow()})}">This is the about page...</div>
+            <pre class="text-violet-700">${#money.usd(12.30)})}</pre>
+            <div th:text="#{price('value', ${#money.usd(12.30)})}">12,89 €</div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold">URL Parameters</h2>
+            <pre class="text-violet-700">${param}</pre>
+            <div th:text="${param}"></div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold">Links</h2>
+            <dl>
+                <dt class="font-bold">Expression</dt>
+                <dd class="pl-2">Nav Link: <span class="text-violet-600">@{/some/random/path}</span></dd>
+                <dd class="pl-2">Asset Link: <span class="text-violet-700">@{some/image.png}</span></dd>
+                <dt class="font-bold">Description</dt>
+                <dd class="pl-2">Renders an internal link</dd>
+                <dt class="font-bold">Output Nav Link</dt>
+                <dd class="pl-2" th:text="@{/some/random/path}">...</dd>
+                <dt class="font-bold">Output Asset Link</dt>
+                <dd class="pl-2" th:text="@{some/image.png}">...</dd>
+            </dl>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold">HTMA Render Context</h2>
+            <dl>
+                <dt class="font-bold">Expression</dt>
+                <dd class="pl-2"><span class="text-violet-700">${htma}</span></dd>
+                <dt class="font-bold">Description</dt>
+                <dd class="pl-2">The internal framework state.</dd>
+                <dt class="font-bold">Output</dt>
+                <!--/*@thymesVar id="htma" type="de.jakobschaefer.htma.thymeleaf.context.HtmaRenderContext"*/-->
+                <dd class="pl-2" th:text="${htma}">...</dd>
+            </dl>
+        </section>
+    </div>
+</body>
+</html>

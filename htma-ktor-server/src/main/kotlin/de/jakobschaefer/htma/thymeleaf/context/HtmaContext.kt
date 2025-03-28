@@ -1,4 +1,4 @@
-package de.jakobschaefer.htma.thymeleaf
+package de.jakobschaefer.htma.thymeleaf.context
 
 import de.jakobschaefer.htma.htma
 import de.jakobschaefer.htma.webinf.AppManifestPage
@@ -31,7 +31,7 @@ class HtmaContext(
     }
   }
 
-  private val variables = LinkedHashMap<String, Any>(
+  private val variables = LinkedHashMap(
     mapOf(
       "htma" to HtmaRenderContext(
         isDevelopment = call.application.developmentMode,
