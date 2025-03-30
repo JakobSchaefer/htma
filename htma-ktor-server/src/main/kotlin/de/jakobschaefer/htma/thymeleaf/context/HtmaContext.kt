@@ -2,8 +2,8 @@ package de.jakobschaefer.htma.thymeleaf.context
 
 import de.jakobschaefer.htma.htma
 import de.jakobschaefer.htma.webinf.AppManifestPage
-import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import io.ktor.util.*
 import org.thymeleaf.context.IContext
 import java.util.*
@@ -12,6 +12,8 @@ class HtmaContext(
   call: RoutingCall,
   fromPage: AppManifestPage?,
   toPage: AppManifestPage,
+  data: Map<String, Any?>,
+  session: String?
 ) : IContext {
 
   private val locale: Locale
@@ -25,9 +27,9 @@ class HtmaContext(
     locale = if (acceptLanguageHeader != null) {
       val acceptedLanguages = Locale.LanguageRange.parse(acceptLanguageHeader)
       Locale.lookup(acceptedLanguages, call.application.htma.supportedLocales)
-        ?: call.application.htma.fallbackLocale
+        ?: call.application.htma.defaultLocale
     } else {
-      call.application.htma.fallbackLocale
+      call.application.htma.defaultLocale
     }
   }
 
@@ -42,7 +44,9 @@ class HtmaContext(
         isHtmxRequest = call.request.headers["Hx-Request"] == "true",
         outletSwap = fromPage?.let { HtmaOutletSwap.build(fromPage, toPage) },
       ),
-      "param" to call.parameters.toMap()
+      "param" to call.parameters.toMap(),
+      "session" to session?.let { call.sessions.get(session) },
+      "data" to data
     )
   )
 

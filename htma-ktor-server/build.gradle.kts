@@ -22,6 +22,8 @@ dependencies {
   implementation(libs.kotlinx.datetime)
 
   api(libs.ktor.server.core)
+  api(libs.ktor.server.sessions)
+  implementation(libs.kotlinx.coroutines)
   testImplementation(libs.ktor.server.test)
 
   implementation(libs.thymeleaf)

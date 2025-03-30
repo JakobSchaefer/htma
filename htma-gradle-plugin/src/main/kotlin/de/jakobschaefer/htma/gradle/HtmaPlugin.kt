@@ -89,11 +89,13 @@ class HtmaPlugin : Plugin<Project> {
           }
 
           val page = AppManifestPage(
+            filePath = htmlFile.path + ".html",
             remotePath = htmlFile.remotePath,
+            canonicalPath = "__root." + htmlFile.canonicalPathWithoutRoot,
             outlets = buildMap {
               var currentOutlet = "__root"
-              for (outlet in htmlFile.normalizedOutletChain) {
-                val templateName = htmlFiles.find { it.normalizedPath == outlet }!!.templateName
+              for (outlet in htmlFile.canonicalOutletChain) {
+                val templateName = htmlFiles.find { it.canonicalPathWithoutRoot == outlet }!!.templateName
                 put(currentOutlet, templateName)
                 currentOutlet = outlet
               }
@@ -114,17 +116,16 @@ data class HtmlFile(
 ) {
   val templateName = path.substring(1)
 
-  val normalizedPath = path.substring(1)
-    .replace('/', '.')
+  val canonicalPathWithoutRoot = path.substring(1).replace('/', '.')
 
-  val normalizedPathSegments = normalizedPath
+  val canonicalPathSegments = canonicalPathWithoutRoot
     .split('.')
 
-  val isLayout = normalizedPathSegments.last().startsWith('_')
+  val isLayout = canonicalPathSegments.last().startsWith('_')
 
-  val isIndex = normalizedPathSegments.last() == "index"
+  val isIndex = canonicalPathSegments.last() == "index"
 
-  val canonicalPathSegments = normalizedPathSegments
+  val remotePathSegments = canonicalPathSegments
     .filter { !it.startsWith('_') }
     .map {
       if (it.startsWith('$')) {
@@ -134,22 +135,22 @@ data class HtmlFile(
       }
     }
   val remotePath = "/" + if (isIndex) {
-    canonicalPathSegments.dropLast(1).joinToString("/")
+    remotePathSegments.dropLast(1).joinToString("/")
   } else {
-    canonicalPathSegments.joinToString("/")
+    remotePathSegments.joinToString("/")
   }
 
-  val normalizedOutletChain = buildList {
-    for (i in normalizedPathSegments.indices) {
-      val segment = normalizedPathSegments[i]
+  val canonicalOutletChain = buildList {
+    for (i in canonicalPathSegments.indices) {
+      val segment = canonicalPathSegments[i]
       if (segment.startsWith("_")) {
-        val normalizedLayoutPath = normalizedPathSegments.subList(0, i + 1).joinToString(".")
-        add(normalizedLayoutPath)
+        val canonicalLayoutPath = canonicalPathSegments.subList(0, i + 1).joinToString(".")
+        add(canonicalLayoutPath)
       }
     }
 
     if (!isLayout) {
-      add(normalizedPathSegments.joinToString("."))
+      add(canonicalPathSegments.joinToString("."))
     }
   }
 }

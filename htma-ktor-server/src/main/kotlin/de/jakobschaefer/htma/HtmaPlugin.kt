@@ -14,8 +14,9 @@ internal class HtmaPlugin(
   val appManifest: AppManifest,
   val viteManifest: ViteManifest,
   val supportedLocales: List<Locale>,
-  val fallbackLocale: Locale,
-  val enableLogic: Boolean
+  val defaultLocale: Locale,
+  val enableLogic: Boolean,
+  val session: String?
 )
 
 internal val htmaPluginKey = AttributeKey<HtmaPlugin>("htma")

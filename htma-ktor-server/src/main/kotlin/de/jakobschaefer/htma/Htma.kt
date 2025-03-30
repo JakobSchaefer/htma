@@ -1,6 +1,7 @@
 package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.messages.HtmaMessageResolver
+import de.jakobschaefer.htma.routing.HtmaDataLoader
 import de.jakobschaefer.htma.thymeleaf.dialect.HtmaDialect
 import de.jakobschaefer.htma.thymeleaf.HtmaLinkBuilder
 import de.jakobschaefer.htma.thymeleaf.context.HtmaContext
@@ -14,6 +15,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.dataloader.DataLoader
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
@@ -27,7 +29,7 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
   val supportedLocales = pluginConfig.supportedLocales
     ?: applicationConfig.propertyOrNull("htma.supportedLocales")?.getList()?.map { Locale.of(it) }
     ?: emptyList()
-  val fallbackLocale = pluginConfig.fallbackLocale
+  val fallbackLocale = pluginConfig.defaultLocale
     ?: applicationConfig.propertyOrNull("htma.fallbackLocale")?.getString()?.let { Locale.of(it) }
     ?: supportedLocales.firstOrNull()
     ?: Locale.getDefault()
@@ -51,6 +53,11 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
         .start()
     }
   }
+
+  val session = findStringProperty(
+    givenValue = pluginConfig.session,
+    propertyName = "htma.session",
+  )
 
   // Read manifest files
   val resourceBase = findStringProperty(
@@ -80,8 +87,9 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
     appManifest = appManifest,
     viteManifest = viteManifest,
     supportedLocales = supportedLocales,
-    fallbackLocale = fallbackLocale,
-    enableLogic = enableLogic
+    defaultLocale = fallbackLocale,
+    enableLogic = enableLogic,
+    session = session,
   )
   application.useHtmaPlugin(plugin)
   Logs.htma.info("Htma plugin started!")
@@ -141,8 +149,16 @@ private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
   return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString()) ?: fallbackValue
 }
 
+private fun PluginBuilder<HtmaPluginConfig>.findStringProperty(
+  givenValue: String?,
+  propertyName: String
+): String? {
+  return givenValue ?: (environment.config.propertyOrNull(propertyName)?.getString())
+}
+
 internal suspend fun RoutingCall.replyHtml(
-  toPage: AppManifestPage
+  toPage: AppManifestPage,
+  data: Map<String, Any?>
 ) {
   val isHtmxRequest = request.headers["Hx-Request"] == "true"
   val fromPage = if (isHtmxRequest) {
@@ -167,7 +183,7 @@ internal suspend fun RoutingCall.replyHtml(
   } else {
     null
   }
-  val context = HtmaContext(this, fromPage, toPage)
+  val context = HtmaContext(this, fromPage, toPage, data, application.htma.session)
 
   // Render response
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {

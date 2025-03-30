@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    <p th:fragment="outlet">inner1</p>
+    <p th:fragment="outlet" th:text="|inner1 = ${data.count}|">inner1</p>
 </body>
 </html>

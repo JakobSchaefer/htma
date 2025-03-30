@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Document</title>
+    <title th:text="#{app.title}">Document</title>
 </head>
 <body>
 <div class="px-2">
-    <header class="min-w-[200px]">
+    <header class="min-w-[200px] border-b-2 border-red-500">
         <nav class="flex gap-2">
             <a th:navigate="@{/}">Index</a>
             <a th:navigate="@{/variables}">Variables</a>

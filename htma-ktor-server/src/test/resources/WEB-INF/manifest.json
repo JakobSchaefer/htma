@@ -1,7 +1,9 @@
 {
   "pages": [
     {
+      "filePath": "/index.html",
       "remotePath": "/",
+      "canonicalPath": "__root.index",
       "outlets": {
         "__root": "index"
       }

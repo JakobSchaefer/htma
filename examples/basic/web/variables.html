@@ -9,6 +9,7 @@
 <body>
     <div th:fragment="outlet" class="flex flex-col gap-3">
         <h1 class="text-3xl font-bold">Variables</h1>
+        <span th:text="${#vars}"></span>
 
         <section>
             <h2 class="text-2xl font-bold">Locale</h2>
@@ -22,12 +23,26 @@
             <div th:text="#{greeting('name', 'Peter', 'now', ${#dates.createNow()})}">This is the about page...</div>
             <pre class="text-violet-700">${#money.usd(12.30)})}</pre>
             <div th:text="#{price('value', ${#money.usd(12.30)})}">12,89 €</div>
+            <pre class="text-violet-700">#{app.title}</pre>
+            <div th:text="#{app.title}">App Title</div>
         </section>
 
         <section>
             <h2 class="text-2xl font-bold">URL Parameters</h2>
             <pre class="text-violet-700">${param}</pre>
-            <div th:text="${param}"></div>
+            <div th:text="${param}">???</div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold">Session</h2>
+            <pre class="text-violet-700">${session}</pre>
+            <div th:text="${session}">???</div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold">Data Loaders</h2>
+            <pre class="text-violet-700">${data}</pre>
+            <div th:text="${data}">???</div>
         </section>
 
         <section>
