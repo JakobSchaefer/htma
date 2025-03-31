@@ -26,7 +26,7 @@ dependencies {
   // -------
 
   implementation(libs.slf4j)
-  implementation("io.ktor:ktor-server-sessions:3.1.1")
+  implementation("io.ktor:ktor-server-sessions:3.1.2")
   implementation("io.ktor:ktor-server-core:3.1.1")
   runtimeOnly(libs.log4j.core)
   runtimeOnly(libs.log4j.slf4j)
