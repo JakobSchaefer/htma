@@ -1,0 +1,49 @@
+<template shadowrootmode="open">
+    <div>
+        <h3><slot></slot></h3>
+        <p>Count: <span>0</span></p>
+        <h1></h1>
+        <div>
+            <button>increment</button>
+        </div>
+    </div>
+</template>
+
+<script>
+class TitledCounter extends HTMLElement {
+    constructor() {
+        super();
+        this.button = this.shadowRoot.querySelector("button")
+        this.countWrapper = this.shadowRoot.querySelector("span")
+
+        this.button.addEventListener("click", () => {
+            this.count = +this.count + 2
+        })
+    }
+
+    get count() {
+        return this.getAttribute("count")
+    }
+
+    set count(value) {
+        this.setAttribute("count", value)
+    }
+
+    updateCount(newValue) {
+        this.countWrapper.innerText = newValue
+    }
+
+    static get observedAttributes() {
+        return ["count"]
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "count") {
+            this.updateCount(newValue)
+        }
+    }
+
+}
+
+customElements.define('titled-counter', TitledCounter)
+</script>

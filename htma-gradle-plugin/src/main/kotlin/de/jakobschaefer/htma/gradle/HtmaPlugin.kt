@@ -79,6 +79,7 @@ class HtmaPlugin : Plugin<Project> {
       .map { htmlFile ->
         htmlFile.pathString.substringAfter(webDir.pathString).substringBeforeLast(".html")
       }
+      .filter { htmlFile -> !htmlFile.startsWith("/__components") }
       .map { HtmlFile(it) }
       .toList()
 

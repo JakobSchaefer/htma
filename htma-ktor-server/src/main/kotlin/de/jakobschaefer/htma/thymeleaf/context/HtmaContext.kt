@@ -2,6 +2,7 @@ package de.jakobschaefer.htma.thymeleaf.context
 
 import de.jakobschaefer.htma.htma
 import de.jakobschaefer.htma.webinf.AppManifestPage
+import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
@@ -10,12 +11,33 @@ import java.util.*
 
 class HtmaContext(
   call: RoutingCall,
-  fromPage: AppManifestPage?,
   toPage: AppManifestPage,
   data: Map<String, Any?>,
-  session: String?
 ) : IContext {
 
+  private val isHtmxRequest = call.request.headers["Hx-Request"] == "true"
+  private val fromPage = if (isHtmxRequest) {
+    val fromPathSegments = Url(call.request.headers["Hx-Current-Url"]!!).segments
+    call.application.htma.appManifest.pages
+      .find {
+        val remotePathSegments = if (it.remotePath == "/") {
+          emptyList()
+        } else {
+          it.remotePath.substring(1).split("/")
+        }
+        if (fromPathSegments.size != remotePathSegments.size) {
+          return@find false
+        }
+        for (i in fromPathSegments.indices) {
+          if (fromPathSegments[i] != remotePathSegments[i] && !remotePathSegments[i].startsWith('{')) {
+            return@find false
+          }
+        }
+        return@find true
+      }!!
+  } else {
+    null
+  }
   private val locale: Locale
 
   override fun getLocale(): Locale {
@@ -41,11 +63,11 @@ class HtmaContext(
         toPage = toPage,
         vite = call.application.htma.viteManifest,
         app = call.application.htma.appManifest,
-        isHtmxRequest = call.request.headers["Hx-Request"] == "true",
+        isHtmxRequest = isHtmxRequest,
         outletSwap = fromPage?.let { HtmaOutletSwap.build(fromPage, toPage) },
       ),
       "param" to call.parameters.toMap(),
-      "session" to session?.let { call.sessions.get(session) },
+      "session" to call.application.htma.session?.let { call.sessions.get(it) },
       "data" to data
     )
   )

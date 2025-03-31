@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<body>
+    <div th:fragment="outlet">
+        <style>
+            p {
+                color: red;
+            }
+        </style>
+        <p>This is a paragraph</p>
+        <th:titled-counter start="1" th:foo="'bar'">
+            The best counter
+        </th:titled-counter>
+    </div>
+</body>
+</html>

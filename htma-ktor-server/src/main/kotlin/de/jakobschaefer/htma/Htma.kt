@@ -17,6 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.dataloader.DataLoader
 import org.thymeleaf.TemplateEngine
+import org.thymeleaf.standard.StandardDialect
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
@@ -137,7 +138,9 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
   templateEngine.templateResolvers = templateResolvers
   templateEngine.setLinkBuilder(HtmaLinkBuilder())
   templateEngine.setMessageResolver(HtmaMessageResolver())
-  templateEngine.addDialect(HtmaDialect())
+  templateEngine.clearDialects()
+  templateEngine.addDialect(StandardDialect()) // NOTE: Precedence = 1000
+  templateEngine.addDialect(HtmaDialect("HTMA", "th", 500))
   return templateEngine
 }
 
@@ -160,30 +163,7 @@ internal suspend fun RoutingCall.replyHtml(
   toPage: AppManifestPage,
   data: Map<String, Any?>
 ) {
-  val isHtmxRequest = request.headers["Hx-Request"] == "true"
-  val fromPage = if (isHtmxRequest) {
-    val fromPathSegments = Url(request.headers["Hx-Current-Url"]!!).segments
-    application.htma.appManifest.pages
-      .find {
-        val remotePathSegments = if (it.remotePath == "/") {
-          emptyList()
-        } else {
-          it.remotePath.substring(1).split("/")
-        }
-        if (fromPathSegments.size != remotePathSegments.size) {
-          return@find false
-        }
-        for (i in fromPathSegments.indices) {
-          if (fromPathSegments[i] != remotePathSegments[i] && !remotePathSegments[i].startsWith('{')) {
-            return@find false
-          }
-        }
-        return@find true
-      }!!
-  } else {
-    null
-  }
-  val context = HtmaContext(this, fromPage, toPage, data, application.htma.session)
+  val context = HtmaContext(this, toPage, data)
 
   // Render response
   respondText(contentType = ContentType.Text.Html, status = HttpStatusCode.OK) {
