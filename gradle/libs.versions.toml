@@ -39,7 +39,7 @@ icu4j = "77.1"
 moneta = "1.4.4"
 
 # https://github.com/apollographql/apollo-kotlin
-apollo = "4.1.0"
+apollo = "4.1.1"
 
 # https://github.com/graphql-java/graphql-java
 graphql-java = "22.3"
