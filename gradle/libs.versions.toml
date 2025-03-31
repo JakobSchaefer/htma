@@ -36,7 +36,7 @@ jsoup = "1.18.3"
 icu4j = "77.1"
 
 # https://javamoney.github.io/ri.html
-moneta = "1.4.4"
+moneta = "1.4.5"
 
 # https://github.com/apollographql/apollo-kotlin
 apollo = "4.1.0"
