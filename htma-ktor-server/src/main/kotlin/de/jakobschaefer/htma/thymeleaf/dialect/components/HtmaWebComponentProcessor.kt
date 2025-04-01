@@ -1,12 +1,14 @@
-package de.jakobschaefer.htma.thymeleaf.dialect
+package de.jakobschaefer.htma.thymeleaf.dialect.components
 
 import org.thymeleaf.context.ITemplateContext
 import org.thymeleaf.model.AttributeValueQuotes
-import org.thymeleaf.model.ICloseElementTag
 import org.thymeleaf.model.IModel
 import org.thymeleaf.model.IOpenElementTag
 import org.thymeleaf.processor.element.AbstractElementModelProcessor
 import org.thymeleaf.processor.element.IElementModelStructureHandler
+import org.thymeleaf.standard.expression.Fragment
+import org.thymeleaf.standard.expression.FragmentExpression
+import org.thymeleaf.standard.expression.StandardExpressions
 import org.thymeleaf.templatemode.TemplateMode
 
 class HtmaWebComponentProcessor(
@@ -19,9 +21,8 @@ class HtmaWebComponentProcessor(
   true,
   null,
   false,
-  1000,
+  1,
 ) {
-
   override fun doProcess(
     context: ITemplateContext,
     model: IModel,
@@ -29,8 +30,9 @@ class HtmaWebComponentProcessor(
   ) {
     val mf = context.modelFactory
     val child = mf.createModel()
-    child.add(mf.createOpenElementTag("th:block", "th:replace", "~{ __components/$componentName :: template }"))
-    child.add(mf.createCloseElementTag("th:block"))
+    val templateTag = "${dialectPrefix}:${HtmaWebTemplateProcessor.TAG_NAME}"
+    child.add(mf.createOpenElementTag(templateTag, "name", componentName))
+    child.add(mf.createCloseElementTag(templateTag))
 
     val openTag = model[0] as IOpenElementTag
     val newOpenTag = mf.createOpenElementTag(componentName, openTag.attributeMap, AttributeValueQuotes.DOUBLE, false)
@@ -38,5 +40,7 @@ class HtmaWebComponentProcessor(
     model.replace(0, newOpenTag)
     model.replace(model.size() - 1, newClosTag)
     model.insertModel(1, child)
+
+    structureHandler.setLocalVariable("attributes", openTag.attributeMap)
   }
 }

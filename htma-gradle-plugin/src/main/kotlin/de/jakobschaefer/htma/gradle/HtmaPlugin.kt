@@ -2,6 +2,7 @@ package de.jakobschaefer.htma.gradle
 
 import com.github.gradle.node.NodeExtension
 import com.github.gradle.node.npm.task.NpxTask
+import de.jakobschaefer.htma.webinf.AppComponent
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import org.gradle.api.Plugin
@@ -78,13 +79,14 @@ class HtmaPlugin : Plugin<Project> {
       .filter { it.pathString.endsWith(".html")}
       .map { htmlFile ->
         htmlFile.pathString.substringAfter(webDir.pathString).substringBeforeLast(".html")
-      }
+      }.toList()
+
+    val pagesAndLayouts = htmlFiles
       .filter { htmlFile -> !htmlFile.startsWith("/__components") }
       .map { HtmlFile(it) }
-      .toList()
 
       val pages = buildList {
-        for (htmlFile in htmlFiles) {
+        for (htmlFile in pagesAndLayouts) {
           if (htmlFile.isLayout) {
             continue
           }
@@ -96,7 +98,7 @@ class HtmaPlugin : Plugin<Project> {
             outlets = buildMap {
               var currentOutlet = "__root"
               for (outlet in htmlFile.canonicalOutletChain) {
-                val templateName = htmlFiles.find { it.canonicalPathWithoutRoot == outlet }!!.templateName
+                val templateName = pagesAndLayouts.find { it.canonicalPathWithoutRoot == outlet }!!.templateName
                 put(currentOutlet, templateName)
                 currentOutlet = outlet
               }
@@ -106,8 +108,13 @@ class HtmaPlugin : Plugin<Project> {
         }
       }
 
+    val components = htmlFiles
+      .filter { htmlFile -> htmlFile.startsWith("/__components") }
+      .map { AppComponent(it.substringAfter("/__components/")) }
+      .toList()
     return AppManifest(
       pages = pages,
+      components = components
     )
   }
 }

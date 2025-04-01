@@ -1,11 +1,11 @@
 package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.messages.HtmaMessageResolver
-import de.jakobschaefer.htma.routing.HtmaDataLoader
 import de.jakobschaefer.htma.thymeleaf.dialect.HtmaDialect
 import de.jakobschaefer.htma.thymeleaf.HtmaLinkBuilder
 import de.jakobschaefer.htma.thymeleaf.context.HtmaContext
 import de.jakobschaefer.htma.thymeleaf.context.htma
+import de.jakobschaefer.htma.thymeleaf.dialect.components.HtmaWebComponentDialect
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -78,7 +78,7 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
   }
 
   // Setup template engine
-  val templateEngine = setupTemplateEngine(resourceBase, enableLogic)
+  val templateEngine = setupTemplateEngine(resourceBase, enableLogic, appManifest)
 
   // Add plugin to the ktor application
   val plugin = HtmaPlugin(
@@ -96,7 +96,11 @@ val Htma = createApplicationPlugin(name = "Htma", createConfiguration = ::HtmaPl
   Logs.htma.info("Htma plugin started!")
 }
 
-private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: String, enableLogic: Boolean): TemplateEngine {
+private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(
+  resourceBase: String,
+  enableLogic: Boolean,
+  appManifest: AppManifest,
+): TemplateEngine {
   val templateEngine = TemplateEngine()
   val templateResolvers = mutableSetOf<ITemplateResolver>()
 
@@ -140,7 +144,8 @@ private fun PluginBuilder<HtmaPluginConfig>.setupTemplateEngine(resourceBase: St
   templateEngine.setMessageResolver(HtmaMessageResolver())
   templateEngine.clearDialects()
   templateEngine.addDialect(StandardDialect()) // NOTE: Precedence = 1000
-  templateEngine.addDialect(HtmaDialect("HTMA", "th", 500))
+  templateEngine.addDialect(HtmaDialect("Htma", "th"))
+  templateEngine.addDialect(HtmaWebComponentDialect("HtmaWebComponents", "th", appManifest.components))
   return templateEngine
 }
 

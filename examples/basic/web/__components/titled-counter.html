@@ -1,8 +1,7 @@
 <template shadowrootmode="open">
     <div>
         <h3><slot></slot></h3>
-        <p>Count: <span>0</span></p>
-        <h1></h1>
+        <p>Count: <span th:text="${attributes.count}">0</span></p>
         <div>
             <button>increment</button>
         </div>
@@ -13,11 +12,25 @@
 class TitledCounter extends HTMLElement {
     constructor() {
         super();
+    }
+
+    connectedCallback() {
+        if (!this.shadowRoot) {
+            // NOTE: Required due to the limitation of htmx.
+            // See: https://web.dev/articles/declarative-shadow-dom#parser-only
+            // See: https://github.com/bigskysoftware/htmx/issues/2682
+            const template = this.querySelector("template")
+            const mode = template.getAttribute("shadowrootmode")
+            this.attachShadow({ mode })
+            this.shadowRoot.appendChild(template.content.cloneNode(true))
+            template.remove()
+        }
+
         this.button = this.shadowRoot.querySelector("button")
         this.countWrapper = this.shadowRoot.querySelector("span")
 
         this.button.addEventListener("click", () => {
-            this.count = +this.count + 2
+            this.count = +this.count + 1
         })
     }
 
@@ -30,7 +43,9 @@ class TitledCounter extends HTMLElement {
     }
 
     updateCount(newValue) {
-        this.countWrapper.innerText = newValue
+        if (this.countWrapper) {
+            this.countWrapper.innerText = newValue
+        }
     }
 
     static get observedAttributes() {

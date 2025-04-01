@@ -10,7 +10,8 @@ import java.io.InputStream
 
 @Serializable
 data class AppManifest(
-  val pages: List<AppManifestPage>
+  val pages: List<AppManifestPage>,
+  val components: List<AppComponent>
 ) {
 
   companion object {
