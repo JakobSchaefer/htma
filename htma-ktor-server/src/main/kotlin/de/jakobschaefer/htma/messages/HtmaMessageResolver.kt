@@ -7,18 +7,17 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaInstant
-import org.thymeleaf.messageresolver.StandardMessageResolver
 import java.util.*
 import javax.money.MonetaryAmount
 
-class HtmaMessageResolver : StandardMessageResolver() {
+class HtmaMessageResolver {
 
   private val functions = MFFunctionRegistry.builder()
     .setFormatter("money") { locale, params -> HtmaMoneyFormatter(locale) }
     .setDefaultFormatterNameForType(MonetaryAmount::class.java, "money")
     .build()
 
-  override fun formatMessage(locale: Locale, message: String, messageParameters: Array<out Any>): String {
+  fun formatMessage(locale: Locale, message: String, messageParameters: Array<out Any>): String {
     val icuFormatter = MessageFormatter.builder()
       .setPattern(message)
       .setFunctionRegistry(functions)

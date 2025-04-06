@@ -1,7 +1,8 @@
 package de.jakobschaefer.htma
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-object Logs {
-  val htma = LoggerFactory.getLogger("de.jakobschaefer.htma.Htma")
+internal object Logs {
+  val htma: Logger = LoggerFactory.getLogger("de.jakobschaefer.htma.Htma")
 }

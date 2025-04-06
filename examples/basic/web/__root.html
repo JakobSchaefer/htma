@@ -1,22 +1,13 @@
 <!doctype html>
-<html lang="en" th:lang="${#locale}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="#{app.title}">Document</title>
+    <title>Document</title>
 </head>
 <body>
-<div class="px-2">
-    <header class="min-w-[200px] border-b-2 border-red-500">
-        <nav class="flex gap-2">
-            <a th:navigate="@{/}">Index</a>
-            <a th:navigate="@{/variables}">Variables</a>
-            <a th:navigate="@{/components}">Components</a>
-        </nav>
-    </header>
-    <div>
-        <th:outlet>hier steht etwas</th:outlet>
+    <div class="m-2 border border-blue-400">
+        <outlet></outlet>
     </div>
-</div>
 </body>
 </html>

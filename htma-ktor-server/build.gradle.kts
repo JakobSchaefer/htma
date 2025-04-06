@@ -18,27 +18,34 @@ repositories {
 }
 
 dependencies {
-  implementation(libs.kotlinx.serialization.json)
-  implementation(libs.kotlinx.datetime)
+  api(libs.kotlinx.serialization.json)
+  api(libs.kotlinx.datetime)
 
+  // Provide common libraries and ktor plugins
   api(libs.ktor.server.core)
   api(libs.ktor.server.sessions)
-  implementation(libs.kotlinx.coroutines)
+  api(libs.ktor.server.contentNegotiation)
+  api(libs.ktor.server.netty)
+  api(libs.ktor.serialization.json)
+
+  api(libs.kotlinx.coroutines)
   testImplementation(libs.ktor.server.test)
 
-  implementation(libs.thymeleaf)
+  implementation(libs.jsoup)
+  implementation(libs.jexl)
+
   implementation(libs.icu4j)
   implementation(libs.moneta)
-  api(libs.graphql.java)
   implementation(libs.gson)
-  implementation(libs.betterParse)
+  implementation(libs.uriTemplate)
+
+  implementation(libs.graphql.java)
 
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)
   testImplementation(libs.log4j.slf4j)
   testImplementation(libs.log4j.test)
 
-  testImplementation(libs.jsoup)
   testImplementation(libs.kotest.runner.junit5)
   testImplementation(libs.kotest.assertions.core)
 }

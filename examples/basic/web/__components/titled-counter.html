@@ -1,7 +1,12 @@
 <template shadowrootmode="open">
-    <div>
+    <style>
+        h3, p {
+            margin: 0;
+        }
+    </style>
+    <div style="border: 1px solid red">
         <h3><slot></slot></h3>
-        <p>Count: <span th:text="${attributes.count}">0</span></p>
+        <p>Count: <span x-text="attributes.count">0</span></p>
         <div>
             <button>increment</button>
         </div>

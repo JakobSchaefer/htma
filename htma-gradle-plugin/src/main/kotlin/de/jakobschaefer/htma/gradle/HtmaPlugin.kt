@@ -95,7 +95,7 @@ class HtmaPlugin : Plugin<Project> {
             filePath = htmlFile.path + ".html",
             remotePath = htmlFile.remotePath,
             canonicalPath = "__root." + htmlFile.canonicalPathWithoutRoot,
-            outlets = buildMap {
+            outletChain = buildMap {
               var currentOutlet = "__root"
               for (outlet in htmlFile.canonicalOutletChain) {
                 val templateName = pagesAndLayouts.find { it.canonicalPathWithoutRoot == outlet }!!.templateName

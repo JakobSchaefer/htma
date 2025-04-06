@@ -13,7 +13,7 @@ class HtmaSmokeTests : FunSpec({
     withTestServer {
       install(Htma)
     }
-    logs.events.map { it.message.formattedMessage } shouldContain "Htma plugin started!"
+    logs.events.map { it.message.formattedMessage } shouldContain "Htma plugin has been configured!"
   }
 
   test("__root layout is working properly") {
@@ -21,7 +21,8 @@ class HtmaSmokeTests : FunSpec({
       install(Htma)
 
       routing {
-        web {  }
+        web {
+        }
       }
       val response = client.get("/")
       response.status shouldBe HttpStatusCode.OK

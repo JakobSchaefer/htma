@@ -1,11 +1,13 @@
 package de.jakobschaefer.htma.webinf.vite
 
-import de.jakobschaefer.htma.serde.JsonConverter
-import de.jakobschaefer.htma.webinf.loadResource
+import de.jakobschaefer.htma.JSON
+import de.jakobschaefer.htma.loadAppResource
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 
+@Serializable
 data class ViteManifest(
   val assets: Map<String, ViteChunk>,
   val mainJsModules: List<String>,
@@ -15,13 +17,13 @@ data class ViteManifest(
   companion object {
     @OptIn(ExperimentalSerializationApi::class)
     fun loadFromResources(resourceBase: String): ViteManifest {
-      val manifest = loadResource("$resourceBase/.vite/manifest.json")
-      val assets = JsonConverter.decodeFromStream<Map<String, ViteChunk>>(manifest)
+      val manifest = loadAppResource("$resourceBase/.vite/manifest.json")
+      val assets = JSON.decodeFromStream<Map<String, ViteChunk>>(manifest)
       val mainChunk = assets.values.find { it.isEntry }!!
       return ViteManifest(
         assets = assets,
-        mainJsModules = listOf(mainChunk.file),
-        mainCssModules = mainChunk.css
+        mainJsModules = listOf("/" + mainChunk.file),
+        mainCssModules = mainChunk.css.map { "/${it}" }
       )
     }
 

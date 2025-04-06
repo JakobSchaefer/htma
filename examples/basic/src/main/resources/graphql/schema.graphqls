@@ -1,5 +1,4 @@
 type Query {
-    name: String!
-
+    name: String
     greeting(name: String): String
 }

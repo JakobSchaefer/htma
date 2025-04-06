@@ -1,21 +1,14 @@
 <!doctype html>
-<html lang="en" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Example Basic</title>
+    <title>Document</title>
 </head>
-<body class="bg-surface text-on-surface w-dvw h-dvh">
-    <div th:fragment="outlet">
-        <iframe id="one-hub-onboarding" width="800" height="800" class="overflow-scroll" src="http://localhost:5173/cdn/onboarding-service-frontend/0.0.1/index.html?licenseKey=Z8HNB-2T8ZW-93A5M-QTIFX&domain=heinz-und-kunz.de"></iframe>
-        <script>
-            window.addEventListener("message", (event) => {
-                fetch(`/api/activate/${event.data.jobId}`, {
-                    method: "POST",
-                }).then(it => console.log("server", it.statusText))
-                console.log("got event from iframe = ", event.data)
-            })
-        </script>
-    </div>
+<body>
+<div class="m-2 border border-red-400">
+    <h1 class="text-2xl font-bold">Hello World!</h1>
+    <a x-navigate="'/home'" class="hover:underline"> >> Home</a>
+</div>
 </body>
 </html>

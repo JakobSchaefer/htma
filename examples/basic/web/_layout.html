@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <div class="m-2 border border-green-400">
+        <nav>
+            <div class="flex gap-2 items-baseline">
+                <a x-navigate="uri:template('/')" class="hover:underline">Back</a>
+                <h1 class="text-2xl font-bold">Navigation</h1>
+            </div>
+            <a x-navigate="uri:template('/home')" class="hover:underline">Home</a>
+            <a x-navigate="uri:template('/variables/{varId}{?firstName,lastName}', { 'firstName': 'Peter', 'lastName': 'Pan', 'varId': 123456 })" class="hover:underline">Variables</a>
+            <a x-navigate="uri:template('/components')" class="hover:underline">Components</a>
+        </nav>
+        <outlet></outlet>
+    </div>
+</body>
+</html>

@@ -1,8 +1,8 @@
-package de.jakobschaefer.htma.serde
+package de.jakobschaefer.htma
 
 import kotlinx.serialization.json.Json
 
-val JsonConverter = Json {
+internal val JSON = Json {
   prettyPrint = true
   ignoreUnknownKeys = true
 }

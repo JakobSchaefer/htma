@@ -5,6 +5,9 @@ kotlinx-serialization = "1.8.0"
 kotlinx-datetime = "0.6.1"
 kotlinx-coroutines = "1.10.1"
 
+# https://commons.apache.org/proper/commons-jexl/index.html
+jexl = "3.4.0"
+
 # https://www.slf4j.org/
 slf4j = "2.0.16"
 
@@ -52,8 +55,10 @@ handlebars = "4.4.0"
 
 gradle-node = "7.1.0"
 
+# https://github.com/damnhandy/Handy-URI-Templates
+uriTemplate = "2.1.8"
+
 [libraries]
-handlebars-java = { group = "com.github.jknack", name = "handlebars", version.ref = "handlebars" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -67,12 +72,11 @@ ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-conten
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 gradle-node =  { module = "com.github.node-gradle:gradle-node-plugin", version.ref = "gradle-node" }
 
+jexl = { module = "org.apache.commons:commons-jexl3", version.ref = "jexl" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 thymeleaf = { group = "org.thymeleaf", name = "thymeleaf", version.ref = "thymeleaf" }
 icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
 moneta = { group = "org.javamoney", name = "moneta", version.ref = "moneta" }
-apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
-apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
-apollo-gradle-plugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 graphql-java = { group = "com.graphql-java", name = "graphql-java", version.ref = "graphql-java" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "better-parse" }
@@ -84,7 +88,8 @@ log4j-test = { module = "org.apache.logging.log4j:log4j-core-test", version.ref 
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+
+uriTemplate = { module = "com.damnhandy:handy-uri-templates", version.ref = "uriTemplate" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

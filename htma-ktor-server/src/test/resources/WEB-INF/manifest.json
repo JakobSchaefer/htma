@@ -4,7 +4,7 @@
       "filePath": "/index.html",
       "remotePath": "/",
       "canonicalPath": "__root.index",
-      "outlets": {
+      "outletChain": {
         "__root": "index"
       }
     }
