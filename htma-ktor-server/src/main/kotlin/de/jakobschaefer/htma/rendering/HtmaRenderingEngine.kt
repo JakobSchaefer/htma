@@ -11,7 +11,7 @@ import org.apache.commons.jexl3.introspection.JexlPermissions
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
-const val ATTRIBUTE_PREFIX = "x-"
+const val ATTRIBUTE_PREFIX = "data-x-"
 
 internal class HtmaRenderingEngine(
   isDevelopmentMode: Boolean,
@@ -76,7 +76,7 @@ internal class HtmaRenderingEngine(
     if (entrypoint == "__root") {
       addScriptsAndStylesToRoot(rootDoc, htmaState)
     }
-    processExpressions(rootDoc, htmaContext)
+    processAttributeTags(rootDoc, htmaContext)
     expandComponents(rootDoc)
     return rootDoc.html()
   }
@@ -94,7 +94,29 @@ internal class HtmaRenderingEngine(
     }
   }
 
-  private fun processExpressions(rootDoc: Element, context: JexlContext) {
+  private fun processAttributeTags(rootDoc: Element, context: JexlContext) {
+    val anchors = rootDoc.getElementsByTag("a")
+    for (anchor in anchors) {
+      val hrefValue = anchor.attr("href")
+      anchor.attr("hx-get", hrefValue)
+    }
+
+    val forms = rootDoc.select("form")
+    for (form in forms) {
+      form.attr("enctype", "multipart/form-data")
+      val actionValue = form.attr("action")
+      val methodValue = if (form.hasAttr("method")) {
+        form.attr("method")
+      } else {
+        "get"
+      }
+      if (methodValue == "get") {
+        form.attr("hx-get", actionValue)
+      } else {
+        form.attr("hx-post", actionValue)
+      }
+    }
+
     val expressionTags = rootDoc.getElementsByAttributeStarting(ATTRIBUTE_PREFIX)
     val operations = mutableListOf<ElementOperation>()
     for (tag in expressionTags) {
@@ -106,7 +128,7 @@ internal class HtmaRenderingEngine(
           val attributeExpression = jexl.createExpression(attributeValue)
           val attributeResult = attributeExpression.evaluate(context)
           when (attributeKey) {
-            "utext" -> {
+            "html" -> {
               when (attributeResult) {
                 is String -> operations.add(ElementOperation.WriteInnerHtml(tag, attributeResult))
                 else -> operations.add(ElementOperation.WriteInnerHtml(tag, gson.toJson(attributeResult)))
@@ -117,12 +139,6 @@ internal class HtmaRenderingEngine(
                 is String -> operations.add(ElementOperation.WriteInnerHtml(tag, attributeResult.escapeHTML()))
                 else -> operations.add(ElementOperation.WriteInnerHtml(tag, gson.toJson(attributeResult).escapeHTML()))
               }
-            }
-            "navigate" -> {
-              val href = attributeResult as String
-              operations.add(ElementOperation.WriteStringAttribute(tag, "href", href))
-              operations.add(ElementOperation.WriteStringAttribute(tag, "hx-get", href))
-              operations.add(ElementOperation.WriteStringAttribute(tag, "hx-push-url", "true"))
             }
             else -> when (attributeResult) {
               is String -> operations.add(ElementOperation.WriteStringAttribute(tag, attributeKey, attributeResult))
@@ -151,7 +167,7 @@ internal class HtmaRenderingEngine(
           val attributes = component.attributes().associate { it.key to it.value }
           val ctx = MapContext()
           ctx.set("attributes", attributes)
-          processExpressions(processedTemplate, ctx)
+          processAttributeTags(processedTemplate, ctx)
           component.appendChild(processedTemplate)
         }
       }

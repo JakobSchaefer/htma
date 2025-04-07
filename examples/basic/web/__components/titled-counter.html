@@ -4,9 +4,9 @@
             margin: 0;
         }
     </style>
-    <div style="border: 1px solid red">
+    <div style="border: 1px dashed violet">
         <h3><slot></slot></h3>
-        <p>Count: <span x-text="attributes.count">0</span></p>
+        <p>Count: <span data-x-text="attributes.count">0</span></p>
         <div>
             <button>increment</button>
         </div>

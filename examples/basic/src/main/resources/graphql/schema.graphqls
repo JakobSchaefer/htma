@@ -2,3 +2,7 @@ type Query {
     name: String
     greeting(name: String): String
 }
+
+type Mutation {
+    setName(name: String): String
+}

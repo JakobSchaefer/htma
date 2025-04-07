@@ -21,6 +21,10 @@ fun Application.module() {
     web {
 
     }
+
+    get("/heroes/{heroId}") {
+
+    }
 //    web({ RequestContext("Hansi") }) {
 //      loader("common", "__root") {
 //        mapOf("some" to "variable")

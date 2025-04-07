@@ -1,0 +1,35 @@
+<div>
+    <h1 class="text-2xl font-bold">Forms</h1>
+    <form class="m-2 flex flex-col gap-2" action="/variables" data-x-href="">
+        <h2 class="text-xl font-bold">Go to Variables!</h2>
+        <div class="flex flex-col">
+            <label for="name">Name:</label>
+            <input class="border p-2" id="name" name="person[name]" type="text" required>
+        </div>
+        <div class="flex flex-col">
+            <label for="age">Age:</label>
+            <input class="border p-2" id="age" name="person[age]" type="number" required min="13">
+        </div>
+        <div class="flex flex-col">
+            <label for="email">Email:</label>
+            <input class="border p-2" id="email" name="person[eMail]" type="email">
+        </div>
+        <button class="p-2  border bg-blue-300">Go</button>
+    </form>
+    <form class="m-2 flex flex-col gap-2" action="/variables" method="post">
+        <h2 class="text-xl font-bold">Create a Hero!</h2>
+        <div class="flex flex-col">
+            <label for="name2">Name:</label>
+            <input class="border p-2" id="name2" name="name">
+        </div>
+        <div class="flex flex-col">
+            <label for="level">Level:</label>
+            <input class="border p-2" id="level" name="level" type="number" value="1">
+        </div>
+        <div class="flex flex-col">
+            <label for="files">Files:</label>
+            <input class="border p-2" id="files" name="files" type="file" multiple>
+        </div>
+        <button class="p-2  border bg-blue-300">Create</button>
+    </form>
+</div>
