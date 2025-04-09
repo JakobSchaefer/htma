@@ -1,3 +1,8 @@
 /* Tailwindcss 4: https://tailwindcss.com/docs/v4-beta#css-first-configuration */
 @import "tailwindcss";
 @source "./**/*.html";
+
+
+@theme {
+    --text-subtitle: 12rem;
+}

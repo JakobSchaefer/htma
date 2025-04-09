@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+<div>
+    <p data-x-text="t:msg('welcome.text', { 'count': 1 })">
+        .input {$count :integer}
+        .match $count
+        1 {{Sie haben {#italic}einen{/italic} Apfel.}}
+        * {{Sie haben {#bold}{$count}{/bold} Äpfel.}}
+    </p>
+</div>
+</body>
+</html>

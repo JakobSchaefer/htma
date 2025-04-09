@@ -1,5 +1,6 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.messages.HtmaFormatter
 import de.jakobschaefer.htma.rendering.HtmaRenderingEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -76,10 +77,14 @@ val Htma = createApplicationPlugin(
     }
   }
 
+  val formatter = HtmaFormatter()
+
   val renderingEngine = HtmaRenderingEngine(
     isDevelopmentMode = isDevelopmentMode,
     resourceBase = resourceBase,
     appManifest = appManifest,
+    formatter = formatter,
+    defaultLocale = defaultLocale,
   )
 
   val plugin = HtmaConfiguration(
@@ -92,6 +97,7 @@ val Htma = createApplicationPlugin(
     isLogicEnabled = isLogicEnabled,
     session = session,
     renderingEngine = renderingEngine,
+    formatter = formatter
   )
   application.installHtmaConfiguration(plugin)
   Logs.htma.info("Htma plugin has been configured!")

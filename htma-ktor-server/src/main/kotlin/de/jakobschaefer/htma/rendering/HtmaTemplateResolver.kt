@@ -36,7 +36,7 @@ class ProductionTemplateResolver(
   init {
     loadTemplate("__root")
     for (page in appManifest.pages) {
-      page.forEachOutlet { outletTemplateName ->
+      page.outletChainList.forEach { outletTemplateName ->
         if (!cache.containsKey(outletTemplateName)) {
           loadTemplate(outletTemplateName)
         }

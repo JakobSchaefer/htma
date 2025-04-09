@@ -29,9 +29,6 @@ dokka = "2.0.0"
 # https://opensource.deepmedia.io/deployer
 deployer = "0.17.0"
 
-# https://www.thymeleaf.org/
-thymeleaf = "3.1.3.RELEASE"
-
 # https://github.com/jhy/jsoup/
 jsoup = "1.18.3"
 
@@ -41,17 +38,9 @@ icu4j = "77.1"
 # https://javamoney.github.io/ri.html
 moneta = "1.4.4"
 
-# https://github.com/apollographql/apollo-kotlin
-apollo = "4.1.0"
-
 # https://github.com/graphql-java/graphql-java
 graphql-java = "22.3"
 gson = "2.11.0"
-
-# https://github.com/h0tk3y/better-parse
-better-parse = "0.4.4"
-
-handlebars = "4.4.0"
 
 gradle-node = "7.1.0"
 
@@ -69,17 +58,12 @@ ktor-server-sessions = { module = "io.ktor:ktor-server-sessions", version.ref = 
 ktor-server-test = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-gradle-node =  { module = "com.github.node-gradle:gradle-node-plugin", version.ref = "gradle-node" }
-
 jexl = { module = "org.apache.commons:commons-jexl3", version.ref = "jexl" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
-thymeleaf = { group = "org.thymeleaf", name = "thymeleaf", version.ref = "thymeleaf" }
 icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
 moneta = { group = "org.javamoney", name = "moneta", version.ref = "moneta" }
 graphql-java = { group = "com.graphql-java", name = "graphql-java", version.ref = "graphql-java" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
-betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "better-parse" }
 
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }

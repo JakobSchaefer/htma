@@ -1,5 +1,6 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.messages.HtmaFormatter
 import de.jakobschaefer.htma.rendering.HtmaRenderingEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -17,6 +18,7 @@ internal class HtmaConfiguration(
   val isLogicEnabled: Boolean,
   val session: String?,
   val renderingEngine: HtmaRenderingEngine,
+  val formatter: HtmaFormatter
 )
 
 internal val htmaConfigurationKey = AttributeKey<HtmaConfiguration>("htma")

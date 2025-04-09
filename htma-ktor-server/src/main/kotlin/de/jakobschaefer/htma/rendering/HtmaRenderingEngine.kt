@@ -1,15 +1,17 @@
 package de.jakobschaefer.htma.rendering
 
 import com.google.gson.GsonBuilder
+import de.jakobschaefer.htma.messages.HtmaFormatter
+import de.jakobschaefer.htma.rendering.jexl.HtmaContext
+import de.jakobschaefer.htma.rendering.jexl.HtmaFormattedMessage
+import de.jakobschaefer.htma.rendering.jexl.HtmaJexl
 import de.jakobschaefer.htma.webinf.AppManifest
 import io.ktor.util.*
-import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlContext
-import org.apache.commons.jexl3.JexlFeatures
 import org.apache.commons.jexl3.MapContext
-import org.apache.commons.jexl3.introspection.JexlPermissions
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import java.util.*
 
 const val ATTRIBUTE_PREFIX = "data-x-"
 
@@ -17,34 +19,19 @@ internal class HtmaRenderingEngine(
   isDevelopmentMode: Boolean,
   resourceBase: String,
   val appManifest: AppManifest,
+  val formatter: HtmaFormatter,
+  val defaultLocale: Locale
 ) {
   private val gson = GsonBuilder()
     .setPrettyPrinting()
     .serializeNulls()
     .create()
-  private val templateResolver: HtmaTemplateResolver
-  private val jexl = JexlBuilder()
-    .permissions(JexlPermissions.UNRESTRICTED)
-    .features(JexlFeatures()
-      .script(false)
-      .loops(false)
-      .sideEffect(false)
-      .sideEffectGlobal(false)
-    )
-    .namespaces(
-      mapOf(
-        "uri" to HtmaContextUrlNamespace()
-      )
-    )
-    .create()
-
-  init {
-    templateResolver = if (isDevelopmentMode) {
-      DevelopmentTemplateResolver()
-    } else {
-      ProductionTemplateResolver(appManifest, resourceBase)
-    }
+  private val templateResolver: HtmaTemplateResolver = if (isDevelopmentMode) {
+    DevelopmentTemplateResolver()
+  } else {
+    ProductionTemplateResolver(appManifest, resourceBase)
   }
+  private val jexl = HtmaJexl.build()
 
   fun renderFragment(htmaState: HtmaState, htmaContext: HtmaContext): String {
     return renderPage(htmaState, htmaContext, entrypoint = htmaState.outletSwap!!.newOutlet)
@@ -95,12 +82,14 @@ internal class HtmaRenderingEngine(
   }
 
   private fun processAttributeTags(rootDoc: Element, context: JexlContext) {
+    // boost anchors
     val anchors = rootDoc.getElementsByTag("a")
     for (anchor in anchors) {
       val hrefValue = anchor.attr("href")
       anchor.attr("hx-get", hrefValue)
     }
 
+    // boost forms
     val forms = rootDoc.select("form")
     for (form in forms) {
       form.attr("enctype", "multipart/form-data")
@@ -136,8 +125,18 @@ internal class HtmaRenderingEngine(
             }
             "text" -> {
               when (attributeResult) {
-                is String -> operations.add(ElementOperation.WriteInnerHtml(tag, attributeResult.escapeHTML()))
-                else -> operations.add(ElementOperation.WriteInnerHtml(tag, gson.toJson(attributeResult).escapeHTML()))
+                is String -> operations.add(ElementOperation.WriteInnerText(tag, attributeResult))
+                is HtmaFormattedMessage -> if (attributeResult.message != null) {
+                  operations.add(ElementOperation.WriteInnerText(tag, attributeResult.message))
+                } else {
+                  val innerHtml = tag.html()
+                  val formattedInnerHtml = formatter.format(defaultLocale, innerHtml, attributeResult.params)
+                  operations.add(ElementOperation.WriteInnerText(tag, formattedInnerHtml))
+                }
+                else -> {
+                  operations.add(
+                    ElementOperation.WriteInnerText(tag, gson.toJson(attributeResult)))
+                }
               }
             }
             else -> when (attributeResult) {
@@ -194,9 +193,14 @@ sealed interface ElementOperation {
       tag.attr(attributeKey, attributeValue)
     }
   }
-  class WriteInnerHtml(val tag: Element, val text: String): ElementOperation {
+  class WriteInnerHtml(val tag: Element, val innerHtml: String): ElementOperation {
     override fun execute() {
-      tag.html(text)
+      tag.html(innerHtml)
+    }
+  }
+  class WriteInnerText(val tag: Element, val text: String): ElementOperation {
+    override fun execute() {
+      tag.html(text.escapeHTML())
     }
   }
 }
