@@ -5,21 +5,30 @@ import java.util.*
 internal class HtmaTNamespace(
   val context: HtmaContext
 ) {
+
   fun fmt(pattern: String): String {
     return fmt(pattern, context.params, context.locale)
   }
+
   fun fmt(pattern: String, params: Map<String, Any>): String {
     return fmt(pattern, params, context.locale)
   }
+
   fun fmt(pattern: String, params: Map<String, Any>, locale: Locale): String {
     val handyParams = buildHandyParams(params)
     return context.configuration.formatter.format(locale, pattern, handyParams)
   }
+
   fun msg(key: String): HtmaFormattedMessage {
     return msg(key, context.params, context.locale)
   }
+
   fun msg(key: String, params: Map<String, Any>): HtmaFormattedMessage {
     return msg(key, params, context.locale)
+  }
+
+  fun locale(language: String): Locale {
+    return Locale.of(language)
   }
 
   fun msg(key: String, params: Map<String, Any>, locale: Locale): HtmaFormattedMessage {

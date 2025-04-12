@@ -18,6 +18,7 @@ object HtmaJexl {
       mapOf(
         "t" to HtmaTNamespace::class.java,
         "uri" to HtmaUrlNamespace::class.java,
+        "money" to HtmaMoneyNamespace()
       )
     )
     .create()

@@ -8,6 +8,8 @@
 <body>
 <div>
     <h1 class="text-2xl font-bold">Messages</h1>
+    <p data-x-text="t:fmt('Kostet: {$price}', { 'price': money:eur(123.0) }, t:locale('de'))"></p>
+    <p data-x-text="t:msg('ein.key', { 'longPrice': money:eur(12.99), 'doublePrice': money:eur(1299) })">Preise: {$longPrice} {$doublePrice}</p>
     <form action="/messages" class="flex flex-col gap-2 p-2">
         <div class="flex flex-col">
             <label for="count">Count:</label>
