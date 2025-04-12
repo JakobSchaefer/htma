@@ -63,13 +63,17 @@ private suspend fun RoutingContext.replyHtml(
   params: HtmaParams
 ) {
   val htmaState = HtmaState.build(call, toPage, configuration)
+
   val htmaContext = HtmaContext(
     call = call,
     locale = detectUserLocale(htmaState),
     htmaState = htmaState,
     params = params,
-    configuration = configuration
+    configuration = configuration,
   )
+  htmaContext.executeMutationsIfRequired()
+  htmaContext.executeQueries()
+
   val responseBody = if (htmaState.isFetchRequest) {
     val outletCssSelector =
       "#${htmaState.outletSwap!!.oldOutlet.replace(".", "\\.").replace("/", "\\/").replace("$", "\\$")}"

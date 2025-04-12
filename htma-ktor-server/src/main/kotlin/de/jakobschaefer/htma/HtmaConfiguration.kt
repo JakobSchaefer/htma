@@ -1,5 +1,6 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.graphql.GraphQlService
 import de.jakobschaefer.htma.messages.HtmaFormatter
 import de.jakobschaefer.htma.rendering.HtmaRenderingEngine
 import de.jakobschaefer.htma.webinf.AppManifest
@@ -18,7 +19,8 @@ internal class HtmaConfiguration(
   val isLogicEnabled: Boolean,
   val session: String?,
   val renderingEngine: HtmaRenderingEngine,
-  val formatter: HtmaFormatter
+  val formatter: HtmaFormatter,
+  val graphQlService: GraphQlService?
 )
 
 internal val htmaConfigurationKey = AttributeKey<HtmaConfiguration>("htma")

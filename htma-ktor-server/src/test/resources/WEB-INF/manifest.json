@@ -4,10 +4,12 @@
       "filePath": "/index.html",
       "remotePath": "/",
       "canonicalPath": "__root.index",
+      "templateName": "index",
       "outletChain": {
         "__root": "index"
       }
     }
   ],
-  "components": []
+  "components": [],
+  "graphQlDocuments": {}
 }

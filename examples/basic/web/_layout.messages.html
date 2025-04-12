@@ -7,12 +7,28 @@
 </head>
 <body>
 <div>
-    <p data-x-text="t:msg('welcome.text', { 'count': 1 })">
-        .input {$count :integer}
-        .match $count
-        1 {{Sie haben {#italic}einen{/italic} Apfel.}}
-        * {{Sie haben {#bold}{$count}{/bold} Äpfel.}}
-    </p>
+    <h1 class="text-2xl font-bold">Messages</h1>
+    <form action="/messages" class="flex flex-col gap-2 p-2">
+        <div class="flex flex-col">
+            <label for="count">Count:</label>
+            <input class="border p-2" id="count" name="count" type="number" data-x-value="params.count[0]">
+        </div>
+        <button class="p-2  border bg-blue-300">Change</button>
+    </form>
+    <div class="p-2">
+        <h1 class="font-bold">Deutsch</h1>
+        <pre data-x-text="t:msg('welcome.text')">
+            .input {$count :integer}
+            .match $count
+            0 {{Sie haben {#em}keine{/em} Äpfel.}}
+            1 {{Sie haben einen Apfel.}}
+            2 {{Sie haben zwei Äpfel.}}
+            3 {{Sie haben drei Äpfel.}}
+            4 {{Sie haben vie Äpfel.}}
+            5 {{Sie haben fünf Äpfel.}}
+            * {{Sie haben {$count} Äpfel.}}
+        </pre>
+    </div>
 </div>
 </body>
 </html>

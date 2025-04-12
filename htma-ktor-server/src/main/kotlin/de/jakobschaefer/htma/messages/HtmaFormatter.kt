@@ -1,7 +1,6 @@
 package de.jakobschaefer.htma.messages
 
 import com.ibm.icu.message2.MFFunctionRegistry
-import com.ibm.icu.message2.MFParser
 import com.ibm.icu.message2.MessageFormatter
 import java.util.*
 import javax.money.MonetaryAmount

@@ -8,19 +8,24 @@ data class AppManifestPage(
   val filePath: String,
   val remotePath: String,
   val canonicalPath: String,
+  val templateName: String,
   val outletChain: Map<String, String>,
 ) {
 
   val outletChainList by lazy {
-    var currentOutlet: String? = "__root"
-    val resultList = mutableListOf<String>()
-    while (currentOutlet != null) {
-      resultList.add(currentOutlet!!)
-      currentOutlet = outletChain[currentOutlet]
-    }
-    resultList
+    buildOutletChainListStartingFrom("__root")
   }
   val outletChainListReversed by lazy {
     outletChainList.reversed()
+  }
+
+  fun buildOutletChainListStartingFrom(outlet: String): List<String> {
+    return buildList {
+      var currentOutlet: String? = outlet
+      while (currentOutlet != null) {
+        add(currentOutlet)
+        currentOutlet = outletChain[currentOutlet]
+      }
+    }
   }
 }

@@ -1,8 +1,17 @@
 type Query {
     name: String
     greeting(name: String): String
+    serverTime: String
+
+    meals: [Meal]
 }
 
 type Mutation {
     setName(name: String): String
+}
+
+type Meal {
+    title: String
+    price: String
+    ingredients: [String]
 }

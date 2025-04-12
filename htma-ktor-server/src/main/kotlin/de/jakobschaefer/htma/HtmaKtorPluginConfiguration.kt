@@ -1,5 +1,8 @@
 package de.jakobschaefer.htma
 
+import de.jakobschaefer.htma.graphql.GraphQlDsl
+import de.jakobschaefer.htma.graphql.GraphQlService
+import de.jakobschaefer.htma.graphql.GraphQlServiceBuilder
 import java.util.*
 
 class HtmaKtorPluginConfiguration {
@@ -8,4 +11,14 @@ class HtmaKtorPluginConfiguration {
   var resourceBase: String? = null
   var isLogicEnabled: Boolean? = null
   var session: String? = null
+  var graphQlService: GraphQlService? = null
+
+  @GraphQlDsl
+  fun graphql(
+    schemaResource: String = "graphql/schema.graphqls",
+    spec: GraphQlServiceBuilder.() -> Unit
+  ) {
+    val schema = loadAppResource(schemaResource).readAllBytes().toString(Charsets.UTF_8)
+    graphQlService = GraphQlServiceBuilder(schema).apply(spec).build()
+  }
 }

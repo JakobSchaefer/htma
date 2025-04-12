@@ -7,5 +7,6 @@ data class AppManifestPage(
   val filePath: String,
   val remotePath: String,
   val canonicalPath: String,
+  val templateName: String,
   val outletChain: Map<String, String>,
 )

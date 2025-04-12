@@ -97,7 +97,8 @@ val Htma = createApplicationPlugin(
     isLogicEnabled = isLogicEnabled,
     session = session,
     renderingEngine = renderingEngine,
-    formatter = formatter
+    formatter = formatter,
+    graphQlService = pluginConfig.graphQlService
   )
   application.installHtmaConfiguration(plugin)
   Logs.htma.info("Htma plugin has been configured!")

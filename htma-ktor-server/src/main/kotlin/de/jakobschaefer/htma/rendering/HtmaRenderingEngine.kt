@@ -8,7 +8,7 @@ import de.jakobschaefer.htma.rendering.jexl.HtmaJexl
 import de.jakobschaefer.htma.webinf.AppManifest
 import io.ktor.util.*
 import org.apache.commons.jexl3.JexlContext
-import org.apache.commons.jexl3.MapContext
+import org.jsoup.nodes.Attribute
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.*
@@ -63,8 +63,8 @@ internal class HtmaRenderingEngine(
     if (entrypoint == "__root") {
       addScriptsAndStylesToRoot(rootDoc, htmaState)
     }
-    processAttributeTags(rootDoc, htmaContext)
-    expandComponents(rootDoc)
+    process(rootDoc, htmaContext)
+    expandComponents(rootDoc, htmaContext)
     return rootDoc.html()
   }
 
@@ -81,16 +81,37 @@ internal class HtmaRenderingEngine(
     }
   }
 
-  private fun processAttributeTags(rootDoc: Element, context: JexlContext) {
+  private fun process(element: Element, context: HtmaContext): Element {
+    // Expand each attributes
+    while (true) {
+      val eachAttributeName = "${ATTRIBUTE_PREFIX}each"
+      val eachTag = element.selectFirst("[$eachAttributeName]") ?: break
+      val eachAttribute = eachTag.attribute(eachAttributeName)!!
+      val eachAttributeValue = evaluateJexlAttributeValue(eachAttribute, context)
+      when (eachAttributeValue) {
+        is Collection<*> -> {
+          for (value in eachAttributeValue) {
+            val eachTagCloned = eachTag.clone()
+            eachTagCloned.removeAttr(eachAttributeName)
+            context.pushIt(value)
+            val processAndClonedEachTag = process(eachTagCloned, context)
+            context.popIt()
+            eachTag.before(processAndClonedEachTag)
+          }
+        }
+      }
+      eachTag.remove()
+    }
+
     // boost anchors
-    val anchors = rootDoc.getElementsByTag("a")
+    val anchors = element.getElementsByTag("a")
     for (anchor in anchors) {
       val hrefValue = anchor.attr("href")
       anchor.attr("hx-get", hrefValue)
     }
 
     // boost forms
-    val forms = rootDoc.select("form")
+    val forms = element.select("form")
     for (form in forms) {
       form.attr("enctype", "multipart/form-data")
       val actionValue = form.attr("action")
@@ -106,16 +127,25 @@ internal class HtmaRenderingEngine(
       }
     }
 
-    val expressionTags = rootDoc.getElementsByAttributeStarting(ATTRIBUTE_PREFIX)
+    processAttributes(element, context)
+    return element
+  }
+
+  private fun evaluateJexlAttributeValue(attribute: Attribute, context: JexlContext): Any? {
+    val attributeValue = attribute.value
+    val attributeExpression = jexl.createExpression(attributeValue)
+    return attributeExpression.evaluate(context)
+  }
+
+  private fun processAttributes(root: Element, context: JexlContext) {
+    val expressionTags = root.getElementsByAttributeStarting(ATTRIBUTE_PREFIX)
     val operations = mutableListOf<ElementOperation>()
     for (tag in expressionTags) {
       for (attribute in tag.attributes()) {
         if (attribute.key.startsWith(ATTRIBUTE_PREFIX)) {
           val attributeKey = attribute.key.substringAfter(ATTRIBUTE_PREFIX)
-          val attributeValue = attribute.value
           operations.add(ElementOperation.DeleteAttribute(tag, attribute.key))
-          val attributeExpression = jexl.createExpression(attributeValue)
-          val attributeResult = attributeExpression.evaluate(context)
+          val attributeResult = evaluateJexlAttributeValue(attribute, context)
           when (attributeKey) {
             "html" -> {
               when (attributeResult) {
@@ -154,7 +184,7 @@ internal class HtmaRenderingEngine(
     }
   }
 
-  private fun expandComponents(rootDoc: Document) {
+  private fun expandComponents(rootDoc: Document, context: HtmaContext) {
     for (availableComponent in appManifest.components) {
       val foundComponentsInDocument = rootDoc.getElementsByTag(availableComponent.name)
       if (foundComponentsInDocument.size > 0) {
@@ -164,9 +194,9 @@ internal class HtmaRenderingEngine(
         for (component in foundComponentsInDocument) {
           val processedTemplate = template.clone()
           val attributes = component.attributes().associate { it.key to it.value }
-          val ctx = MapContext()
-          ctx.set("attributes", attributes)
-          processAttributeTags(processedTemplate, ctx)
+          context.set("attributes", attributes)
+          process(processedTemplate, context)
+          context.set("attributes", null)
           component.appendChild(processedTemplate)
         }
       }

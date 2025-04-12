@@ -7,7 +7,8 @@ import kotlinx.serialization.json.Json
 @Serializable
 data class AppManifest(
   val pages: List<AppManifestPage>,
-  val components: List<AppComponent>
+  val components: List<AppComponent>,
+  val graphQlDocuments: Map<String, AppManifestGraphQlDocument>
 ) {
 
   fun toJson() = json.encodeToString(this)

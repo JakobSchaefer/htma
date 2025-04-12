@@ -10,6 +10,7 @@ import kotlinx.serialization.json.decodeFromStream
 data class AppManifest(
   val pages: List<AppManifestPage>,
   val components: List<AppComponent>,
+  val graphQlDocuments: Map<String, AppManifestGraphQlDocument>
 ) {
 
   companion object {

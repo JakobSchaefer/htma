@@ -2,12 +2,14 @@ package de.jakobschaefer.htma.gradle
 
 import com.github.gradle.node.NodeExtension
 import com.github.gradle.node.npm.task.NpxTask
-import de.jakobschaefer.htma.webinf.AppComponent
-import de.jakobschaefer.htma.webinf.AppManifest
-import de.jakobschaefer.htma.webinf.AppManifestPage
+import de.jakobschaefer.htma.webinf.*
+import graphql.language.AstPrinter
+import graphql.language.OperationDefinition
+import graphql.parser.Parser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
+import org.gradle.internal.declarativedsl.dom.mutation.MutationDefinition
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
@@ -68,7 +70,6 @@ class HtmaPlugin : Plugin<Project> {
       from(webDir) {
         include("**/*.html")
         include("**/*.properties")
-        include("**/*.graphql")
         into("$resourceBase/web")
       }
     }
@@ -76,7 +77,7 @@ class HtmaPlugin : Plugin<Project> {
 
   private fun buildAppManifest(webDir: Path): AppManifest {
     val htmlFiles = Files.walk(webDir)
-      .filter { it.pathString.endsWith(".html")}
+      .filter { it.pathString.endsWith(".html") }
       .map { htmlFile ->
         htmlFile.pathString.substringAfter(webDir.pathString).substringBeforeLast(".html")
       }.toList()
@@ -95,6 +96,7 @@ class HtmaPlugin : Plugin<Project> {
             filePath = htmlFile.path + ".html",
             remotePath = htmlFile.remotePath,
             canonicalPath = "__root." + htmlFile.canonicalPathWithoutRoot,
+            templateName = htmlFile.templateName,
             outletChain = buildMap {
               var currentOutlet = "__root"
               for (outlet in htmlFile.canonicalOutletChain) {
@@ -112,9 +114,46 @@ class HtmaPlugin : Plugin<Project> {
       .filter { htmlFile -> htmlFile.startsWith("/__components") }
       .map { AppComponent(it.substringAfter("/__components/")) }
       .toList()
+
+    val graphQlDocumentParser = Parser()
+    val graphQlDocuments = Files.walk(webDir)
+      .filter { it.pathString.endsWith(".graphql") }
+      .toList()
+      .associate { graphQlFile ->
+        val templateName = graphQlFile.pathString
+          .substringAfter(webDir.pathString)
+          .substringBeforeLast(".graphql")
+          .substring(1)
+
+        val parsedDocument = graphQlDocumentParser.parseDocument(graphQlFile.toFile().readText(Charsets.UTF_8))
+        val queries = parsedDocument.definitions.filterIsInstance<OperationDefinition>()
+          .filter { it.operation == OperationDefinition.Operation.QUERY }
+          .map {
+            AppManifestGraphQlOperation(
+              operationName = it.name,
+              operation = AstPrinter.printAst(it),
+            )
+          }
+        val mutation = parsedDocument.definitions.filterIsInstance<OperationDefinition>()
+          .filter { it.operation == OperationDefinition.Operation.MUTATION }
+          .map {
+            AppManifestGraphQlOperation(
+              operationName = it.name,
+              operation = AstPrinter.printAst(it),
+            )
+          }
+          .firstOrNull()
+        val document = AppManifestGraphQlDocument(
+          queries = queries,
+          mutation = mutation
+        )
+        (templateName to document)
+      }
+
     return AppManifest(
       pages = pages,
-      components = components
+      components = components,
+      graphQlDocuments = graphQlDocuments
     )
   }
 }
