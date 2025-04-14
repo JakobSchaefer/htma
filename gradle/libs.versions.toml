@@ -30,7 +30,7 @@ dokka = "2.0.0"
 deployer = "0.17.0"
 
 # https://github.com/jhy/jsoup/
-jsoup = "1.18.3"
+jsoup = "1.19.1"
 
 # https://github.com/unicode-org/icu
 icu4j = "77.1"
