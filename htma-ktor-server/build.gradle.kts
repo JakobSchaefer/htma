@@ -41,6 +41,9 @@ dependencies {
 
   implementation(libs.graphql.java)
 
+  api(libs.exposed.core)
+  runtimeOnly(libs.exposed.jdbc)
+
   implementation(libs.slf4j)
   testImplementation(libs.log4j.core)
   testImplementation(libs.log4j.slf4j)

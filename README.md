@@ -3,13 +3,6 @@
 A web application framework driven by HTML
 
 ## Features
-### Isomorphic rendering
-### File based routing
-### Declarative state management
-### Localization and message formatting
-### Styling and theming
-### Authentication
-### Authorization
 
 ## Installation
 
@@ -28,7 +21,7 @@ pluginManagement {
 
 // build.gradle.kts
 plugins {
-  id("de.jakobschaefer.htma") version "0.1.23"
+  id("de.jakobschaefer.htma") version "0.1.29"
 }
 
 repositories {
@@ -36,7 +29,7 @@ repositories {
 }
 
 dependencies {
-  implementation("de.jakobschaefer.htma:htma-ktor-server:0.1.23")
+  implementation("de.jakobschaefer.htma:htma-ktor-server:0.1.29")
 }
 ```
 
