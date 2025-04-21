@@ -47,7 +47,7 @@ gradle-node = "7.1.0"
 # https://github.com/damnhandy/Handy-URI-Templates
 uriTemplate = "2.1.8"
 
-exposed = "0.60.0"
+exposed = "0.61.0"
 
 lucene = "10.2.0"
 
