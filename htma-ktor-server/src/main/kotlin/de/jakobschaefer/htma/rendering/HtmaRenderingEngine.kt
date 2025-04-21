@@ -5,6 +5,7 @@ import de.jakobschaefer.htma.messages.HtmaFormatter
 import de.jakobschaefer.htma.rendering.jexl.HtmaContext
 import de.jakobschaefer.htma.rendering.jexl.HtmaFormattedMessage
 import de.jakobschaefer.htma.rendering.jexl.HtmaJexl
+import de.jakobschaefer.htma.rendering.jexl.HtmaUrlNamespace
 import de.jakobschaefer.htma.webinf.AppManifest
 import io.ktor.util.*
 import org.apache.commons.jexl3.JexlContext
@@ -101,6 +102,13 @@ internal class HtmaRenderingEngine(
         }
       }
       eachTag.remove()
+    }
+
+    // resolve image asset urls
+    val images = element.select("img[src^=.]")
+    val urlNamespace = HtmaUrlNamespace(context)
+    for (img in images) {
+      img.attr("src", urlNamespace.asset(img.attr("src")))
     }
 
     // boost anchors

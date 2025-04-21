@@ -12,6 +12,7 @@ type Mutation {
 
 type Meal {
     title: String
+    imageUrl: String
     price: String
     ingredients: [String]
 }

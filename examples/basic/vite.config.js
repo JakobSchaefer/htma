@@ -8,7 +8,8 @@ function htma() {
     const pluginConfig = {
         componentNames: [],
         componentPaths: {},
-        componentNamesByPath: {}
+        componentNamesByPath: {},
+        assets: []
     }
     return {
         name: "htma",
@@ -29,6 +30,12 @@ function htma() {
             }
         },
         async configResolved() {
+            // get assets
+            const webDir = path.resolve(__dirname, "web")
+            const files = await fs.readdir(webDir, { recursive: true })
+            pluginConfig.assets = files.filter((it) => it.endsWith(".png"))
+
+            // get components
             const componentsDir = path.resolve(__dirname, "web/__components")
             const components = await fs.readdir(componentsDir)
             for (const componentFile of components) {
@@ -63,9 +70,11 @@ function htma() {
         },
         async transform(src, id) {
             if (id.endsWith("__root.js")) {
+                const assetImportStatements = pluginConfig.assets.map(it => `import "./${it}"`)
+                    .join("\n")
                 const componentImportStatements = pluginConfig.componentNames.map((it) => `import "virtual:htma/${it}"`)
                     .join("\n")
-                return `${componentImportStatements}\n${src}`
+                return `${assetImportStatements}\n${componentImportStatements}\n${src}`
             } else {
                 return src
             }

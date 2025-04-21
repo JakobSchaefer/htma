@@ -2,7 +2,6 @@
 @import "tailwindcss";
 @source "./**/*.html";
 
-
 @theme {
     --text-subtitle: 12rem;
 }
