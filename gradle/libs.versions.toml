@@ -6,7 +6,7 @@ kotlinx-datetime = "0.6.2"
 kotlinx-coroutines = "1.10.2"
 
 # https://commons.apache.org/proper/commons-jexl/index.html
-jexl = "3.4.0"
+jexl = "3.5.0"
 
 # https://www.slf4j.org/
 slf4j = "2.0.17"
