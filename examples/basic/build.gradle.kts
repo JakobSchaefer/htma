@@ -16,7 +16,7 @@ application {
 dependencies {
   implementation(project(":htma-ktor-server"))
 
-  implementation("com.h2database:h2:2.2.224")
+  implementation("com.h2database:h2:2.3.232")
 
   implementation(libs.slf4j)
   runtimeOnly(libs.log4j.core)
