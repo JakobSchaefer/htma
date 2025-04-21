@@ -51,7 +51,7 @@ exposed = "0.60.0"
 
 lucene = "10.2.0"
 
-grpc = "1.71.0"
+grpc = "1.72.0"
 protobuf = "4.30.2"
 
 [libraries]
