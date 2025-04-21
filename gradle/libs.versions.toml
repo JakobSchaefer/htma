@@ -3,7 +3,7 @@
 kotlin = "2.1.20"
 kotlinx-serialization = "1.8.1"
 kotlinx-datetime = "0.6.2"
-kotlinx-coroutines = "1.10.1"
+kotlinx-coroutines = "1.10.2"
 
 # https://commons.apache.org/proper/commons-jexl/index.html
 jexl = "3.4.0"
