@@ -68,23 +68,7 @@ fun Application.module() {
     SchemaUtils.create(Heroes, UserSessions)
   }
 
-  val signingKey = SecretKeySpec("asda".toByteArray(), "HmacSHA256")
-  val mac = Mac.getInstance("HmacSHA256")
-  mac.init(signingKey)
-  val enc = mac.doFinal("asda".toByteArray()).toHexString()
-  println("enc = ${enc}")
-
-  install(Sessions) {
-    cookie<String>("sessionId") {
-      cookie.secure = true
-      cookie.httpOnly = true
-      cookie.path = "/"
-      cookie.sameSite = "Strict"
-    }
-  }
-
   install(Htma) {
-    session = "session"
     graphql {
       type("Query") {
         resolve("name", NameResolver())

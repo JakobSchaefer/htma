@@ -47,10 +47,11 @@ internal class HtmaUrlNamespace(
       .resolve(relativeAssetPath)
       .normalize()
       .pathString
+      .replace("\\", "/") // windows
+
     return if (context.htmaState.isDevelopmentMode) {
       "http://localhost:5174/$webAssetPath"
     } else {
-      println(webAssetPath)
       val contextPath = "/"
       contextPath + context.htmaState.viteManifest.assets[webAssetPath]!!.file
     }
