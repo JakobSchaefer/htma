@@ -40,7 +40,7 @@ moneta = "1.4.5"
 
 # https://github.com/graphql-java/graphql-java
 graphql-java = "23.1"
-gson = "2.13.0"
+gson = "2.13.1"
 
 gradle-node = "7.1.0"
 
