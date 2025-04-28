@@ -90,7 +90,7 @@ lucene-core = { module = "org.apache.lucene:lucene-core", version.ref = "lucene"
 
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
-grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version = "1.4.1" }
+grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version = "1.4.3" }
 protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 protobuf = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
