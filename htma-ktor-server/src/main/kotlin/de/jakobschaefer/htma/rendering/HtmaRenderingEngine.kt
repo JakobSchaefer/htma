@@ -238,7 +238,7 @@ sealed interface ElementOperation {
   }
   class WriteInnerText(val tag: Element, val text: String): ElementOperation {
     override fun execute() {
-      tag.html(text.escapeHTML())
+      tag.text(text)
     }
   }
 }

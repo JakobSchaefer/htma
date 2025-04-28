@@ -5,6 +5,8 @@ import de.jakobschaefer.htma.rendering.HtmaRenderingEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.server.application.*
+import io.ktor.server.sessions.sessions
+import io.ktor.util.toLowerCasePreservingASCIIRules
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -69,7 +71,13 @@ val Htma = createApplicationPlugin(
   if (isDevelopmentMode) {
     Logs.htma.info("Starting vite dev server...")
     GlobalScope.launch {
-      ProcessBuilder("npx", "vite", "dev")
+      val os = System.getProperty("os.name").toLowerCasePreservingASCIIRules()
+      val processBuilder = if (os.contains("win")) {
+        ProcessBuilder("cmd.exe", "/c", "npx", "vite", "dev")
+      } else {
+        ProcessBuilder("npx", "vite", "dev")
+      }
+      processBuilder
         .directory(File("."))
         .redirectOutput(ProcessBuilder.Redirect.INHERIT)
         .redirectInput(ProcessBuilder.Redirect.INHERIT)
@@ -100,6 +108,7 @@ val Htma = createApplicationPlugin(
     formatter = formatter,
     graphQlService = pluginConfig.graphQlService
   )
+
   application.installHtmaConfiguration(plugin)
   Logs.htma.info("Htma plugin has been configured!")
 }

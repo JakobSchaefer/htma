@@ -40,19 +40,19 @@ fun Route.web(spec: HtmaRoutingBuilder.() -> Unit) {
 }
 
 private fun Route.setupPageRouting(configuration: HtmaConfiguration) {
-  for (page in configuration.appManifest.pages) {
-    get(page.remotePath) {
+  for (toPage in configuration.appManifest.pages) {
+    get(toPage.remotePath) {
       val pathParams = call.pathParameters.toMap()
       val queryParams = call.queryParameters.toMap()
       val params = pathParams + queryParams
-      replyHtml(page, configuration, params)
+      replyHtml(toPage, configuration, params)
     }
-    post(page.remotePath) {
+    post(toPage.remotePath) {
       val pathParams = call.pathParameters.toMap()
       val queryParams = call.queryParameters.toMap()
       val formParams = call.receiveFormParams()
       val params = pathParams + queryParams + formParams
-      replyHtml(page, configuration, params)
+      replyHtml(toPage, configuration, params)
     }
   }
 }

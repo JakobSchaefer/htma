@@ -8,6 +8,7 @@ import de.jakobschaefer.htma.routing.HtmaParams
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.sessions
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -28,6 +29,11 @@ internal class HtmaContext(
     set("locale", locale)
     set("params", params)
     set("htma", htmaState)
+    if (configuration.session != null) {
+      set("session", call.sessions.get(configuration.session))
+    } else {
+      set("session", null)
+    }
   }
 
   fun pushIt(it: Any?) {

@@ -17,9 +17,7 @@ internal class GraphQlServiceImpl(
       if (request.operationName != null) {
         inputBuilder.operationName(request.operationName)
       }
-      inputBuilder.graphQLContext(
-        mapOf("to" to "")
-      ).variables(request.variables)
+      inputBuilder.variables(request.variables)
     }.await()
 
     return reply.toSpecification()
