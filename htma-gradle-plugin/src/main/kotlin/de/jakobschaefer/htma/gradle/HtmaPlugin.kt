@@ -18,6 +18,8 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -111,7 +113,10 @@ class HtmaPlugin : Plugin<Project> {
     val htmlFiles = Files.walk(webDir)
       .filter { it.pathString.endsWith(".html") }
       .map { htmlFile ->
-        htmlFile.pathString.substringAfter(webDir.pathString).substringBeforeLast(".html")
+        htmlFile.pathString
+          .substringAfter(webDir.pathString)
+          .substringBeforeLast(".html")
+          .replace(FileSystems.getDefault().separator, "/")
       }.toList()
 
     val pagesAndLayouts = htmlFiles
@@ -155,6 +160,7 @@ class HtmaPlugin : Plugin<Project> {
         val templateName = graphQlFile.pathString
           .substringAfter(webDir.pathString)
           .substringBeforeLast(".graphql")
+          .replace(FileSystems.getDefault().separator, "/")
           .substring(1)
 
         val parsedDocument = graphQlDocumentParser.parseDocument(graphQlFile.toFile().readText(Charsets.UTF_8))
