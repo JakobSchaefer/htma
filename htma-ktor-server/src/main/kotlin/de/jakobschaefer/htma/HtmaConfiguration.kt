@@ -17,7 +17,6 @@ internal class HtmaConfiguration(
   val supportedLocales: List<Locale>,
   val defaultLocale: Locale,
   val isLogicEnabled: Boolean,
-  val session: String?,
   val renderingEngine: HtmaRenderingEngine,
   val formatter: HtmaFormatter,
   val graphQlService: GraphQlService?

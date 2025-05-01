@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Session(
-  val count: Int = 0
+  val id: String,
+  val preferredLocale: String
 )

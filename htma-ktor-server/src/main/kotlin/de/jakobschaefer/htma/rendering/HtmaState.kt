@@ -1,6 +1,7 @@
 package de.jakobschaefer.htma.rendering
 
 import de.jakobschaefer.htma.HtmaConfiguration
+import de.jakobschaefer.htma.SessionIdAttribute
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -20,7 +21,7 @@ data class HtmaState(
   val toPage: AppManifestPage,
   val isFetchRequest: Boolean,
   val fromPage: AppManifestPage?,
-  val outletSwap: HtmaStateOutletSwap?,
+  val outletSwap: HtmaStateOutletSwap?
 ) {
   companion object {
     internal fun build(call: RoutingCall, toPage: AppManifestPage, configuration: HtmaConfiguration): HtmaState {

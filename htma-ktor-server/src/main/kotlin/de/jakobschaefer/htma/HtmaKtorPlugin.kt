@@ -4,13 +4,15 @@ import de.jakobschaefer.htma.messages.HtmaFormatter
 import de.jakobschaefer.htma.rendering.HtmaRenderingEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
+import io.ktor.http.Cookie
 import io.ktor.server.application.*
-import io.ktor.server.sessions.sessions
+import io.ktor.util.AttributeKey
 import io.ktor.util.toLowerCasePreservingASCIIRules
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
+import java.util.UUID
 
 val Htma = createApplicationPlugin(
   name = "Htma",
@@ -39,12 +41,12 @@ val Htma = createApplicationPlugin(
   ) ?: false
   Logs.htma.info("Logic is {}", if (isLogicEnabled) { "enabled" } else { "disabled" })
 
-  val session = loadConfigProperty(
-    input = pluginConfig.session,
-    propertyName = "htma.session",
+  val sessionIdCookieName = loadConfigProperty(
+    input = pluginConfig.sessionIdCookieName,
+    propertyName = "htma.sessionIdCookieName",
     mapFn = { it }
-  )
-  Logs.htma.info("Using session name '{}'", session)
+  ) ?: "sessionId"
+  Logs.htma.info("Using session id cookie name '{}'", sessionIdCookieName)
 
   // Read manifest files
   val resourceBase = loadConfigProperty(
@@ -68,23 +70,6 @@ val Htma = createApplicationPlugin(
   }
   Logs.htma.info("Vite manifest loaded:\n{}", JSON.encodeToString(viteManifest))
 
-  if (isDevelopmentMode) {
-    Logs.htma.info("Starting vite dev server...")
-    GlobalScope.launch {
-      val os = System.getProperty("os.name").toLowerCasePreservingASCIIRules()
-      val processBuilder = if (os.contains("win")) {
-        ProcessBuilder("cmd.exe", "/c", "npx", "vite", "dev")
-      } else {
-        ProcessBuilder("npx", "vite", "dev")
-      }
-      processBuilder
-        .directory(File("."))
-        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-        .redirectInput(ProcessBuilder.Redirect.INHERIT)
-        .start()
-    }
-  }
-
   val formatter = HtmaFormatter()
 
   val renderingEngine = HtmaRenderingEngine(
@@ -103,15 +88,36 @@ val Htma = createApplicationPlugin(
     supportedLocales = supportedLocales,
     defaultLocale = defaultLocale,
     isLogicEnabled = isLogicEnabled,
-    session = session,
     renderingEngine = renderingEngine,
     formatter = formatter,
     graphQlService = pluginConfig.graphQlService
   )
 
+  onCall {
+    val sid = it.request.cookies[sessionIdCookieName]
+    val sessionId = if (sid == null) {
+      val sessionId = UUID.randomUUID().toString()
+      val cookie = Cookie(
+        name = sessionIdCookieName,
+        value = sessionId,
+        httpOnly = true,
+        secure = true,
+        path = "/",
+        extensions = mapOf("SameSite" to "Strict")
+      )
+      it.response.cookies.append(cookie)
+      sessionId
+    } else {
+      sid
+    }
+    it.attributes.put(SessionIdAttribute, sessionId)
+  }
+
   application.installHtmaConfiguration(plugin)
   Logs.htma.info("Htma plugin has been configured!")
 }
+
+internal val SessionIdAttribute = AttributeKey<String>("SessionId")
 
 private fun <P: Any, T> PluginBuilder<P>.loadConfigProperty(input: List<T>?, propertyName: String, mapFn: (String) -> T): List<T>? {
   return input ?: applicationConfig.propertyOrNull(propertyName)?.getList()?.map(mapFn)

@@ -1,6 +1,7 @@
 package de.jakobschaefer.htma.gradle
 
 import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.npm.task.NpmTask
 import com.github.gradle.node.npm.task.NpxTask
 import de.jakobschaefer.htma.webinf.*
 import graphql.language.AstPrinter
@@ -9,9 +10,12 @@ import graphql.parser.Parser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.internal.declarativedsl.dom.mutation.MutationDefinition
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 import java.nio.file.Files
@@ -30,6 +34,7 @@ class HtmaPlugin : Plugin<Project> {
     }
 
     project.tasks.register("buildAppManifest") {
+      group = "htma"
       val outputDir = project.layout.buildDirectory.dir("htma")
       val webDir = htma.webDir.get()
       inputs.dir(webDir)
@@ -43,17 +48,44 @@ class HtmaPlugin : Plugin<Project> {
       }
     }
 
-    project.tasks.register("npxViteBuild", NpxTask::class.java) {
+    project.tasks.register("npmRunDev", NpmTask::class.java) {
+      group = "htma"
       dependsOn("npmInstall")
-      description = "Executes npx vite build"
-      command.set("vite")
-      args.set(listOf("build"))
+      description = "Executes 'npm run dev'"
+      args.set(listOf("run", "dev"))
+      inputs.files("package.json", "package-lock.json", "vite.config.js")
+      inputs.dir("web")
+      inputs.dir(project.fileTree("node_modules").exclude(".cache"))
+    }
+
+    val sourceSets = project.extensions.getByName("sourceSets") as SourceSetContainer
+    project.tasks.register("serverRunDev", JavaExec::class.java) {
+      group = "htma"
+      classpath = sourceSets.getByName("main").runtimeClasspath
+      mainClass.set("io.ktor.server.netty.EngineMain")
+      inputs.files("src/main/kotlin")
+      setJvmArgs(listOf("-Dio.ktor.development=true"))
+      workingDir(project.projectDir)
+    }
+    project.tasks.register("serverRunProd", JavaExec::class.java) {
+      group = "htma"
+      classpath = sourceSets.getByName("main").runtimeClasspath
+      mainClass.set("io.ktor.server.netty.EngineMain")
+      inputs.files("src/main/kotlin")
+      workingDir(project.projectDir)
+    }
+
+    project.tasks.register("npmRunBuild", NpmTask::class.java) {
+      group = "htma"
+      dependsOn("npmInstall")
+      description = "Executes npm run build"
+      args.set(listOf("run", "build"))
       inputs.files("package.json", "package-lock.json", "vite.config.js")
       inputs.dir("web")
       inputs.dir(project.fileTree("node_modules").exclude(".cache"))
       outputs.dir("dist")
     }
-    project.tasks.named("build") { dependsOn("npxViteBuild") }
+    project.tasks.named("build") { dependsOn("npmRunBuild") }
     project.tasks.named("clean", Delete::class.java) { delete("dist") }
 
     project.tasks.withType<ProcessResources>().configureEach {
@@ -65,7 +97,7 @@ class HtmaPlugin : Plugin<Project> {
         }
       }
       val webDir = htma.webDir.get()
-      from(project.tasks.named("npxViteBuild")) { into(resourceBase) }
+      from(project.tasks.named("npmRunBuild")) { into(resourceBase) }
       from(project.tasks.named("buildAppManifest")) { into(resourceBase) }
       from(webDir) {
         include("**/*.html")

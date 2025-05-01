@@ -5,10 +5,10 @@ import de.jakobschaefer.htma.graphql.GraphQlParamsToVariablesConverter
 import de.jakobschaefer.htma.graphql.GraphQlRequest
 import de.jakobschaefer.htma.rendering.HtmaState
 import de.jakobschaefer.htma.routing.HtmaParams
+import de.jakobschaefer.htma.SessionIdAttribute
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.sessions
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -29,11 +29,7 @@ internal class HtmaContext(
     set("locale", locale)
     set("params", params)
     set("htma", htmaState)
-    if (configuration.session != null) {
-      set("session", call.sessions.get(configuration.session))
-    } else {
-      set("session", null)
-    }
+    set("sessionId", call.attributes[SessionIdAttribute])
   }
 
   fun pushIt(it: Any?) {

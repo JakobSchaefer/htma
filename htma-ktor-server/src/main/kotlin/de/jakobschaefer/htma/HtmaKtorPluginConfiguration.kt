@@ -10,8 +10,8 @@ class HtmaKtorPluginConfiguration {
   var defaultLocale: Locale? = null
   var resourceBase: String? = null
   var isLogicEnabled: Boolean? = null
-  var session: String? = null
   var graphQlService: GraphQlService? = null
+  var sessionIdCookieName: String? = null
 
   @GraphQlDsl
   fun graphql(

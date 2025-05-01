@@ -11,5 +11,9 @@
     "tailwindcss": "^4.0.0-beta.2",
     "vite": "^6.2.3",
     "vite-plugin-compression": "^0.5.1"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build"
   }
 }

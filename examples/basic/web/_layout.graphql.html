@@ -1,58 +1,72 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Document</title>
-</head>
-<body>
-<div>
-    <h1 class="text-2xl font-bold">GraphQL</h1>
-    <form action="/graphql" class="p-2 flex flex-col items-start">
+  </head>
+  <body>
+    <div>
+      <h1 class="text-2xl font-bold">GraphQL</h1>
+      <form action="/graphql" class="p-2 flex flex-col items-start">
         <h2 class="font-bold">Greeting</h2>
-        <p data-x-text="query.MyQuery.data.greeting" class="text-violet-500"></p>
+        <p
+          data-x-text="query.MyQuery.data.greeting"
+          class="text-violet-500"
+        ></p>
         <div class="flex gap-2 items-center">
-            <label for="name">Name:</label>
-            <input class="border p-2" id="name" name="$name" type="text">
-            <button class="p-2 w-40 border bg-blue-300">Go</button>
+          <label for="name">Name:</label>
+          <input class="border p-2" id="name" name="$name" type="text" />
+          <button class="p-2 w-40 border bg-blue-300">Go</button>
         </div>
-    </form>
-    <form action="/graphql" class="p-2 flex flex-col items-start" method="post">
+      </form>
+      <form
+        action="/graphql"
+        class="p-2 flex flex-col items-start"
+        method="post"
+      >
         <h2 class="font-bold">Change Name</h2>
         <div class="flex gap-2 items-center">
-            <label for="newName">New Name:</label>
-            <input class="border p-2" id="newName" name="$name" type="text">
-            <button class="p-2 w-40 border bg-blue-300">Go</button>
+          <label for="newName">New Name:</label>
+          <input class="border p-2" id="newName" name="$name" type="text" />
+          <button class="p-2 w-40 border bg-blue-300">Go</button>
         </div>
-    </form>
-    <ul class="list-disc list-inside">
+      </form>
+      <ul class="list-disc list-inside">
         <li class="p-2" data-x-each="query.MyQuery.data.meals">
-            <span class="font-bold" data-x-text="it.title">....</span>
-            <div class="flex gap-2">Zutaten: <span class="font-light" data-x-each="it.ingredients" data-x-text="it"></span></div>
+          <span class="font-bold" data-x-text="it.title">....</span>
+          <div class="flex gap-2">
+            Zutaten:
+            <span
+              class="font-light"
+              data-x-each="it.ingredients"
+              data-x-text="it"
+            ></span>
+          </div>
         </li>
-    </ul>
-    <dl>
+      </ul>
+      <dl>
         <dt class="bg-violet-50">
-            <pre class="font-bold text-violet-500">params</pre>
+          <pre class="font-bold text-violet-500">params</pre>
         </dt>
         <dd class="bg-violet-50">
-            <pre class="text-xs" data-x-text="params"></pre>
+          <pre class="text-xs" data-x-text="params"></pre>
         </dd>
 
         <dt class="bg-violet-50">
-            <pre class="font-bold text-violet-500">query</pre>
+          <pre class="font-bold text-violet-500">query</pre>
         </dt>
         <dd class="bg-violet-50">
-            <pre class="text-xs" data-x-text="query"></pre>
+          <pre class="text-xs" data-x-text="query"></pre>
         </dd>
 
         <dt class="bg-violet-50">
-            <pre class="font-bold text-violet-500">mutation</pre>
+          <pre class="font-bold text-violet-500">mutation</pre>
         </dt>
         <dd class="bg-violet-50">
-            <pre class="text-xs" data-x-text="mutation"></pre>
+          <pre class="text-xs" data-x-text="mutation"></pre>
         </dd>
-    </dl>
-</div>
-</body>
+      </dl>
+    </div>
+  </body>
 </html>

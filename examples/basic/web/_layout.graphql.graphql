@@ -1,13 +1,13 @@
 query MyQuery($name: String) {
-    serverTime # string
-    meals {
-        title
-        price
-        ingredients
-    }
-    greeting(name: $name)
+  serverTime # string
+  meals {
+    title
+    price
+    ingredients
+  }
+  greeting(name: $name)
 }
 
 mutation ChangeName($name: String) {
-    setName(name: $name)
+  setName(name: $name)
 }

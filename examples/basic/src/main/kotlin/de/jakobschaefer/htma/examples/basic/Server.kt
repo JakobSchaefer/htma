@@ -9,6 +9,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.OAuthServerSettings
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.oauth
+import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import org.jetbrains.exposed.dao.id.UUIDTable
@@ -68,6 +69,14 @@ fun Application.module() {
     SchemaUtils.create(Heroes, UserSessions)
   }
 
+  install(Sessions) {
+    cookie<Session>("htma", SessionStorageDatabase()) {
+      cookie.sameSite = "Strict"
+      cookie.httpOnly = true
+      cookie.secure = true
+    }
+  }
+
   install(Htma) {
     graphql {
       type("Query") {
@@ -87,4 +96,3 @@ fun Application.module() {
     }
   }
 }
-class UserSession(accessToken: String)
