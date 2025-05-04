@@ -2,7 +2,6 @@ package de.jakobschaefer.htma.gradle
 
 import com.github.gradle.node.NodeExtension
 import com.github.gradle.node.npm.task.NpmTask
-import com.github.gradle.node.npm.task.NpxTask
 import de.jakobschaefer.htma.webinf.*
 import graphql.language.AstPrinter
 import graphql.language.OperationDefinition
@@ -13,13 +12,10 @@ import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.internal.cc.base.logger
-import org.gradle.internal.declarativedsl.dom.mutation.MutationDefinition
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
-import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -70,6 +66,7 @@ class HtmaPlugin : Plugin<Project> {
       setJvmArgs(listOf("-Dio.ktor.development=true"))
       workingDir(project.projectDir)
     }
+
     project.tasks.register("serverRunProd", JavaExec::class.java) {
       group = "htma"
       classpath = sourceSets.getByName("main").runtimeClasspath
@@ -138,9 +135,12 @@ class HtmaPlugin : Plugin<Project> {
             outletChain = buildMap {
               var currentOutlet = "__root"
               for (outlet in htmlFile.canonicalOutletChain) {
-                val templateName = pagesAndLayouts.find { it.canonicalPathWithoutRoot == outlet }!!.templateName
+                val templateName = when (val page = pagesAndLayouts.find { it.canonicalPathWithoutRoot == outlet }) {
+                  null -> outlet // Expect a template at the canonical path.
+                  else -> page.templateName
+                }
                 put(currentOutlet, templateName)
-                currentOutlet = outlet
+                currentOutlet = templateName
               }
             }
           )

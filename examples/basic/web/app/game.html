@@ -13,7 +13,7 @@
                 <button class="hover:text-blue-600 transition cursor-pointer">LOGOUT</button>
             </form>
         </div>
-        <form class="p-2 w-[400px] flex flex-col gap-1 items-center" action="/app/game" method="post" data-x-mutation="'AddMeal'">
+        <form class="p-2 w-[400px] flex flex-col gap-1 items-center" method="post">
             <div class="flex items-center">
                 <label class="mr-2" for="title">Title:</label>
                 <input class="border p-2" id="title" name="$request.title" type="text" required>
@@ -30,7 +30,8 @@
                 <label class="mr-2" for="ingredients-1">Ingredients: </label>
                 <input class="border p-2" id="ingredients-1" name="$request.ingredients[]" type="text" required>
             </div>
-            <button class="p-2 border bg-blue-300">Go</button>
+            <button class="p-2 border bg-blue-300" name="$$mutation" value="AddMeal">Go</button>
+            <button class="p-2 border bg-blue-300" name="$$mutation" value="AddMeal2">Go 2</button>
         </form>
         <table class="container">
             <thead>

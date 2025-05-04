@@ -6,6 +6,7 @@ import de.jakobschaefer.htma.graphql.GraphQlRequest
 import de.jakobschaefer.htma.rendering.HtmaState
 import de.jakobschaefer.htma.routing.HtmaParams
 import de.jakobschaefer.htma.SessionIdAttribute
+import de.jakobschaefer.htma.rendering.GRAPHQL_MUTATION_PARAMETER_NAME
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
@@ -89,7 +90,7 @@ internal class HtmaContext(
     if (call.request.httpMethod == HttpMethod.Post) {
       if (configuration.graphQlService != null) {
         val mutations = configuration.appManifest.graphQlDocuments[htmaState.toPage.templateName]?.mutations ?: emptyList()
-        val operationName = params["__operationName"]
+        val operationName = params[GRAPHQL_MUTATION_PARAMETER_NAME]
         if (operationName != null) {
           val mutation = mutations.find { it.operationName == operationName[0] }
           if (mutation != null) {

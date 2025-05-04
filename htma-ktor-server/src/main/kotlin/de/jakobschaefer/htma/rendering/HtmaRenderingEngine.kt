@@ -15,6 +15,7 @@ import org.jsoup.nodes.Element
 import java.util.*
 
 const val ATTRIBUTE_PREFIX = "data-x-"
+const val GRAPHQL_MUTATION_PARAMETER_NAME = "$${'$'}mutation"
 
 internal class HtmaRenderingEngine(
   isDevelopmentMode: Boolean,
@@ -182,7 +183,7 @@ internal class HtmaRenderingEngine(
                 is String -> {
                   val operationNameInput = Element("input")
                   operationNameInput.attr("type", "hidden")
-                  operationNameInput.attr("name", "__operationName")
+                  operationNameInput.attr("name", GRAPHQL_MUTATION_PARAMETER_NAME)
                   operationNameInput.attr("value", attributeResult)
                   operations.add(ElementOperation.AddChildElement(tag, operationNameInput))
                 }

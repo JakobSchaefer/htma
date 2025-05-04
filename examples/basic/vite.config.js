@@ -34,6 +34,7 @@ function htma() {
             const webDir = path.resolve(__dirname, "web")
             const files = await fs.readdir(webDir, { recursive: true })
             pluginConfig.assets = files.filter((it) => it.endsWith(".png"))
+                .map(it => it.replaceAll(path.sep, "/"))
 
             // get components
             const componentsDir = path.resolve(__dirname, "web/__components")

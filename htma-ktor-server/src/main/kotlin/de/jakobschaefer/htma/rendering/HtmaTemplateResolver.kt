@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.exists
 
 interface HtmaTemplateResolver {
   fun getTemplate(templateName: String): HtmaTemplate
@@ -15,7 +16,15 @@ interface HtmaTemplateResolver {
 class DevelopmentTemplateResolver : HtmaTemplateResolver {
   override fun getTemplate(templateName: String): HtmaTemplate {
     val templatePath = getTemplatePath(templateName)
-    val document = Jsoup.parse(templatePath)
+    val isLayout = templateName.replace("/", ".")
+      .split(".")
+      .last()
+      .startsWith('_')
+    val document = if (isLayout && !templatePath.exists()) {
+      Jsoup.parse(DEFAULT_LAYOUT_TEMPLATE_CONTENT)
+    } else {
+      Jsoup.parse(templatePath)
+    }
     return HtmaTemplate(document)
   }
 
@@ -58,9 +67,23 @@ class ProductionTemplateResolver(
   }
 
   private fun loadTemplate(templateName: String) {
+    val isLayout = templateName.replace("/", ".")
+      .split(".")
+      .last()
+      .startsWith('_')
     val templatePath = getTemplateResourcePath(templateName)
+    val document = if (isLayout) {
+      try {
+        loadTemplateDocument(templatePath)
+      } catch (e: Exception) {
+        log.info("Template {} not found. Fallback content will be used.", templateName)
+        Jsoup.parse(DEFAULT_LAYOUT_TEMPLATE_CONTENT)
+      }
+    } else {
+      loadTemplateDocument(templatePath)
+    }
     log.info("Loading resource {}", templatePath)
-    cache[templateName] = HtmaTemplate(loadTemplateDocument(templatePath))
+    cache[templateName] = HtmaTemplate(document)
   }
 
   companion object {
