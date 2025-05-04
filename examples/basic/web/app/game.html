@@ -52,9 +52,9 @@
                     <td data-x-text="it.price"></td>
                     <td data-x-text="it.ingredients"></td>
                     <td>
-                        <form action="/app/game" method="post" data-x-mutation="'DeleteMeal'">
+                        <form method="post">
                             <input type="hidden" name="$id" data-x-value="it.id">
-                            <button class="p-1 border cursor-pointer border-b-red-400 font-bold text-red-500 hover:text-red-700">X</button>
+                            <button name="$$mutation" value="DeleteMeal" class="p-1 border cursor-pointer border-b-red-400 font-bold text-red-500 hover:text-red-700">X</button>
                         </form>
                     </td>
                 </tr>

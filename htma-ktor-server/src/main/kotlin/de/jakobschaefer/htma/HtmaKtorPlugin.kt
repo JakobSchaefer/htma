@@ -93,31 +93,9 @@ val Htma = createApplicationPlugin(
     graphQlService = pluginConfig.graphQlService
   )
 
-  onCall {
-    val sid = it.request.cookies[sessionIdCookieName]
-    val sessionId = if (sid == null) {
-      val sessionId = UUID.randomUUID().toString()
-      val cookie = Cookie(
-        name = sessionIdCookieName,
-        value = sessionId,
-        httpOnly = true,
-        secure = true,
-        path = "/",
-        extensions = mapOf("SameSite" to "Strict")
-      )
-      it.response.cookies.append(cookie)
-      sessionId
-    } else {
-      sid
-    }
-    it.attributes.put(SessionIdAttribute, sessionId)
-  }
-
   application.installHtmaConfiguration(plugin)
   Logs.htma.info("Htma plugin has been configured!")
 }
-
-internal val SessionIdAttribute = AttributeKey<String>("SessionId")
 
 private fun <P: Any, T> PluginBuilder<P>.loadConfigProperty(input: List<T>?, propertyName: String, mapFn: (String) -> T): List<T>? {
   return input ?: applicationConfig.propertyOrNull(propertyName)?.getList()?.map(mapFn)

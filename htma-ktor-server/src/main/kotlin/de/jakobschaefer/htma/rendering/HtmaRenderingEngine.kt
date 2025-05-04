@@ -5,9 +5,8 @@ import de.jakobschaefer.htma.messages.HtmaFormatter
 import de.jakobschaefer.htma.rendering.jexl.HtmaContext
 import de.jakobschaefer.htma.rendering.jexl.HtmaFormattedMessage
 import de.jakobschaefer.htma.rendering.jexl.HtmaJexl
-import de.jakobschaefer.htma.rendering.jexl.HtmaUrlNamespace
+import de.jakobschaefer.htma.rendering.jexl.HtmaUriNamespace
 import de.jakobschaefer.htma.webinf.AppManifest
-import io.ktor.util.*
 import org.apache.commons.jexl3.JexlContext
 import org.jsoup.nodes.Attribute
 import org.jsoup.nodes.Document
@@ -36,7 +35,7 @@ internal class HtmaRenderingEngine(
   private val jexl = HtmaJexl.build()
 
   fun renderFragment(htmaState: HtmaState, htmaContext: HtmaContext): String {
-    return renderPage(htmaState, htmaContext, entrypoint = htmaState.outletSwap!!.newOutlet)
+    return renderPage(htmaState, htmaContext, entrypoint = htmaState.outletSwap!!.innerMostCommonOutlet)
   }
 
   fun renderPage(htmaState: HtmaState, htmaContext: HtmaContext, entrypoint: String = "__root"): String {
@@ -107,7 +106,7 @@ internal class HtmaRenderingEngine(
 
     // resolve image asset urls
     val images = element.select("img[src^=.]")
-    val urlNamespace = HtmaUrlNamespace(context)
+    val urlNamespace = HtmaUriNamespace(context)
     for (img in images) {
       img.attr("src", urlNamespace.asset(img.attr("src")))
     }
@@ -178,16 +177,33 @@ internal class HtmaRenderingEngine(
                 }
               }
             }
-            "mutation" -> {
+            "if" -> {
               when (attributeResult) {
-                is String -> {
-                  val operationNameInput = Element("input")
-                  operationNameInput.attr("type", "hidden")
-                  operationNameInput.attr("name", GRAPHQL_MUTATION_PARAMETER_NAME)
-                  operationNameInput.attr("value", attributeResult)
-                  operations.add(ElementOperation.AddChildElement(tag, operationNameInput))
+                null -> operations.add(ElementOperation.DeleteTag(tag))
+                is Boolean -> if (!attributeResult) {
+                  operations.add(ElementOperation.DeleteTag(tag))
                 }
-                else -> throw IllegalArgumentException("Operation attribute must be a string")
+                is String -> if (attributeResult.isEmpty()) {
+                  operations.add(ElementOperation.DeleteTag(tag))
+                }
+                is Collection<*> -> if (attributeResult.isEmpty()) {
+                  operations.add(ElementOperation.DeleteTag(tag))
+                }
+              }
+            }
+            "class-append" -> {
+              when (attributeResult) {
+                is String -> operations.add(ElementOperation.AddClass(tag, attributeResult))
+                is Map<*, *> -> {
+                  for ((className, append) in attributeResult) {
+                    if (append !is Boolean) continue
+                    if (className !is String) continue
+                    if (append) {
+                      operations.add(ElementOperation.AddClass(tag, className))
+                    }
+                  }
+                }
+                else -> throw IllegalArgumentException("Classappend attribute must be a String or Map<String, Boolean>")
               }
             }
             else -> when (attributeResult) {
@@ -229,6 +245,12 @@ sealed interface ElementOperation {
 
   fun execute()
 
+  class DeleteTag(val tag: Element): ElementOperation {
+    override fun execute() {
+      tag.remove()
+    }
+  }
+
   class DeleteAttribute(val tag: Element, val attributeKey: String) : ElementOperation {
     override fun execute() {
       tag.removeAttr(attributeKey)
@@ -254,9 +276,9 @@ sealed interface ElementOperation {
       tag.text(text)
     }
   }
-  class AddChildElement(val tag: Element, val childElement: Element): ElementOperation {
+  class AddClass(val tag: Element, val className: String): ElementOperation {
     override fun execute() {
-      tag.appendChild(childElement)
+      tag.addClass(className)
     }
   }
 }

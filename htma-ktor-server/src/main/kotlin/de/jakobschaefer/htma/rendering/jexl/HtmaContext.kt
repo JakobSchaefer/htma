@@ -5,7 +5,6 @@ import de.jakobschaefer.htma.graphql.GraphQlParamsToVariablesConverter
 import de.jakobschaefer.htma.graphql.GraphQlRequest
 import de.jakobschaefer.htma.rendering.HtmaState
 import de.jakobschaefer.htma.routing.HtmaParams
-import de.jakobschaefer.htma.SessionIdAttribute
 import de.jakobschaefer.htma.rendering.GRAPHQL_MUTATION_PARAMETER_NAME
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -22,7 +21,8 @@ internal class HtmaContext(
   val locale: Locale,
   val htmaState: HtmaState,
   val params: HtmaParams,
-  val configuration: HtmaConfiguration
+  val location: String,
+  val configuration: HtmaConfiguration,
 ) : MapContext() {
   val itStack = ArrayDeque<Any?>()
 
@@ -30,6 +30,7 @@ internal class HtmaContext(
     set("locale", locale)
     set("params", params)
     set("htma", htmaState)
+    set("location", location)
   }
 
   fun pushIt(it: Any?) {
@@ -56,12 +57,7 @@ internal class HtmaContext(
     val graphQlService = configuration.graphQlService
     if (graphQlService != null) {
       val outletChainList = if (htmaState.outletSwap != null) {
-        if (htmaState.outletSwap.innerMostCommonOutlet != htmaState.outletSwap.newOutlet) {
-          htmaState.toPage.buildOutletChainListStartingFrom(htmaState.outletSwap.innerMostCommonOutlet)
-            .drop(1) // Do not execute layout queries, the layout itself will not be exchanged
-        } else {
-          htmaState.toPage.buildOutletChainListStartingFrom(htmaState.outletSwap.innerMostCommonOutlet)
-        }
+        htmaState.toPage.buildOutletChainListStartingFrom(htmaState.outletSwap.innerMostCommonOutlet)
       } else {
         htmaState.toPage.outletChainList
       }
@@ -105,6 +101,9 @@ internal class HtmaContext(
             log.error("Could not find mutation with operationName {}. Available mutations: {}", operationName, mutations.map { it.operationName })
             set("mutation", emptyMap<String, Any>())
           }
+
+        } else if (mutations.isEmpty()) {
+          // Nothing to do. Skip the execution.
         } else if (mutations.size == 1) {
           val mutation = mutations.first()
           val request = GraphQlRequest(

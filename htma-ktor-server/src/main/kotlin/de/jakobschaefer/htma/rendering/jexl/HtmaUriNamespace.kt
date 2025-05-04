@@ -1,10 +1,11 @@
 package de.jakobschaefer.htma.rendering.jexl
 
 import com.damnhandy.uri.template.UriTemplate
+import io.ktor.http.Url
 import java.nio.file.Paths
 import kotlin.io.path.pathString
 
-internal class HtmaUrlNamespace(
+internal class HtmaUriNamespace(
   val context: HtmaContext
 ) {
   fun template(uriTemplate: String): String {
@@ -37,12 +38,27 @@ internal class HtmaUrlNamespace(
    * @see [RFC6570](https://www.rfc-editor.org/rfc/rfc6570)
    */
   fun template(uriTemplate: String, params: Map<String, Any>): String {
+    val tpl = UriTemplate.fromTemplate(uriTemplate)
+    tpl
     return UriTemplate.fromTemplate(uriTemplate).expand(params)
+  }
+
+  fun match(matchStr: String, location: String): Boolean {
+    val matchSegments = Url(matchStr).segments
+    val locationSegments = Url(location).segments
+    return if (matchSegments.size == locationSegments.size) {
+      matchSegments.foldIndexed(true) { index, acc, matchSegment ->
+        val match = matchSegment.startsWith("$") || matchSegment == locationSegments[index]
+        acc && match
+      }
+    } else {
+      false
+    }
   }
 
   fun asset(relPath: String): String {
     val relativeAssetPath = Paths.get(relPath)
-    val htmlFilePath = Paths.get("web/${context.htmaState.toPage.filePath}")
+    val htmlFilePath = Paths.get("web/${context.htmaState.toPage.webPath}")
     val webAssetPath = htmlFilePath.parent
       .resolve(relativeAssetPath)
       .normalize()

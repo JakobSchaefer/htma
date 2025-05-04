@@ -16,6 +16,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
+import org.jsoup.Jsoup
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -110,26 +111,32 @@ class HtmaPlugin : Plugin<Project> {
   private fun buildAppManifest(webDir: Path): AppManifest {
     val htmlFiles = Files.walk(webDir)
       .filter { it.pathString.endsWith(".html") }
-      .map { htmlFile ->
-        htmlFile.pathString
+      .map { filePath ->
+        filePath.pathString
           .substringAfter(webDir.pathString)
           .substringBeforeLast(".html")
-          .replace(FileSystems.getDefault().separator, "/")
+          .replace(FileSystems.getDefault().separator, "/") to filePath
       }.toList()
 
     val pagesAndLayouts = htmlFiles
-      .filter { htmlFile -> !htmlFile.startsWith("/__components") }
-      .map { HtmlFile(it) }
+      .filter { (webPath, _) -> !webPath.startsWith("/__components") }
+      .map { (webPath, filePath) -> HtmlFile(filePath, webPath) }
 
       val pages = buildList {
         for (htmlFile in pagesAndLayouts) {
-          if (htmlFile.isLayout) {
-            continue
+          val routeConfigJson = htmlFile.document.getElementById("route-config")?.html()
+          val routeConfig = if (routeConfigJson == null) {
+            AppManifestPageRouteConfig(
+              params = emptyList()
+            )
+          } else {
+            JsonConverter.decodeFromString(routeConfigJson)
           }
 
           val page = AppManifestPage(
-            filePath = htmlFile.path + ".html",
+            webPath = htmlFile.webPath + ".html",
             remotePath = htmlFile.remotePath,
+            remotePathPriority = if (htmlFile.isPathless) { -1 } else if (htmlFile.isIndex) { 2 } else { 1 },
             canonicalPath = "__root." + htmlFile.canonicalPathWithoutRoot,
             templateName = htmlFile.templateName,
             outletChain = buildMap {
@@ -139,15 +146,16 @@ class HtmaPlugin : Plugin<Project> {
                 put(currentOutlet, templateName)
                 currentOutlet = templateName
               }
-            }
+            },
+            routeConfig = routeConfig
           )
           add(page)
         }
       }
 
     val components = htmlFiles
-      .filter { htmlFile -> htmlFile.startsWith("/__components") }
-      .map { AppComponent(it.substringAfter("/__components/")) }
+      .filter { (webPath, _) -> webPath.startsWith("/__components") }
+      .map { (webPath, _) -> AppComponent(webPath.substringAfter("/__components/")) }
       .toList()
 
     val graphQlDocumentParser = Parser()
@@ -201,16 +209,17 @@ class HtmaPlugin : Plugin<Project> {
 }
 
 data class HtmlFile(
-  val path: String
+  val filePath: Path,
+  val webPath: String
 ) {
-  val templateName = path.substring(1)
+  val templateName = webPath.substring(1)
 
-  val canonicalPathWithoutRoot = path.substring(1).replace('/', '.')
+  val canonicalPathWithoutRoot = webPath.substring(1).replace('/', '.')
 
   val canonicalPathSegments = canonicalPathWithoutRoot
     .split('.')
 
-  val isLayout = canonicalPathSegments.last().startsWith('_')
+  val isPathless = canonicalPathSegments.last().startsWith('_')
 
   val isIndex = canonicalPathSegments.last() == "index"
 
@@ -218,7 +227,11 @@ data class HtmlFile(
     .filter { !it.startsWith('_') }
     .map {
       if (it.startsWith('$')) {
-        "{${it.substring(1)}}"
+        if (it == "$") {
+          "{...}"
+        } else {
+          "{${it.substring(1)}}"
+        }
       } else {
         it
       }
@@ -229,17 +242,13 @@ data class HtmlFile(
     remotePathSegments.joinToString("/")
   }
 
+  // app.foo._bar.$test.html
   val canonicalOutletChain = buildList {
     for (i in canonicalPathSegments.indices) {
-      val segment = canonicalPathSegments[i]
-      if (segment.startsWith("_")) {
-        val canonicalLayoutPath = canonicalPathSegments.subList(0, i + 1).joinToString(".")
-        add(canonicalLayoutPath)
-      }
-    }
-
-    if (!isLayout) {
-      add(canonicalPathSegments.joinToString("."))
+      val path = canonicalPathSegments.subList(0, i + 1).joinToString(".")
+      add(path)
     }
   }
+
+  val document = Jsoup.parse(filePath.toFile())
 }

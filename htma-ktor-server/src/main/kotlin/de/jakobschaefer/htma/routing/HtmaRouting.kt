@@ -48,7 +48,20 @@ fun Route.web(spec: HtmaRoutingBuilder.() -> Unit) {
 }
 
 private fun Route.setupPageRouting(configuration: HtmaConfiguration, routing: HtmaRouting) {
+  // Pages can map to the same remote path. Pick the one with the highest priority
+  val pages = mutableMapOf<String, AppManifestPage>()
   for (toPage in configuration.appManifest.pages) {
+    if (toPage.remotePathPriority > 0) {
+      val existingPage = pages[toPage.remotePath]
+      if (existingPage == null) {
+        pages[toPage.remotePath] = toPage
+      } else if (existingPage.remotePathPriority < toPage.remotePathPriority) {
+        pages[toPage.remotePath] = toPage
+      }
+    }
+  }
+
+  for (toPage in pages.values) {
     get(toPage.remotePath) {
       val pathParams = call.pathParameters.toMap()
       val queryParams = call.queryParameters.toMap()
@@ -78,6 +91,7 @@ private suspend fun RoutingContext.replyHtml(
     locale = detectUserLocale(htmaState),
     htmaState = htmaState,
     params = params,
+    location = call.request.uri,
     configuration = configuration,
   )
 
@@ -86,10 +100,10 @@ private suspend fun RoutingContext.replyHtml(
 
   val responseBody = if (htmaState.isFetchRequest) {
     val outletCssSelector =
-      "#${htmaState.outletSwap!!.oldOutlet.replace(".", "\\.").replace("/", "\\/").replace("$", "\\$")}"
-    call.response.header("HX-Retarget", outletCssSelector)
-    call.response.header("HX-Reswap", "outerHTML")
-    call.response.header("HX-Push-Url", call.request.uri)
+      "#${htmaState.outletSwap!!.innerMostCommonOutlet.replace(".", "\\.").replace("/", "\\/").replace("$", "\\$")}"
+    call.response.header("Hx-Retarget", outletCssSelector)
+    call.response.header("Hx-Reswap", "outerHTML")
+    call.response.header("Hx-Push-Url", call.request.uri)
     configuration.renderingEngine.renderFragment(htmaState, htmaContext)
   } else {
     configuration.renderingEngine.renderPage(htmaState, htmaContext)

@@ -17,7 +17,7 @@ object HtmaJexl {
     .namespaces(
       mapOf(
         "t" to HtmaTNamespace::class.java,
-        "uri" to HtmaUrlNamespace::class.java,
+        "uri" to HtmaUriNamespace::class.java,
         "money" to HtmaMoneyNamespace(),
       )
     )

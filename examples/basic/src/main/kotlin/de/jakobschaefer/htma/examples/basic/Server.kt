@@ -115,5 +115,9 @@ fun Application.module() {
       call.sessions.clear<Session>()
       call.respondRedirect("/app/login")
     }
+
+    get("/bla/{name}") {
+
+    }
   }
 }

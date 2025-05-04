@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="param" content="name=foo, required=true, type=text" />
     <title>Document</title>
   </head>
   <body>
@@ -15,17 +14,40 @@
         </div>
         <div class="px-2 flex justify-between">
           <div class="flex gap-2">
-            <a href="/forms" class="hover:underline">Forms</a>
-            <a href="/variables" class="hover:underline">Variables</a>
-            <a href="/components" class="hover:underline">Components</a>
-            <a href="/messages?count=0" class="hover:underline">Messages</a>
-            <a href="/graphql" class="hover:underline">GraphQL</a>
+            <a
+                    id="forms-link"
+                    href="/forms"
+                    class="hover:underline transition"
+                    data-x-class-append="{ 'text-blue-600': uri:match('/forms', location) }"
+            >Forms</a>
+            <a
+                    id="variables-link"
+                    href="/variables"
+                    class="hover:underline transition"
+                    data-x-class-append="{ 'text-blue-600': uri:match('/variables', location) }"
+            >Variables</a>
+            <a
+                    id="components-link"
+                    href="/components"
+                    class="hover:underline transition"
+                    data-x-class-append="{ 'text-blue-600': uri:match('/components', location) }"
+            >Components</a>
+            <a
+                    id="messages-link"
+                    href="/messages?count=0"
+                    class="hover:underline transition"
+                    data-x-class-append="{ 'text-blue-600': uri:match('/messages', location) }"
+            >Messages</a>
+            <a
+                    id="graphql-link"
+                    href="/graphql"
+                    class="hover:underline transition"
+                    data-x-class-append="{ 'text-blue-600': uri:match('/graphql', location) }"
+            >GraphQL</a>
           </div>
           <span
             class="justify-self-end font-bold"
-            data-x-text="t:msg('labeled.name', { 'name': query.NameQuery.data.name })"
-            >Current Name: {$name}</span
-          >
+            data-x-text="query.NameQuery.data.serverTime"></span>
         </div>
       </nav>
       <outlet></outlet>

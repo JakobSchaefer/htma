@@ -1,15 +1,16 @@
 package de.jakobschaefer.htma.webinf
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 data class AppManifestPage(
-  val filePath: String,
+  val webPath: String,
   val remotePath: String,
+  val remotePathPriority: Int,
   val canonicalPath: String,
   val templateName: String,
   val outletChain: Map<String, String>,
+  val routeConfig: AppManifestPageRouteConfig
 ) {
 
   val outletChainList by lazy {

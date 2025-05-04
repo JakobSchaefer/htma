@@ -6,7 +6,7 @@ import kotlin.math.sin
 object GraphQlParamsToVariablesConverter {
   fun convert(params: HtmaParams): Map<String, Any?> {
     val result = mutableMapOf<String, Any?>()
-    for ((key, value) in params.filter { it.key.startsWith('$') }) {
+    for ((key, value) in params.filter { it.key.startsWith('$') && !it.key.startsWith("$$") }) {
       if (key.endsWith("[]")) {
         val segments = key.substring(1).dropLast(2).split('.')
         insertValueIntoStructure(result, segments, value)

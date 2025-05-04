@@ -1,5 +1,1 @@
-import htmx from "htmx.org"
-
-window.htmx = htmx
-
-export default htmx
+import "htmx.org"

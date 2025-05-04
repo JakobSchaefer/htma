@@ -1,7 +1,6 @@
 package de.jakobschaefer.htma.rendering
 
 import de.jakobschaefer.htma.HtmaConfiguration
-import de.jakobschaefer.htma.SessionIdAttribute
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
@@ -21,14 +20,14 @@ data class HtmaState(
   val toPage: AppManifestPage,
   val isFetchRequest: Boolean,
   val fromPage: AppManifestPage?,
-  val outletSwap: HtmaStateOutletSwap?,
-  val sessionId: String
+  val outletSwap: HtmaStateOutletSwap?
 ) {
   companion object {
     internal fun build(call: RoutingCall, toPage: AppManifestPage, configuration: HtmaConfiguration): HtmaState {
       val isFetchRequest = call.request.header("HX-Request") == "true"
       val fromPage = if (isFetchRequest) {
-        val fromPathSegments = Url(call.request.header("HX-Current-URL")!!).segments
+        val fromUrl = Url(call.request.header("HX-Current-URL")!!)
+        val fromPathSegments = fromUrl.segments
         detectFromPage(fromPathSegments, configuration.appManifest)
       } else {
         null
@@ -45,7 +44,6 @@ data class HtmaState(
         isFetchRequest = isFetchRequest,
         fromPage = fromPage,
         outletSwap = fromPage?.let { HtmaStateOutletSwap.build(fromPage, toPage) },
-        sessionId = call.attributes[SessionIdAttribute]
       )
     }
 

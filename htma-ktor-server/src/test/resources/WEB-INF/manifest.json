@@ -1,12 +1,16 @@
 {
   "pages": [
     {
-      "filePath": "/index.html",
+      "webPath": "/index.html",
       "remotePath": "/",
+      "remotePathPriority": 1,
       "canonicalPath": "__root.index",
       "templateName": "index",
       "outletChain": {
         "__root": "index"
+      },
+      "routeConfig": {
+        "params": []
       }
     }
   ],
