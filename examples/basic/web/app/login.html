@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <div class="h-dvh w-dvw grid place-items-center">
+        <form class="p-2 flex flex-col items-start gap-1 border" method="post">
+            <p data-x-text="htma.sessionId"></p>
+            <label for="email">E-Mail:</label>
+            <input type="text" name="$email" id="email" class="border">
+            <label for="password">Password:</label>
+            <input type="password" name="$password" id="password" class="border">
+            <button type="submit" class="bg-blue-600 text-white p-1 w-full">Login</button>
+        </form>
+        <form action="/login" method="post">
+            <button>LOGIN</button>
+        </form>
+    </div>
+</body>
+</html>

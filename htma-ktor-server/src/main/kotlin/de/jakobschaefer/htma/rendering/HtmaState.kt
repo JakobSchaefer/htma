@@ -21,7 +21,8 @@ data class HtmaState(
   val toPage: AppManifestPage,
   val isFetchRequest: Boolean,
   val fromPage: AppManifestPage?,
-  val outletSwap: HtmaStateOutletSwap?
+  val outletSwap: HtmaStateOutletSwap?,
+  val sessionId: String
 ) {
   companion object {
     internal fun build(call: RoutingCall, toPage: AppManifestPage, configuration: HtmaConfiguration): HtmaState {
@@ -44,6 +45,7 @@ data class HtmaState(
         isFetchRequest = isFetchRequest,
         fromPage = fromPage,
         outletSwap = fromPage?.let { HtmaStateOutletSwap.build(fromPage, toPage) },
+        sessionId = call.attributes[SessionIdAttribute]
       )
     }
 

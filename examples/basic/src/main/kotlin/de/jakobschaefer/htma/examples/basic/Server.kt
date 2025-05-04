@@ -21,6 +21,10 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.upsert
+import sun.security.jgss.GSSUtil.login
+import java.util.Locale
+import java.util.UUID
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -40,7 +44,7 @@ object UserSessions : Table("user_sessions") {
 class SessionStorageDatabase : SessionStorage {
   override suspend fun write(id: String, value: String) {
     newSuspendedTransaction {
-      UserSessions.insert {
+      UserSessions.upsert {
         it[UserSessions.id] = id
         it[UserSessions.state] = value
       }
@@ -77,22 +81,39 @@ fun Application.module() {
     }
   }
 
+  val meals = MealsRepository()
+
   install(Htma) {
     graphql {
       type("Query") {
         resolve("name", NameResolver())
         resolve("greeting", GreetingResolver())
         resolve("serverTime", ServerTimeResolver())
-        resolve("meals", MealsResolver())
+        resolve("meals", MealsResolver(meals))
       }
       type("Mutation") {
         resolve("setName", SetNameResolver())
+        resolve("addMeal", AddMealsResolver(meals))
+        resolve("deleteMeal", DeleteMealResolver(meals))
+        resolve("signInWithEmailAndPassword", SignInWithEmailAndPasswordResolver())
       }
     }
   }
 
   routing {
     web {
+      loader("__root") {
+      }
+    }
+
+    post("/login") {
+      call.sessions.set(Session(UUID.randomUUID().toString(), "de"))
+      call.respondRedirect("/app/game")
+    }
+
+    post("/logout") {
+      call.sessions.clear<Session>()
+      call.respondRedirect("/app/login")
     }
   }
 }

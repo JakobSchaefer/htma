@@ -17,12 +17,20 @@ import io.ktor.utils.io.*
 import java.io.File
 import java.util.*
 
-class HtmaRouting {
-}
+data class HtmaRouting(
+  val dataLoaders: Map<String, DataLoader>
+)
 
 class HtmaRoutingBuilder : HtmaRoutingDslBuilder<HtmaRouting> {
+  private var dataLoaders = mutableMapOf<String, DataLoader>()
+
+  fun loader(canonicalPath: String, method: HttpMethod = HttpMethod.Get, spec: DataLoaderBuilder.() -> Unit) {
+    val dataLoader = DataLoaderBuilder(canonicalPath).apply(spec).build()
+    dataLoaders[canonicalPath] = dataLoader
+  }
+
   override fun build(): HtmaRouting {
-    return HtmaRouting()
+    return HtmaRouting(dataLoaders)
   }
 }
 
@@ -36,23 +44,23 @@ fun Route.web(spec: HtmaRoutingBuilder.() -> Unit) {
     preCompressed(CompressedFileType.GZIP)
   }
 
-  setupPageRouting(configuration)
+  setupPageRouting(configuration, routing)
 }
 
-private fun Route.setupPageRouting(configuration: HtmaConfiguration) {
+private fun Route.setupPageRouting(configuration: HtmaConfiguration, routing: HtmaRouting) {
   for (toPage in configuration.appManifest.pages) {
     get(toPage.remotePath) {
       val pathParams = call.pathParameters.toMap()
       val queryParams = call.queryParameters.toMap()
       val params = pathParams + queryParams
-      replyHtml(toPage, configuration, params)
+      replyHtml(toPage, configuration, params, routing)
     }
     post(toPage.remotePath) {
       val pathParams = call.pathParameters.toMap()
       val queryParams = call.queryParameters.toMap()
       val formParams = call.receiveFormParams()
       val params = pathParams + queryParams + formParams
-      replyHtml(toPage, configuration, params)
+      replyHtml(toPage, configuration, params, routing)
     }
   }
 }
@@ -60,7 +68,8 @@ private fun Route.setupPageRouting(configuration: HtmaConfiguration) {
 private suspend fun RoutingContext.replyHtml(
   toPage: AppManifestPage,
   configuration: HtmaConfiguration,
-  params: HtmaParams
+  params: HtmaParams,
+  routing: HtmaRouting
 ) {
   val htmaState = HtmaState.build(call, toPage, configuration)
 
@@ -71,6 +80,7 @@ private suspend fun RoutingContext.replyHtml(
     params = params,
     configuration = configuration,
   )
+
   htmaContext.executeMutationsIfRequired()
   htmaContext.executeQueries()
 

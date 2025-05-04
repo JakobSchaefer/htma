@@ -1,3 +1,5 @@
+scalar File
+
 type Query {
     name: String
     greeting(name: String): String
@@ -8,9 +10,27 @@ type Query {
 
 type Mutation {
     setName(name: String): String
+    addMeal(request: AddMealRequest): Meal
+    deleteMeal(id: ID!): Boolean
+
+    signInWithEmailAndPassword(email: String, password: String): User
+}
+
+type User {
+    id: ID
+    email: String
+    name: String
+}
+
+input AddMealRequest {
+    title: String
+    image: File
+    price: String
+    ingredients: [String]
 }
 
 type Meal {
+    id: ID
     title: String
     imageUrl: String
     price: String

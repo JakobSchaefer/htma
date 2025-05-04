@@ -1,0 +1,19 @@
+query GameQuery {
+    meals {
+        id
+        title
+        imageUrl
+        price
+        ingredients
+    }
+}
+
+mutation AddMeal($request: AddMealRequest) {
+    addMeal(request: $request) {
+        id
+    }
+}
+
+mutation DeleteMeal($id: ID!) {
+    deleteMeal(id: $id)
+}

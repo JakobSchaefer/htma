@@ -12,6 +12,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.internal.cc.base.logger
 import org.gradle.internal.declarativedsl.dom.mutation.MutationDefinition
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
@@ -156,14 +157,21 @@ class HtmaPlugin : Plugin<Project> {
     val graphQlDocuments = Files.walk(webDir)
       .filter { it.pathString.endsWith(".graphql") }
       .toList()
-      .associate { graphQlFile ->
+      .mapNotNull { graphQlFile ->
+        try {
+          graphQlFile to graphQlDocumentParser.parseDocument(graphQlFile.toFile().readText(Charsets.UTF_8))
+        } catch (e: Exception) {
+          logger.error("Failed to parse GraphQL file {}. This file will be ignored. Reason: {}", graphQlFile.pathString, e.message)
+          null
+        }
+      }
+      .associate { (graphQlFile, parsedDocument) ->
         val templateName = graphQlFile.pathString
           .substringAfter(webDir.pathString)
           .substringBeforeLast(".graphql")
           .replace(FileSystems.getDefault().separator, "/")
           .substring(1)
 
-        val parsedDocument = graphQlDocumentParser.parseDocument(graphQlFile.toFile().readText(Charsets.UTF_8))
         val queries = parsedDocument.definitions.filterIsInstance<OperationDefinition>()
           .filter { it.operation == OperationDefinition.Operation.QUERY }
           .map {
@@ -172,7 +180,7 @@ class HtmaPlugin : Plugin<Project> {
               operation = AstPrinter.printAst(it),
             )
           }
-        val mutation = parsedDocument.definitions.filterIsInstance<OperationDefinition>()
+        val mutations = parsedDocument.definitions.filterIsInstance<OperationDefinition>()
           .filter { it.operation == OperationDefinition.Operation.MUTATION }
           .map {
             AppManifestGraphQlOperation(
@@ -180,10 +188,9 @@ class HtmaPlugin : Plugin<Project> {
               operation = AstPrinter.printAst(it),
             )
           }
-          .firstOrNull()
         val document = AppManifestGraphQlDocument(
           queries = queries,
-          mutation = mutation
+          mutations = mutations
         )
         (templateName to document)
       }

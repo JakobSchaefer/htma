@@ -29,7 +29,6 @@ internal class HtmaContext(
     set("locale", locale)
     set("params", params)
     set("htma", htmaState)
-    set("sessionId", call.attributes[SessionIdAttribute])
   }
 
   fun pushIt(it: Any?) {
@@ -89,8 +88,24 @@ internal class HtmaContext(
   suspend fun executeMutationsIfRequired() {
     if (call.request.httpMethod == HttpMethod.Post) {
       if (configuration.graphQlService != null) {
-        val mutation = configuration.appManifest.graphQlDocuments[htmaState.toPage.templateName]?.mutation
-        if (mutation != null) {
+        val mutations = configuration.appManifest.graphQlDocuments[htmaState.toPage.templateName]?.mutations ?: emptyList()
+        val operationName = params["__operationName"]
+        if (operationName != null) {
+          val mutation = mutations.find { it.operationName == operationName[0] }
+          if (mutation != null) {
+            val request = GraphQlRequest(
+              query = mutation.operation,
+              operationName = mutation.operationName,
+              variables = GraphQlParamsToVariablesConverter.convert(params)
+            )
+            val result = configuration.graphQlService.execute(request)
+            set("mutation", result)
+          } else {
+            log.error("Could not find mutation with operationName {}. Available mutations: {}", operationName, mutations.map { it.operationName })
+            set("mutation", emptyMap<String, Any>())
+          }
+        } else if (mutations.size == 1) {
+          val mutation = mutations.first()
           val request = GraphQlRequest(
             query = mutation.operation,
             operationName = mutation.operationName,
@@ -98,7 +113,9 @@ internal class HtmaContext(
           )
           val result = configuration.graphQlService.execute(request)
           set("mutation", result)
-          return
+        } else {
+          log.error("Could not decide which mutation to execute, because no operationName was provided. Please provide one via the data-x-operation attribute. Available mutations: {}", mutations.map { it.operationName })
+          set("mutation", emptyMap<String, Any>())
         }
       }
     }

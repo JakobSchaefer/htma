@@ -41,6 +41,8 @@ dependencies {
 
   implementation(libs.graphql.java)
 
+  api(libs.konform)
+
   api(libs.exposed.core)
   runtimeOnly(libs.exposed.jdbc)
 

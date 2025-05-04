@@ -177,6 +177,18 @@ internal class HtmaRenderingEngine(
                 }
               }
             }
+            "mutation" -> {
+              when (attributeResult) {
+                is String -> {
+                  val operationNameInput = Element("input")
+                  operationNameInput.attr("type", "hidden")
+                  operationNameInput.attr("name", "__operationName")
+                  operationNameInput.attr("value", attributeResult)
+                  operations.add(ElementOperation.AddChildElement(tag, operationNameInput))
+                }
+                else -> throw IllegalArgumentException("Operation attribute must be a string")
+              }
+            }
             else -> when (attributeResult) {
               is String -> operations.add(ElementOperation.WriteStringAttribute(tag, attributeKey, attributeResult))
               is Boolean -> operations.add(ElementOperation.WriteBooleanAttribute(tag, attributeKey, attributeResult))
@@ -239,6 +251,11 @@ sealed interface ElementOperation {
   class WriteInnerText(val tag: Element, val text: String): ElementOperation {
     override fun execute() {
       tag.text(text)
+    }
+  }
+  class AddChildElement(val tag: Element, val childElement: Element): ElementOperation {
+    override fun execute() {
+      tag.appendChild(childElement)
     }
   }
 }

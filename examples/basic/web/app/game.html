@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl">Game</h1>
+            <form action="/logout" method="post">
+                <button class="hover:text-blue-600 transition cursor-pointer">LOGOUT</button>
+            </form>
+        </div>
+        <form class="p-2 w-[400px] flex flex-col gap-1 items-center" action="/app/game" method="post" data-x-mutation="'AddMeal'">
+            <div class="flex items-center">
+                <label class="mr-2" for="title">Title:</label>
+                <input class="border p-2" id="title" name="$request.title" type="text" required>
+            </div>
+            <div class="flex items-center">
+                <label class="mr-2" for="imageUrl">Image URL:</label>
+                <input class="border p-2" id="imageUrl" name="$request.image" type="file" required>
+            </div>
+            <div class="flex items-center">
+                <label class="mr-2" for="price">Price: </label>
+                <input class="border p-2" id="price" name="$request.price" type="number" required>
+            </div>
+            <div class="flex items-center">
+                <label class="mr-2" for="ingredients-1">Ingredients: </label>
+                <input class="border p-2" id="ingredients-1" name="$request.ingredients[]" type="text" required>
+            </div>
+            <button class="p-2 border bg-blue-300">Go</button>
+        </form>
+        <table class="container">
+            <thead>
+                <tr class="text-left">
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Image URL</th>
+                    <th>Price</th>
+                    <th>Ingredients</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-x-each="query.GameQuery.data.meals">
+                    <td data-x-text="it.id"></td>
+                    <td data-x-text="it.title"></td>
+                    <td data-x-text="it.imageUrl"></td>
+                    <td data-x-text="it.price"></td>
+                    <td data-x-text="it.ingredients"></td>
+                    <td>
+                        <form action="/app/game" method="post" data-x-mutation="'DeleteMeal'">
+                            <input type="hidden" name="$id" data-x-value="it.id">
+                            <button class="p-1 border cursor-pointer border-b-red-400 font-bold text-red-500 hover:text-red-700">X</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

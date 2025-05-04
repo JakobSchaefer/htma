@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppManifestGraphQlDocument(
   val queries: List<AppManifestGraphQlOperation>,
-  val mutation: AppManifestGraphQlOperation?,
+  val mutations: List<AppManifestGraphQlOperation>,
 )
 

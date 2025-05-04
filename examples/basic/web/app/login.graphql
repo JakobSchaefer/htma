@@ -1,0 +1,8 @@
+
+mutation SignIn($email: String, $password: String) {
+    signInWithEmailAndPassword(email: $email, password: $password) {
+        id
+        email
+        name
+    }
+}
