@@ -135,10 +135,7 @@ class HtmaPlugin : Plugin<Project> {
             outletChain = buildMap {
               var currentOutlet = "__root"
               for (outlet in htmlFile.canonicalOutletChain) {
-                val templateName = when (val page = pagesAndLayouts.find { it.canonicalPathWithoutRoot == outlet }) {
-                  null -> outlet // Expect a template at the canonical path.
-                  else -> page.templateName
-                }
+                val templateName = pagesAndLayouts.find { it.canonicalPathWithoutRoot == outlet }?.templateName ?: continue
                 put(currentOutlet, templateName)
                 currentOutlet = templateName
               }

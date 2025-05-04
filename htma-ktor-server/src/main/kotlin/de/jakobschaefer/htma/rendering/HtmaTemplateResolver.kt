@@ -16,15 +16,7 @@ interface HtmaTemplateResolver {
 class DevelopmentTemplateResolver : HtmaTemplateResolver {
   override fun getTemplate(templateName: String): HtmaTemplate {
     val templatePath = getTemplatePath(templateName)
-    val isLayout = templateName.replace("/", ".")
-      .split(".")
-      .last()
-      .startsWith('_')
-    val document = if (isLayout && !templatePath.exists()) {
-      Jsoup.parse(DEFAULT_LAYOUT_TEMPLATE_CONTENT)
-    } else {
-      Jsoup.parse(templatePath)
-    }
+    val document = Jsoup.parse(templatePath)
     return HtmaTemplate(document)
   }
 
@@ -67,21 +59,8 @@ class ProductionTemplateResolver(
   }
 
   private fun loadTemplate(templateName: String) {
-    val isLayout = templateName.replace("/", ".")
-      .split(".")
-      .last()
-      .startsWith('_')
     val templatePath = getTemplateResourcePath(templateName)
-    val document = if (isLayout) {
-      try {
-        loadTemplateDocument(templatePath)
-      } catch (e: Exception) {
-        log.info("Template {} not found. Fallback content will be used.", templateName)
-        Jsoup.parse(DEFAULT_LAYOUT_TEMPLATE_CONTENT)
-      }
-    } else {
-      loadTemplateDocument(templatePath)
-    }
+    val document = loadTemplateDocument(templatePath)
     log.info("Loading resource {}", templatePath)
     cache[templateName] = HtmaTemplate(document)
   }
