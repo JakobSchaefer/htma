@@ -49,7 +49,7 @@ uriTemplate = "2.1.8"
 
 exposed = "0.61.0"
 
-lucene = "10.2.0"
+lucene = "10.2.1"
 
 grpc = "1.72.0"
 protobuf = "4.30.2"
