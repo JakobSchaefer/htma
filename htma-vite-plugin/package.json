@@ -1,12 +1,13 @@
 {
-  "name": "@jakobschaefer/htma-vite-plugin",
-  "version": "0.1.0",
-  "main": "src/index.js",
-  "private": false,
-  "type": "module",
-  "scripts": {
-  },
-  "author": "Jakob Schäfer",
-  "license": "MIT",
-  "description": "The vite plugin for htma"
+    "name": "@jakobschaefer/htma-vite-plugin",
+    "version": "0.1.40",
+    "main": "src/index.js",
+    "private": false,
+    "type": "module",
+    "scripts": {
+        
+    },
+    "author": "Jakob Sch\u00e4fer",
+    "license": "MIT",
+    "description": "The vite plugin for htma"
 }
