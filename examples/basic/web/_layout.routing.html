@@ -1,10 +1,15 @@
-<plug>
+<plug data-x-class-append="
+    {
+        'bg-red-100': uri:match('/routing', location),
+        'bg-blue-100': uri:match('/routing/page-a', location),
+        'bg-green-100': uri:match('/routing/page-b', location),
+        'bg-yellow-100': uri:match('/routing/page-c', location),
+    }">
     <nav>
         <a data-x-navigate="'/routing'">Index</a>
         <a data-x-navigate="'/routing/page-a'">Page A</a>
         <a data-x-navigate="'/routing/page-b'">Page B</a>
         <a data-x-navigate="'/routing/page-c'">Page C</a>
     </nav>
-    <h1>Routing....</h1>
     <outlet></outlet>
 </plug>
