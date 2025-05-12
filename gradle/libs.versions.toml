@@ -27,7 +27,7 @@ axion = "1.18.18"
 dokka = "2.0.0"
 
 # https://opensource.deepmedia.io/deployer
-deployer = "0.17.0"
+deployer = "0.18.0"
 
 # https://github.com/jhy/jsoup/
 jsoup = "1.20.1"
