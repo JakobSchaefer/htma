@@ -13,7 +13,8 @@
     "lit": "^3.2.1",
     "tailwindcss": "^4.0.0-beta.2",
     "vite": "^6.2.3",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression": "^0.5.1",
+    "@jakobschaefer/htma-vite-plugin": "../../htma-vite-plugin"
   },
   "scripts": {
     "dev": "vite dev",

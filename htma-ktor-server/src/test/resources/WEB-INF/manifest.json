@@ -12,8 +12,64 @@
       "routeConfig": {
         "params": []
       }
+    },
+    {
+      "webPath": "/blog.html",
+      "remotePath": "/blog",
+      "remotePathPriority": 1,
+      "canonicalPath": "__root.blog",
+      "templateName": "blog",
+      "outletChain": {
+        "__root": "blog"
+      },
+      "routeConfig": {
+        "params": []
+      }
+    },
+    {
+      "webPath": "/blog/index.html",
+      "remotePath": "/blog",
+      "remotePathPriority": 2,
+      "canonicalPath": "__root.blog.index",
+      "templateName": "blog/index",
+      "outletChain": {
+        "__root": "blog",
+        "blog": "blog/index"
+      },
+      "routeConfig": {
+        "params": []
+      }
+    },
+    {
+      "webPath": "/blog/_layout.html",
+      "remotePath": "/blog",
+      "remotePathPriority": -1,
+      "canonicalPath": "__root.blog._layout",
+      "templateName": "blog",
+      "outletChain": {
+        "__root": "blog",
+        "blog": "blog/_layout"
+      },
+      "routeConfig": {
+        "params": []
+      }
+    },
+    {
+      "webPath": "/blog/_layout.new.html",
+      "remotePath": "/blog/new",
+      "remotePathPriority": 1,
+      "canonicalPath": "__root.blog._layout.new",
+      "templateName": "blog/new",
+      "outletChain": {
+        "__root": "blog",
+        "blog": "blog/_layout",
+        "blog/_layout": "blog/_layout.new"
+      },
+      "routeConfig": {
+        "params": []
+      }
     }
   ],
-  "components": [],
+  "webComponents": [],
   "graphQlDocuments": {}
 }

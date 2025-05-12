@@ -118,8 +118,9 @@ class HtmaPlugin : Plugin<Project> {
           .replace(FileSystems.getDefault().separator, "/") to filePath
       }.toList()
 
+    val componentFolderRegex = Regex("""\(([^)]+)\)/\1""")
     val pagesAndLayouts = htmlFiles
-      .filter { (webPath, _) -> !webPath.startsWith("/__components") }
+      .filter { (webPath, _) -> !webPath.contains(componentFolderRegex) }
       .map { (webPath, filePath) -> HtmlFile(filePath, webPath) }
 
       val pages = buildList {
@@ -153,9 +154,12 @@ class HtmaPlugin : Plugin<Project> {
         }
       }
 
-    val components = htmlFiles
-      .filter { (webPath, _) -> webPath.startsWith("/__components") }
-      .map { (webPath, _) -> AppComponent(webPath.substringAfter("/__components/")) }
+    val webComponents = htmlFiles
+      .filter { (webPath, _) -> webPath.contains(componentFolderRegex) }
+      .map { (webPath, _) ->
+        val componentName = componentFolderRegex.find(webPath)!!.groupValues[1]
+        AppManifestWebComponent(componentName, webPath.substring(1))
+      }
       .toList()
 
     val graphQlDocumentParser = Parser()
@@ -202,7 +206,7 @@ class HtmaPlugin : Plugin<Project> {
 
     return AppManifest(
       pages = pages,
-      components = components,
+      webComponents = webComponents,
       graphQlDocuments = graphQlDocuments
     )
   }
@@ -225,17 +229,6 @@ data class HtmlFile(
 
   val remotePathSegments = canonicalPathSegments
     .filter { !it.startsWith('_') }
-    .map {
-      if (it.startsWith('$')) {
-        if (it == "$") {
-          "{...}"
-        } else {
-          "{${it.substring(1)}}"
-        }
-      } else {
-        it
-      }
-    }
   val remotePath = "/" + if (isIndex) {
     remotePathSegments.dropLast(1).joinToString("/")
   } else {

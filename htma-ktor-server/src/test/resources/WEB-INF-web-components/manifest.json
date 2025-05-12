@@ -1,0 +1,24 @@
+{
+  "pages": [
+    {
+      "webPath": "/index.html",
+      "remotePath": "/",
+      "remotePathPriority": 1,
+      "canonicalPath": "__root.index",
+      "templateName": "index",
+      "outletChain": {
+        "__root": "index"
+      },
+      "routeConfig": {
+        "params": []
+      }
+    }
+  ],
+  "webComponents": [
+    {
+      "name": "example-web-component",
+      "templateName": "(example-web-component)/example-web-component"
+    }
+  ],
+  "graphQlDocuments": {}
+}

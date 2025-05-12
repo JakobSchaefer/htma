@@ -6,7 +6,7 @@ import java.nio.file.Paths
 import kotlin.io.path.pathString
 
 internal class HtmaUriNamespace(
-  val context: HtmaContext
+  val context: HtmaJexlContext
 ) {
   fun template(uriTemplate: String): String {
     return template(uriTemplate, context.params)

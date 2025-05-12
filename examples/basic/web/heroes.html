@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <plug class="p-2 m-2 border border-red-500">
+        <div class="p-2 border flex gap-2">
+            <a data-x-navigate="uri:template('/heroes')">Heroes...</a>
+            <a data-x-navigate="uri:template('/heroes/{heroId}', { 'heroId': 9999 })">Hero: 9999</a>
+        </div>
+        <outlet></outlet>
+    </plug>
+</body>
+</html>

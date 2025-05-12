@@ -28,18 +28,11 @@ data class ViteManifest(
     }
 
     fun development(): ViteManifest {
-      var viteServerPort = 5173
-      val viteConfigJs = File("vite.config.js")
-      val viteConfigTs = File("vite.config.ts")
-      if (viteConfigJs.exists()) {
-        viteServerPort = getVitePort(viteConfigJs.readText())
-      } else if (viteConfigTs.exists()) {
-        viteServerPort = getVitePort(viteConfigTs.readText())
-      }
+      val viteServerPort = 5174
       return ViteManifest(
         assets = emptyMap(),
         mainJsModules = listOf("http://localhost:$viteServerPort/@vite/client", "http://localhost:$viteServerPort/web/__root.js"),
-        mainCssModules = emptyList()
+        mainCssModules = listOf("http://localhost:$viteServerPort/web/__root.css")
       )
     }
 

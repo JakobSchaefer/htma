@@ -1,13 +1,13 @@
-package de.jakobschaefer.htma.rendering
+package de.jakobschaefer.htma.rendering.state
 
 import de.jakobschaefer.htma.HtmaConfiguration
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
-import io.ktor.http.*
-import io.ktor.server.request.*
-import io.ktor.server.routing.*
-import java.util.*
+import io.ktor.http.Url
+import io.ktor.server.request.header
+import io.ktor.server.routing.RoutingCall
+import java.util.Locale
 
 data class HtmaState(
   val isDevelopmentMode: Boolean,
@@ -20,7 +20,6 @@ data class HtmaState(
   val toPage: AppManifestPage,
   val isFetchRequest: Boolean,
   val fromPage: AppManifestPage?,
-  val outletSwap: HtmaStateOutletSwap?
 ) {
   companion object {
     internal fun build(call: RoutingCall, toPage: AppManifestPage, configuration: HtmaConfiguration): HtmaState {
@@ -43,7 +42,6 @@ data class HtmaState(
         toPage = toPage,
         isFetchRequest = isFetchRequest,
         fromPage = fromPage,
-        outletSwap = fromPage?.let { HtmaStateOutletSwap.build(fromPage, toPage) },
       )
     }
 

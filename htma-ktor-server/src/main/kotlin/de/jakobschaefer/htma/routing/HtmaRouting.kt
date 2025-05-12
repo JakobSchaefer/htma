@@ -1,9 +1,13 @@
 package de.jakobschaefer.htma.routing
 
 import de.jakobschaefer.htma.HtmaConfiguration
+import de.jakobschaefer.htma.graphql.GraphQlParamsToVariablesConverter
+import de.jakobschaefer.htma.graphql.GraphQlRequest
+import de.jakobschaefer.htma.graphql.GraphQlService
 import de.jakobschaefer.htma.htmaConfiguration
-import de.jakobschaefer.htma.rendering.jexl.HtmaContext
-import de.jakobschaefer.htma.rendering.HtmaState
+import de.jakobschaefer.htma.rendering.HtmaContext
+import de.jakobschaefer.htma.rendering.state.HtmaState
+import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.AppManifestPage
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -14,6 +18,9 @@ import io.ktor.server.routing.*
 import io.ktor.util.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.util.*
 
@@ -86,28 +93,29 @@ private suspend fun RoutingContext.replyHtml(
 ) {
   val htmaState = HtmaState.build(call, toPage, configuration)
 
-  val htmaContext = HtmaContext(
-    call = call,
-    locale = detectUserLocale(htmaState),
-    htmaState = htmaState,
-    params = params,
-    location = call.request.uri,
-    configuration = configuration,
-  )
-
-  htmaContext.executeMutationsIfRequired()
-  htmaContext.executeQueries()
-
-  val responseBody = if (htmaState.isFetchRequest) {
-    val outletCssSelector =
-      "#${htmaState.outletSwap!!.innerMostCommonOutlet.replace(".", "\\.").replace("/", "\\/").replace("$", "\\$")}"
-    call.response.header("Hx-Retarget", outletCssSelector)
-    call.response.header("Hx-Reswap", "outerHTML")
-    call.response.header("Hx-Push-Url", call.request.uri)
-    configuration.renderingEngine.renderFragment(htmaState, htmaContext)
+  val mutation = if (configuration.graphQlService != null && call.request.httpMethod == HttpMethod.Post) {
+    executeMutations(configuration.graphQlService, configuration.appManifest, htmaState, params)
   } else {
-    configuration.renderingEngine.renderPage(htmaState, htmaContext)
+    emptyMap()
   }
+
+  val query = if (configuration.graphQlService != null) {
+    executeQueries(configuration.graphQlService, htmaState, params)
+  } else {
+    emptyMap()
+  }
+
+  val htmaContext = HtmaContext(
+    locale = detectUserLocale(htmaState),
+    location = call.request.uri,
+    params = params,
+    query = query,
+    mutation = mutation,
+    htma = htmaState,
+  )
+  val responseBody = configuration.templateEngine.process(
+    htmaContext,
+  )
   call.respondText(responseBody, ContentType.Text.Html, HttpStatusCode.OK)
 }
 
@@ -122,6 +130,7 @@ private fun RoutingContext.detectUserLocale(htmaState: HtmaState): Locale {
   }
   return locale
 }
+
 private suspend fun RoutingCall.receiveFormParams(): HtmaParams {
   return if (
     request.contentType().contentType == ContentType.MultiPart.FormData.contentType
@@ -164,3 +173,75 @@ private suspend fun RoutingCall.receiveFormParams(): HtmaParams {
     receiveParameters().toMap()
   }
 }
+
+private suspend fun executeQueries(
+  graphQlService: GraphQlService,
+  htmaState: HtmaState,
+  params: HtmaParams
+): Map<String, Any> {
+    val queries = htmaState.toPage.outletChainList
+      .mapNotNull { htmaState.appManifest.graphQlDocuments[it]?.queries }.flatten()
+    val executedQueries = coroutineScope {
+      queries.map {
+        async {
+          val request = GraphQlRequest(
+            query = it.operation,
+            operationName = it.operationName,
+            variables = GraphQlParamsToVariablesConverter.convert(params)
+          )
+          val response = graphQlService.execute(request)
+          it.operationName to response
+        }
+      }.awaitAll()
+    }.toMap()
+    return executedQueries
+}
+
+private const val GRAPHQL_MUTATION_PARAMETER_NAME = "$${'$'}mutation"
+
+suspend fun executeMutations(
+  graphQlService: GraphQlService,
+  appManifest: AppManifest,
+  htmaState: HtmaState,
+  params: HtmaParams
+): Map<String, Any> {
+      val mutations =
+        appManifest.graphQlDocuments[htmaState.toPage.templateName]?.mutations ?: emptyList()
+      val operationName = params[GRAPHQL_MUTATION_PARAMETER_NAME]
+      return if (operationName != null) {
+        val mutation = mutations.find { it.operationName == operationName[0] }
+        if (mutation != null) {
+          val request = GraphQlRequest(
+            query = mutation.operation,
+            operationName = mutation.operationName,
+            variables = GraphQlParamsToVariablesConverter.convert(params)
+          )
+          return graphQlService.execute(request)
+        } else {
+          log.error(
+            "Could not find mutation with operationName {}. Available mutations: {}",
+            operationName,
+            mutations.map { it.operationName })
+          emptyMap()
+        }
+
+      } else if (mutations.isEmpty()) {
+        // Nothing to do. Skip the execution.
+        emptyMap()
+      } else if (mutations.size == 1) {
+        val mutation = mutations.first()
+        val request = GraphQlRequest(
+          query = mutation.operation,
+          operationName = mutation.operationName,
+          variables = GraphQlParamsToVariablesConverter.convert(params)
+        )
+        graphQlService.execute(request)
+      } else {
+        log.error(
+          "Could not decide which mutation to execute, because no operationName was provided. Please provide one via the data-x-operation attribute. Available mutations: {}",
+          mutations.map { it.operationName })
+        emptyMap()
+      }
+}
+
+private val log = org.slf4j.LoggerFactory.getLogger("HtmaRouting")

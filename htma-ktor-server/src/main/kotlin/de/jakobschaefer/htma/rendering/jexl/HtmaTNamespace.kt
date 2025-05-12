@@ -3,7 +3,7 @@ package de.jakobschaefer.htma.rendering.jexl
 import java.util.*
 
 internal class HtmaTNamespace(
-  val context: HtmaContext
+  val context: HtmaJexlContext
 ) {
 
   fun fmt(pattern: String): String {
@@ -16,7 +16,7 @@ internal class HtmaTNamespace(
 
   fun fmt(pattern: String, params: Map<String, Any>, locale: Locale): String {
     val handyParams = buildHandyParams(params)
-    return context.configuration.formatter.format(locale, pattern, handyParams)
+    return context.messageFormatter.format(locale, pattern, handyParams)
   }
 
   fun msg(key: String): HtmaFormattedMessage {

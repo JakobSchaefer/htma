@@ -1,14 +1,10 @@
 <template shadowrootmode="open">
-    <style>
-        h3, p {
-            margin: 0;
-        }
-    </style>
-    <div style="border: 1px dashed violet">
+    <link rel="stylesheet" data-x-each="htma.viteManifest.mainCssModules" data-x-href="it">
+    <div>
         <h3><slot></slot></h3>
         <p>Count: <span data-x-text="attributes.count">0</span></p>
         <div>
-            <button>increment</button>
+            <button class="border p-1 cursor-pointer">increment</button>
         </div>
     </div>
 </template>
@@ -62,7 +58,6 @@ class TitledCounter extends HTMLElement {
             this.updateCount(newValue)
         }
     }
-
 }
 
 customElements.define('titled-counter', TitledCounter)

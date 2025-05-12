@@ -1,8 +1,8 @@
 package de.jakobschaefer.htma
 
 import de.jakobschaefer.htma.graphql.GraphQlService
-import de.jakobschaefer.htma.messages.HtmaFormatter
-import de.jakobschaefer.htma.rendering.HtmaRenderingEngine
+import de.jakobschaefer.htma.messages.HtmaMessageFormatter
+import de.jakobschaefer.htma.rendering.HtmaTemplateEngine
 import de.jakobschaefer.htma.webinf.AppManifest
 import de.jakobschaefer.htma.webinf.vite.ViteManifest
 import io.ktor.server.application.*
@@ -17,8 +17,8 @@ internal class HtmaConfiguration(
   val supportedLocales: List<Locale>,
   val defaultLocale: Locale,
   val isLogicEnabled: Boolean,
-  val renderingEngine: HtmaRenderingEngine,
-  val formatter: HtmaFormatter,
+  val templateEngine: HtmaTemplateEngine,
+  val formatter: HtmaMessageFormatter,
   val graphQlService: GraphQlService?
 )
 

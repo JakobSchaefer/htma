@@ -6,7 +6,7 @@
     <title>Document</title>
   </head>
   <body>
-    <div>
+    <plug>
       <h1 class="text-2xl font-bold">GraphQL</h1>
       <form action="/graphql" class="p-2 flex flex-col items-start">
         <h2 class="font-bold">Greeting</h2>
@@ -33,6 +33,9 @@
         </div>
       </form>
       <ul class="list-disc list-inside">
+        <li data-x-each="['hello', 'world']">
+          <span data-x-text="it"></span>
+        </li>
         <li class="p-2" data-x-each="query.MyQuery.data.meals">
           <span class="font-bold" data-x-text="it.title">....</span>
           <div class="flex gap-2">
@@ -67,6 +70,6 @@
           <pre class="text-xs" data-x-text="mutation"></pre>
         </dd>
       </dl>
-    </div>
+    </plug>
   </body>
 </html>

@@ -39,6 +39,8 @@ dependencies {
   implementation(libs.gson)
   implementation(libs.uriTemplate)
 
+  implementation(libs.thymeleaf)
+
   implementation(libs.graphql.java)
 
   api(libs.konform)

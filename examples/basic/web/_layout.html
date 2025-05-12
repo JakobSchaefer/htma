@@ -6,41 +6,47 @@
     <title>Document</title>
   </head>
   <body>
-    <div class="m-2 border border-green-400">
+    <plug class="m-2 border border-green-400">
       <nav>
         <div class="flex gap-2 items-baseline">
-          <a href="/" class="hover:underline">Back</a>
+          <a data-x-navigate="'/'" class="hover:underline" >Back</a>
           <h1 class="text-2xl font-bold">Navigation</h1>
         </div>
         <div class="px-2 flex justify-between">
           <div class="flex gap-2">
             <a
+                    id="routing-link"
+                    data-x-navigate="'/routing'"
+                    class="hover:underline transition"
+                    data-x-class-append="{ 'text-blue-600': uri:match('/routing', location) }"
+            >Routing</a>
+            <a
                     id="forms-link"
-                    href="/forms"
+                    data-x-navigate="'/forms'"
                     class="hover:underline transition"
                     data-x-class-append="{ 'text-blue-600': uri:match('/forms', location) }"
             >Forms</a>
             <a
                     id="variables-link"
-                    href="/variables"
+                    data-x-navigate="'/variables'"
                     class="hover:underline transition"
                     data-x-class-append="{ 'text-blue-600': uri:match('/variables', location) }"
             >Variables</a>
             <a
                     id="components-link"
-                    href="/components"
+                    data-x-navigate="'/components'"
                     class="hover:underline transition"
                     data-x-class-append="{ 'text-blue-600': uri:match('/components', location) }"
             >Components</a>
             <a
                     id="messages-link"
-                    href="/messages?count=0"
+                    data-x-navigate="'/messages?count=123'"
                     class="hover:underline transition"
                     data-x-class-append="{ 'text-blue-600': uri:match('/messages', location) }"
             >Messages</a>
             <a
                     id="graphql-link"
-                    href="/graphql"
+                    data-x-navigate="'/graphql'"
                     class="hover:underline transition"
                     data-x-class-append="{ 'text-blue-600': uri:match('/graphql', location) }"
             >GraphQL</a>
@@ -51,6 +57,6 @@
         </div>
       </nav>
       <outlet></outlet>
-    </div>
+    </plug>
   </body>
 </html>

@@ -15,17 +15,15 @@
     </script>
   </head>
   <body>
-    <div>
+    <plug>
       <h1 class="text-2xl font-bold">Messages</h1>
-      <form action="/messages" class="flex flex-col gap-2 p-2">
+      <form data-x-navigate="'/messages'" class="flex flex-col gap-2 p-2">
         <div class="flex flex-col">
           <label for="count">Count:</label>
           <input
             class="border p-2"
             id="count"
             name="count"
-            hx-get="/messages"
-            hx-trigger="input delay:100ms"
             type="number"
             data-x-value="params.count[0]"
           />
@@ -34,7 +32,7 @@
       </form>
       <div class="p-2">
         <h1 class="font-bold">Deutsch</h1>
-        <pre data-x-text="t:msg('welcome.text')">
+        <pre id="xxx" data-x-text="t:msg('welcome.text')">
             .input {$count :integer}
             .match $count
             0 {{Sie haben {#em}keine{/em} Äpfel.}}
@@ -46,6 +44,6 @@
             * {{Sie haben {$count} Äpfel.}}
         </pre>
       </div>
-    </div>
+    </plug>
   </body>
 </html>

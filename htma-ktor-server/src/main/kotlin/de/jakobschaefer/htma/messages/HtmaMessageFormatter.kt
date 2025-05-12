@@ -5,7 +5,7 @@ import com.ibm.icu.message2.MessageFormatter
 import java.util.*
 import javax.money.MonetaryAmount
 
-internal class HtmaFormatter {
+internal class HtmaMessageFormatter {
   private val functions = MFFunctionRegistry.builder()
     .setFormatter("money") { locale, params -> HtmaMoneyFormatter(locale) }
     .setDefaultFormatterNameForType(MonetaryAmount::class.java, "money")
